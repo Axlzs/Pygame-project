@@ -8,9 +8,7 @@ ENEMY_SPAWN_RANGE = 200
 ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
 ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
 ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
-# !!!!!at the moment the enemies can only be the size of 1 sprite in spritesheet!!!!!
-#do something about it
-ENEMY_SIZE = (32, 32)
+ENEMY_SIZE = (144, 144)
 ENEMY_IMAGES = {
     1: 'images/enemy1.png',
     2: 'images/doux_upgrade.png',
