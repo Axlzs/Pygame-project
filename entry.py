@@ -462,6 +462,7 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
         enemy_screen_x = enemy.rect.x - camera_x
         enemy_screen_y = enemy.rect.y - camera_y
         screen.blit(enemy.image, (enemy_screen_x, enemy_screen_y))
+        pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_SIZE[0], ENEMY_SIZE[1]), 2)
     
     # Arrow image drawing
     for arrow_R in player_arrows_R:
