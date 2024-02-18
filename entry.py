@@ -1,6 +1,7 @@
 import pygame
 import spritesheet
 import random
+from gyatggt import Enemy
 
 def set_static_variables():
     """
@@ -8,6 +9,7 @@ def set_static_variables():
     """
     global WIDTH, HEIGHT, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT, FPS, speed, speed_linear, speed_diagonal, MAX_ARROWS, ARROW_SPEED,WIN, last_shot_time
     global enemy_speed_linear, enemy_speed_diagonal
+    global ENEMY_SPAWN_RANGE, ENEMY_HEALTH, ENEMY_HIT_EVENTS, ENEMY_MELEE_HIT_EVENTS, ENEMY_SIZE, ENEMY_IMAGES, ENEMY_ANIMATION_SPEED
     WIDTH, HEIGHT = 1000, 700
     BACKGROUND_WIDTH, BACKGROUND_HEIGHT = 100, 100 # Black background size (UNUSED!!)
     PLAYER_WIDTH, PLAYER_HEIGHT = 144, 144 # Attached to some settings in regards to player location on screen
@@ -21,6 +23,17 @@ def set_static_variables():
     speed_diagonal = 2.828 # Coefficient 0.707 in regards to linear speed
     enemy_speed_linear = 2
     enemy_speed_diagonal = 1.414
+    ##############################################
+    ENEMY_SPAWN_RANGE = 200
+    ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
+    ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
+    ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
+    ENEMY_SIZE = (144, 144)
+    ENEMY_IMAGES = {
+        1: 'images/enemy1.png',
+        2: 'images/doux_upgrade.png',
+        3: 'images/enemy2.png'}
+    ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
 
 def set_color_codes():
     """
@@ -533,8 +546,6 @@ def draw_fps_counter():
     screen.blit(fps_text, (10, 10))
     screen.blit(score_text, (10, 45))
 
-
-
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -684,6 +695,13 @@ def main_loop():
     player_arrows_DOWN = []
     player_health = 100
 
+    # Create enemies
+    enemies = pygame.sprite.Group()
+    for _ in range(1000):
+        enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
+        enemy = Enemy(enemy_type, player)
+        enemies.add(enemy)
+
     
     score = 0
     modifier = 1
@@ -703,7 +721,7 @@ def main_loop():
             print("Game over")
             game_over_screen()
             break
-
+        
         health_bar.hp = player_health
         handle_events()
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
@@ -713,6 +731,10 @@ def main_loop():
         handle_health_pickups()
         calculate_camera_offset()
         draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN)
+                # Update and draw enemies
+        for enemy in enemies:
+            enemy.animate()
+            screen.blit(enemy.image, enemy.rect)
         draw_fps_counter()
         
         # Draw fading text if needed

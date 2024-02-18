@@ -2,8 +2,9 @@ import pygame
 import random
 
 # Define constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+# SCREEN_WIDTH = 800
+# SCREEN_HEIGHT = 600
+
 ENEMY_SPAWN_RANGE = 200
 ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
 ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
@@ -12,14 +13,13 @@ ENEMY_SIZE = (144, 144)
 ENEMY_IMAGES = {
     1: 'images/enemy1.png',
     2: 'images/doux_upgrade.png',
-    3: 'images/enemy2.png'
-}
+    3: 'images/enemy2.png'}
 ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
 
-# Initialize Pygame
-pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-clock = pygame.time.Clock()
+# # Initialize Pygame
+# pygame.init()
+# screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# clock = pygame.time.Clock()
 
 # Define the Enemy class
 class Enemy(pygame.sprite.Sprite):
@@ -47,16 +47,18 @@ class Enemy(pygame.sprite.Sprite):
         return images
 
     def spawn_enemy_position(self, player):
-        square_top_left_x = player.rect.centerx - ENEMY_SPAWN_RANGE
-        square_top_left_y = player.rect.centery - ENEMY_SPAWN_RANGE
-        square_bottom_right_x = player.rect.centerx + ENEMY_SPAWN_RANGE
-        square_bottom_right_y = player.rect.centery + ENEMY_SPAWN_RANGE
-
+        square_top_left_x = player.x - 500
+        square_top_left_y = player.y - 400
+        square_bottom_right_x = player.x + 500
+        square_bottom_right_y = player.y + 400
         while True:
-            x = random.randint(square_top_left_x, square_bottom_right_x)
-            y = random.randint(square_top_left_y, square_bottom_right_y)
-            if abs(x - player.rect.centerx) > 100 and abs(y - player.rect.centery) > 100:
-                return x, y
+            # Generate random x and y coordinates outside the square
+            x = random.uniform(square_top_left_x - 100, square_bottom_right_x + 100)
+            y = random.uniform(square_top_left_y - 100, square_bottom_right_y + 100)
+            
+            # Check if the generated point is outside the square
+            if x < square_top_left_x or x > square_bottom_right_x or y < square_top_left_y or y > square_bottom_right_y:
+                return x, y 
 
     def animate(self):
         current_time = pygame.time.get_ticks()
@@ -65,37 +67,33 @@ class Enemy(pygame.sprite.Sprite):
             self.image = self.images[self.image_index]
             self.last_animation_time = current_time
 
-# Create player
-player = pygame.sprite.Sprite()
-player.image = pygame.Surface((32, 32))
-player.image.fill((0, 255, 0))
-player.rect = player.image.get_rect()
-player.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+# # Create player
+# player = pygame.sprite.Sprite()
+# player.image = pygame.Surface((32, 32))
+# player.image.fill((0, 255, 0))
+# player.rect = player.image.get_rect()
+# player.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
-# Create enemies
-enemies = pygame.sprite.Group()
-for _ in range(1000):
-    enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
-    enemy = Enemy(enemy_type, player)
-    enemies.add(enemy)
+# # Create enemies
+# enemies = pygame.sprite.Group()
+# for _ in range(1000):
+#     enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
+#     enemy = Enemy(enemy_type, player)
+#     enemies.add(enemy)
 
-# Main game loop
-running = True
-while running:
-    screen.fill((0, 0, 0))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+# # Main game loop
+# running = True
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
 
-    # Update and draw enemies
-    for enemy in enemies:
-        enemy.animate()
-        screen.blit(enemy.image, enemy.rect)
+#     # Update and draw enemies
+#     for enemy in enemies:
+#         enemy.animate()
+#         screen.blit(enemy.image, enemy.rect)
 
-    # Draw player
-    screen.blit(player.image, player.rect)
+#     pygame.display.flip()
+#     clock.tick(60)
 
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
+# pygame.quit()
