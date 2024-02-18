@@ -66,7 +66,6 @@ class Enemy(pygame.sprite.Sprite):
             self.image_index = (self.image_index + 1) % len(self.images)
             self.image = self.images[self.image_index]
             self.last_animation_time = current_time
-
 # # Create player
 # player = pygame.sprite.Sprite()
 # player.image = pygame.Surface((32, 32))

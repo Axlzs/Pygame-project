@@ -552,6 +552,29 @@ def draw_fps_counter():
     screen.blit(fps_text, (10, 10))
     screen.blit(score_text, (10, 45))
 
+def innit_enemy_pathfinding(enemy_x, enemy_y, player, speed_linear, speed_diagonal):
+    # Adjust speed based on linear or diagonal movement
+    if ((enemy_x > player.x) or (enemy_x < player.x)) and ((enemy_y > player.y) or (enemy_y < player.y)):
+        speed = speed_diagonal  # Reduce speed for diagonal movement
+    else:
+        speed = speed_linear
+
+    if player.x > enemy_x:
+        enemy_x += speed / 2
+    if player.x < enemy_x:
+        enemy_x -= speed / 2
+    if player.y > enemy_y:
+        enemy_y += speed / 2
+    if player.y < enemy_y:
+        enemy_y -= speed / 2
+    
+    return enemy_x, enemy_y
+
+def find_player(enemies, player, speed_linear, speed_diagonal):
+    for enemy in enemies:
+        enemy.rect.x, enemy.rect.y = innit_enemy_pathfinding(enemy.rect.x, enemy.rect.y, player, speed_linear, speed_diagonal)
+
+
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -706,6 +729,8 @@ def main_loop():
     for _ in range(1000):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
         enemy = Enemy(enemy_type, player)
+        enemy_x = enemy.rect.x
+        enemy_y = enemy.rect.y
         enemies.add(enemy)
 
     
@@ -732,8 +757,8 @@ def main_loop():
         handle_events()
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
         update_animation()
+        find_player(enemies, player, speed_linear, speed_diagonal)
         move_icon()
-        #handle_enemy_collision(enemy1, enemy2, enemy3)
         handle_health_pickups()
         calculate_camera_offset()
         draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
