@@ -433,7 +433,7 @@ def calculate_camera_offset():
     camera_x = player.x - (WIDTH / 2) + (PLAYER_WIDTH / 3) - 26
     camera_y = player.y - (HEIGHT / 2) + (PLAYER_HEIGHT / 3) - 26
 
-def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN):
+def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies):
 
     """
     Draws the necessary background tiles and the player icon on the screen.
@@ -456,6 +456,12 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
         screen.blit(background_tiles[tile_index], (x - camera_x, y - camera_y))
     #screen.blit(animation_list[action][frame], (icon_x - camera_x, icon_y - camera_y))
     screen.blit(animation_list[action][frame], (player.x - camera_x - PLAYER_WIDTH/3, player.y - camera_y - PLAYER_HEIGHT/3))
+    # Update and draw enemies
+    for enemy in enemies:
+        enemy.animate()
+        enemy_screen_x = enemy.rect.x - camera_x
+        enemy_screen_y = enemy.rect.y - camera_y
+        screen.blit(enemy.image, (enemy_screen_x, enemy_screen_y))
     
     # Arrow image drawing
     for arrow_R in player_arrows_R:
@@ -730,11 +736,8 @@ def main_loop():
         #handle_enemy_collision(enemy1, enemy2, enemy3)
         handle_health_pickups()
         calculate_camera_offset()
-        draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN)
-                # Update and draw enemies
-        for enemy in enemies:
-            enemy.animate()
-            screen.blit(enemy.image, enemy.rect)
+        draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
+
         draw_fps_counter()
         
         # Draw fading text if needed
