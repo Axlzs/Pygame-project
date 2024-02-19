@@ -18,7 +18,8 @@ enemy_speed_diagonal = 1.414
 ENEMY_SPAWN_RANGE = 200
 ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
 ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}# hit by enemy 
-PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}# hit by player 
+PLAYER_MELE_HIT = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
+PLAYER_ARROW_HIT_EVENTS = {1: pygame.USEREVENT + 8, 2: pygame.USEREVENT + 9, 3: pygame.USEREVENT + 10}
 ENEMY_SIZE = (67, 63)
 #ENEMY_HITBOX = (70, 70)
 ENEMY_IMAGES = {
@@ -28,6 +29,8 @@ ENEMY_IMAGES = {
 ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
 ENEMY_DAMAGE = {1: 1, 2: 1.5, 3: 2 }
 
+###########PLAYER###########
+PLAYER_DAMAGE = {1: 0.8, 2: 0.6, 3: 1}
 ###########SOME#COLOURS###########
 BLACK, WHITE = (0, 0, 0), (255, 255, 255)
 RED, GREEN, BLUE = (255, 0, 0), (0, 255, 0), (0, 0, 255)
