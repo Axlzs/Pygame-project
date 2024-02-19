@@ -1,48 +1,9 @@
 import pygame
-import spritesheet
 import random
+import spritesheet
+
+from static_variables import *
 from gyatggt import Enemy
-
-def set_static_variables():
-    """
-    Initializes some basic game variables.
-    """
-    global WIDTH, HEIGHT, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT, FPS, speed, speed_linear, speed_diagonal, MAX_ARROWS, ARROW_SPEED,WIN, last_shot_time
-    global enemy_speed_linear, enemy_speed_diagonal
-    global ENEMY_SPAWN_RANGE, ENEMY_HEALTH, ENEMY_HIT_EVENTS, ENEMY_MELEE_HIT_EVENTS, ENEMY_SIZE, ENEMY_IMAGES, ENEMY_ANIMATION_SPEED
-    WIDTH, HEIGHT = 1000, 700
-    BACKGROUND_WIDTH, BACKGROUND_HEIGHT = 100, 100 # Black background size (UNUSED!!)
-    PLAYER_WIDTH, PLAYER_HEIGHT = 144, 144 # Attached to some settings in regards to player location on screen
-    FPS = 60 # Framerate value for game
-    WIN = pygame.display.set_mode((WIDTH,HEIGHT))
-    MAX_ARROWS = 10 # Max arrows on screen at a time 
-    last_shot_time = 0 # Needed to time arrow shots
-    ARROW_SPEED = 7
-    speed = 4
-    speed_linear = 4
-    speed_diagonal = 2.828 # Coefficient 0.707 in regards to linear speed
-    enemy_speed_linear = 2
-    enemy_speed_diagonal = 1.414
-    ##############################################
-    ENEMY_SPAWN_RANGE = 200
-    ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
-    ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
-    ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
-    ENEMY_SIZE = (72, 72)
-    ENEMY_IMAGES = {
-        1: 'images/enemy1.png',
-        2: 'images/doux_upgrade.png',
-        3: 'images/enemy2.png'}
-    ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
-
-def set_color_codes():
-    """
-    Initializes global color code variables.
-    """
-    global BLACK, WHITE, RED, GREEN, BLUE, MAGENTA, YELLOW
-    BLACK, WHITE = (0, 0, 0), (255, 255, 255)
-    RED, GREEN, BLUE = (255, 0, 0), (0, 255, 0), (0, 0, 255)
-    MAGENTA, YELLOW = (255, 0, 255), (255, 255, 0)
 
 def set_basic_settings():
     """
@@ -250,8 +211,8 @@ def initialize_game():
     global tile_grid
     tile_grid = {}  # Dictionary to keep track of which tiles are loaded
     pygame.init()
-    set_static_variables()
-    set_color_codes()
+    # set_static_variables()
+    # set_color_codes()
     set_basic_settings()
     load_images()
     load_sound_effects()
@@ -463,7 +424,7 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
         enemy_screen_y = enemy.rect.y - camera_y
         screen.blit(enemy.image, (enemy_screen_x - 36, enemy_screen_y - 70))
         #debug 
-        pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_SIZE[0], ENEMY_SIZE[1]), 2)
+        pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_HITBOX[0], ENEMY_HITBOX[1]), 2)
     
     # Arrow image drawing
     for arrow_R in player_arrows_R:
@@ -557,7 +518,7 @@ def draw_fps_counter():
 def innit_enemy_pathfinding(enemy_x, enemy_y, player, speed_linear, speed_diagonal):
     # Adjust speed based on linear or diagonal movement
     if ((enemy_x > player.x) or (enemy_x < player.x)) and ((enemy_y > player.y) or (enemy_y < player.y)):
-        speed = speed_diagonal  # Reduce speed for diagonal movement
+        speed = speed_diagonal # Reduce speed for diagonal movement
     else:
         speed = speed_linear
 
@@ -566,7 +527,7 @@ def innit_enemy_pathfinding(enemy_x, enemy_y, player, speed_linear, speed_diagon
     if player.x < enemy_x:
         enemy_x -= speed / 2
     if player.y > enemy_y:
-        enemy_y += speed / 2
+        enemy_y += speed / 2 
     if player.y < enemy_y:
         enemy_y -= speed / 2
     
