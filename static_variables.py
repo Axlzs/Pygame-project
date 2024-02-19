@@ -13,11 +13,12 @@ speed_linear = 4
 speed_diagonal = 2.828 # Coefficient 0.707 in regards to linear speed
 enemy_speed_linear = 2
 enemy_speed_diagonal = 1.414
+
 ############ENEMY############
 ENEMY_SPAWN_RANGE = 200
 ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
-ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
-ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
+ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}# hit by enemy 
+PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}# hit by player 
 ENEMY_SIZE = (144, 144)
 ENEMY_HITBOX = (70, 70)
 ENEMY_IMAGES = {

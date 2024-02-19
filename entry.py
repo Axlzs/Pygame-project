@@ -144,7 +144,8 @@ def game_over_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     mouse_click = True
-
+            # Perform any necessary actions based on the enemy event
+            # For example, you could handle different enemy events differently
         if mainmenu_rect.collidepoint(mouse_pos):
             screen.blit(mainmenu_imgs[1], mainmenu_rect.topleft)
             if mouse_click:
@@ -241,7 +242,15 @@ def handle_events():
             running = False
         elif event.type == pygame.KEYUP:
             last_lift_up = event.key
-        
+        elif event.type in ENEMY_HIT_EVENTS:
+            enemy_action = ENEMY_HIT_EVENTS[event.type]
+            if enemy_action == ENEMY_HIT_EVENTS[0]:
+                player_health -= modifier
+            elif enemy_action == ENEMY_HIT_EVENTS[1]:
+                player_health -= modifier
+            elif enemy_action == ENEMY_HIT_EVENTS[2]:
+                player_health -= modifier
+
         if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
             if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
                 pygame.mixer.Channel(1).play(arrow_shoot)
@@ -537,6 +546,11 @@ def find_player(enemies, player, speed_linear, speed_diagonal):
     for enemy in enemies:
         enemy.rect.x, enemy.rect.y = innit_enemy_pathfinding(enemy.rect.x, enemy.rect.y, player, speed_linear, speed_diagonal)
 
+def player_damage(player, enemies):
+    for enemy in enemies:
+        if player.colliderect(enemy.rect):
+            pygame.event.post(pygame.event.Event(ENEMY_HIT_EVENTS[enemy.type]))
+            
 
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
@@ -689,11 +703,10 @@ def main_loop():
 
     # Create enemies
     enemies = pygame.sprite.Group()
-    for _ in range(1):
+    for _ in range(3):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
         enemy = Enemy(enemy_type, player)
-        enemy_x = enemy.rect.x
-        enemy_y = enemy.rect.y
+        # enemy = {enemy.rect.x, enemy.rect.y}
         enemies.add(enemy)
 
     
@@ -724,6 +737,7 @@ def main_loop():
         move_icon()
         handle_health_pickups()
         calculate_camera_offset()
+        player_damage(player, enemies)
         draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
 
         draw_fps_counter()
