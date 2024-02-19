@@ -37,7 +37,7 @@ def load_images():
         sprite_sheet: SpriteSheet object for managing player sprite animations
         black_background: Surface for black background (temporary)
     """
-    global sprite_sheet, black_background, enemy_sprite_sheet1, enemy_sprite_sheet2, enemy_sprite_sheet3, iron_arrow_R, iron_arrow_L, iron_arrow_UP, iron_arrow_DOWN
+    global sprite_sheet, iron_arrow_R, iron_arrow_L, iron_arrow_UP, iron_arrow_DOWN
     global health_pickup_image
 
     sprite_sheet_image = pygame.image.load('images/player.png').convert_alpha()
@@ -242,14 +242,9 @@ def handle_events():
             running = False
         elif event.type == pygame.KEYUP:
             last_lift_up = event.key
-        elif event.type in ENEMY_HIT_EVENTS:
-            enemy_action = ENEMY_HIT_EVENTS[event.type]
-            if enemy_action == ENEMY_HIT_EVENTS[0]:
-                player_health -= modifier
-            elif enemy_action == ENEMY_HIT_EVENTS[1]:
-                player_health -= modifier
-            elif enemy_action == ENEMY_HIT_EVENTS[2]:
-                player_health -= modifier
+        elif event.type in ENEMY_HIT_EVENTS.values():
+            enemy_type = [enemy_type for enemy_type, event_type in ENEMY_HIT_EVENTS.items() if event_type == event.type][0]
+            player_health -= ENEMY_DAMAGE[enemy_type]
 
         if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
             if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:

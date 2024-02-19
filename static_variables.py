@@ -26,6 +26,7 @@ ENEMY_IMAGES = {
     2: 'images/doux_upgrade.png',
     3: 'images/enemy2.png'}
 ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
+ENEMY_DAMAGE = {1: 1, 2: 1.5, 3: 2 }
 
 ###########SOME#COLOURS###########
 BLACK, WHITE = (0, 0, 0), (255, 255, 255)
