@@ -19,11 +19,11 @@ ENEMY_SPAWN_RANGE = 200
 ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
 ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}# hit by enemy 
 PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}# hit by player 
-ENEMY_SIZE = (144, 144)
-ENEMY_HITBOX = (70, 70)
+ENEMY_SIZE = (67, 63)
+#ENEMY_HITBOX = (70, 70)
 ENEMY_IMAGES = {
     1: 'images/enemy1.png',
-    2: 'images/doux_upgrade.png',
+    2: 'images/enemy0.png',
     3: 'images/enemy2.png'}
 ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
 ENEMY_DAMAGE = {1: 1, 2: 1.5, 3: 2 }

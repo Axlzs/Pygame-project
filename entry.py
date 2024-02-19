@@ -426,9 +426,9 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
         enemy.animate()
         enemy_screen_x = enemy.rect.x - camera_x
         enemy_screen_y = enemy.rect.y - camera_y
-        screen.blit(enemy.image, (enemy_screen_x - 36, enemy_screen_y - 70))
+        screen.blit(enemy.image, (enemy_screen_x, enemy_screen_y))
         #debug 
-        pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_HITBOX[0], ENEMY_HITBOX[1]), 2)
+        pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_SIZE[0], ENEMY_SIZE[1]), 2)
     
     # Arrow image drawing
     for arrow_R in player_arrows_R:
@@ -541,7 +541,7 @@ def find_player(enemies, player, speed_linear, speed_diagonal):
     for enemy in enemies:
         enemy.rect.x, enemy.rect.y = innit_enemy_pathfinding(enemy.rect.x, enemy.rect.y, player, speed_linear, speed_diagonal)
 
-def player_damage(player, enemies):
+def player_recieved_damage(player, enemies):
     for enemy in enemies:
         if player.colliderect(enemy.rect):
             pygame.event.post(pygame.event.Event(ENEMY_HIT_EVENTS[enemy.type]))
@@ -701,7 +701,6 @@ def main_loop():
     for _ in range(3):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
         enemy = Enemy(enemy_type, player)
-        # enemy = {enemy.rect.x, enemy.rect.y}
         enemies.add(enemy)
 
     
@@ -732,7 +731,7 @@ def main_loop():
         move_icon()
         handle_health_pickups()
         calculate_camera_offset()
-        player_damage(player, enemies)
+        player_recieved_damage(player, enemies)
         draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
 
         draw_fps_counter()
