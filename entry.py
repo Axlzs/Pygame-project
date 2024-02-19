@@ -26,8 +26,8 @@ def set_static_variables():
     ##############################################
     ENEMY_SPAWN_RANGE = 200
     ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
-    ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
-    ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
+    ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4} # hits done to enemy 
+    ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7} # hits done by enemies 
     ENEMY_SIZE = (72, 72)
     ENEMY_IMAGES = {
         1: 'images/enemy1.png',
@@ -280,7 +280,7 @@ def handle_events():
             running = False
         elif event.type == pygame.KEYUP:
             last_lift_up = event.key
-        
+            
         if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
             if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
                 pygame.mixer.Channel(1).play(arrow_shoot)
