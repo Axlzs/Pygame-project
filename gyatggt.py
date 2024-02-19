@@ -5,7 +5,7 @@ from static_variables import *
 
 # Define the Enemy class
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, enemy_type, player):
+    def __init__(self, enemy_type, player, enemy_id):
         super().__init__()
         self.type = enemy_type
         self.images = self.load_sprite_sheet(ENEMY_IMAGES[enemy_type], ENEMY_SIZE)
@@ -15,6 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = self.spawn_enemy_position(player) # for enemy hitboxes 
         self.health = ENEMY_HEALTH[enemy_type]
+        self.id = enemy_id
 
     def load_sprite_sheet(self, filename, sprite_size): # usiversal function
         sprite_sheet = pygame.image.load(filename).convert_alpha()

@@ -245,13 +245,13 @@ def handle_events():
         elif event.type in ENEMY_HIT_EVENTS.values():
             enemy_type = [enemy_type for enemy_type, event_type in ENEMY_HIT_EVENTS.items() if event_type == event.type][0]
             player_health -= ENEMY_DAMAGE[enemy_type]
-
+        
             #because the player has mele attacks as well
-            for enemy in enemies:  # Assuming enemies is a list containing all enemy objects
-                if enemy.type == enemy_type:
-                    enemy.health -= 30 #PLAYER_DAMAGE[enemy_type]
-                if enemy.health <= 0:
-                    enemies.remove(enemy)
+            # for enemy in enemies:  # Assuming enemies is a list containing all enemy objects
+            #     if enemy.type == enemy_type:
+            #         enemy.health -= 30 #PLAYER_DAMAGE[enemy_type]
+            #     if enemy.health <= 0:
+            #         enemies.remove(enemy)
         
         if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
             if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
@@ -552,11 +552,12 @@ def player_recieved_damage(player, enemies):
     for enemy in enemies:
         if player.colliderect(enemy.rect):
             pygame.event.post(pygame.event.Event(ENEMY_HIT_EVENTS[enemy.type]))
-            
+
 def player_dealt_damage(player, enemies):
         for enemy in enemies:
             if player.colliderect(enemy.rect):
-                pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy.type]))
+                pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy]))
+
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -709,9 +710,11 @@ def main_loop():
 
     # Create enemies
     enemies = pygame.sprite.Group()
+    enemy_count=0
     for _ in range(300):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
-        enemy = Enemy(enemy_type, player)
+        enemy_count +=1
+        enemy = Enemy(enemy_type, player, enemy_count)
         enemies.add(enemy)
 
     
@@ -743,7 +746,6 @@ def main_loop():
         handle_health_pickups()
         calculate_camera_offset()
         player_recieved_damage(player, enemies)
-        player_dealt_damage(player, enemies)
         draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
         draw_fps_counter()
         
