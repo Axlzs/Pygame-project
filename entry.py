@@ -28,7 +28,7 @@ def set_static_variables():
     ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
     ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}
     ENEMY_MELEE_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6, 3: pygame.USEREVENT + 7}
-    ENEMY_SIZE = (144, 144)
+    ENEMY_SIZE = (72, 72)
     ENEMY_IMAGES = {
         1: 'images/enemy1.png',
         2: 'images/doux_upgrade.png',
@@ -461,7 +461,7 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
         enemy.animate()
         enemy_screen_x = enemy.rect.x - camera_x
         enemy_screen_y = enemy.rect.y - camera_y
-        screen.blit(enemy.image, (enemy_screen_x, enemy_screen_y))
+        screen.blit(enemy.image, (enemy_screen_x - 36, enemy_screen_y - 70))
         pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_SIZE[0], ENEMY_SIZE[1]), 2)
     
     # Arrow image drawing
@@ -727,7 +727,7 @@ def main_loop():
 
     # Create enemies
     enemies = pygame.sprite.Group()
-    for _ in range(1000):
+    for _ in range(1):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
         enemy = Enemy(enemy_type, player)
         enemy_x = enemy.rect.x
