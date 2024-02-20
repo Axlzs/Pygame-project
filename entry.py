@@ -221,7 +221,15 @@ def initialize_game():
     load_game_over_assets()
     create_animation_list()
 
+# Global dictionary to store enemy damage events
+PLAYER_MELE_HIT = {}
 
+# Function to initialize enemy damage events
+def init_enemy_damage_events(enemies):
+    global BASE_ENEMY_EVENT_ID
+    for enemy in enemies:
+        PLAYER_MELE_HIT[enemy.id] = BASE_ENEMY_EVENT_ID
+        BASE_ENEMY_EVENT_ID += 1
 
 def handle_events():
     """
@@ -245,7 +253,19 @@ def handle_events():
         elif event.type in ENEMY_HIT_EVENTS.values():
             enemy_type = [enemy_type for enemy_type, event_type in ENEMY_HIT_EVENTS.items() if event_type == event.type][0]
             player_health -= ENEMY_DAMAGE[enemy_type]
+        elif event.type in PLAYER_MELE_HIT.values():
+            # Find the enemy ID associated with the event
+            enemy_id = [enemy_id for enemy_id, event_id in PLAYER_MELE_HIT.items() if event_id == event.type][0]
+            # Find the enemy instance with the corresponding ID
+            damaged_enemy = next((enemy for enemy in enemies if enemy.id == enemy_id), None)
+            if damaged_enemy:
+                # Decrement the health of the damaged enemy
+                damaged_enemy.health -= 30
+                # Optionally, handle enemy destruction or other effects here
+                if damaged_enemy.health <=0:
+                    enemies.remove(damaged_enemy)
         
+            #ENEMY_DAMAGE_EVENTS[enemy.id]
             #because the player has mele attacks as well
             # for enemy in enemies:  # Assuming enemies is a list containing all enemy objects
             #     if enemy.type == enemy_type:
@@ -554,10 +574,25 @@ def player_recieved_damage(player, enemies):
             pygame.event.post(pygame.event.Event(ENEMY_HIT_EVENTS[enemy.type]))
 
 def player_dealt_damage(player, enemies):
-        for enemy in enemies:
-            if player.colliderect(enemy.rect):
-                pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy]))
+    for enemy in enemies:
+        if player.colliderect(enemy.rect):
+            # Post the event corresponding to the enemy's ID
+            pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy.id]))
 
+def alive_enemies(enemies):
+    alive_count = 0
+    for enemy in enemies:
+        if enemy.health > 0:
+            alive_count += 1
+    return alive_count
+
+def addEnemies(count):
+    global enemy_count
+    for _ in range(count):
+        enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
+        enemy_count +=1
+        enemy = Enemy(enemy_type, player, enemy_count)
+        enemies.add(enemy)
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -697,6 +732,7 @@ def main_loop():
     global modifier
     global enemy_speed_linear, enemy_speed_diagonal
     global level_up
+    global enemy_count
 
     health_pickups = []
 
@@ -711,13 +747,13 @@ def main_loop():
     # Create enemies
     enemies = pygame.sprite.Group()
     enemy_count=0
-    for _ in range(300):
+    for _ in range(10):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
         enemy_count +=1
         enemy = Enemy(enemy_type, player, enemy_count)
         enemies.add(enemy)
 
-    
+    init_enemy_damage_events(enemies)
     score = 0
     modifier = 1
 
@@ -736,8 +772,12 @@ def main_loop():
             print("Game over")
             game_over_screen()
             break
-        
         health_bar.hp = player_health
+        enemy_yes = alive_enemies(enemies)
+        if enemy_yes < 5:
+            temp = 5 - enemy_yes
+            addEnemies(temp)
+        print(enemy_count)
         handle_events()
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
         update_animation()
@@ -746,6 +786,8 @@ def main_loop():
         handle_health_pickups()
         calculate_camera_offset()
         player_recieved_damage(player, enemies)
+        player_dealt_damage(player, enemies)
+
         draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
         draw_fps_counter()
         
