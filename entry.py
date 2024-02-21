@@ -242,7 +242,7 @@ def handle_events():
         running: Game status
         last_lift_up: The last key that was released
     """
-    global running, last_lift_up, player_health, last_shot_time, current_time, action, frame
+    global running, last_lift_up, player_health, last_shot_time, current_time, action, frame, score
     global modifier
 
     for event in pygame.event.get():
@@ -264,6 +264,8 @@ def handle_events():
                 # Optionally, handle enemy destruction or other effects here
                 if damaged_enemy.health <=0:
                     enemies.remove(damaged_enemy)
+                    score+=1
+                    
         
             #ENEMY_DAMAGE_EVENTS[enemy.id]
             #because the player has mele attacks as well
@@ -550,6 +552,7 @@ def innit_enemy_pathfinding(enemy_x, enemy_y, player, speed_linear, speed_diagon
     # Adjust speed based on linear or diagonal movement
     if ((enemy_x > player.x) or (enemy_x < player.x)) and ((enemy_y > player.y) or (enemy_y < player.y)):
         speed = speed_diagonal # Reduce speed for diagonal movement
+        
     else:
         speed = speed_linear
 
@@ -586,13 +589,13 @@ def alive_enemies(enemies):
             alive_count += 1
     return alive_count
 
-def addEnemies(count):
-    global enemy_count
-    for _ in range(count):
-        enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
-        enemy_count +=1
-        enemy = Enemy(enemy_type, player, enemy_count)
-        enemies.add(enemy)
+# def addEnemies(count):
+#     global enemy_count
+#     for _ in range(count):
+#         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
+#         enemy_count +=1
+#         enemy = Enemy(enemy_type, player, enemy_count)
+#         enemies.add(enemy)
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -747,7 +750,7 @@ def main_loop():
     # Create enemies
     enemies = pygame.sprite.Group()
     enemy_count=0
-    for _ in range(10):
+    for _ in range(300):
         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
         enemy_count +=1
         enemy = Enemy(enemy_type, player, enemy_count)
@@ -773,11 +776,7 @@ def main_loop():
             game_over_screen()
             break
         health_bar.hp = player_health
-        enemy_yes = alive_enemies(enemies)
-        if enemy_yes < 5:
-            temp = 5 - enemy_yes
-            addEnemies(temp)
-        print(enemy_count)
+        print(score)
         handle_events()
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
         update_animation()
