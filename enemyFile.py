@@ -30,14 +30,14 @@ class Enemy(pygame.sprite.Sprite):
         return images
 
     def spawn_enemy_position(self, player):
-        square_top_left_x = player.x - 600
-        square_top_left_y = player.y - 500
-        square_bottom_right_x = player.x + 600
-        square_bottom_right_y = player.y + 500
+        square_top_left_x = player.x - (HEIGHT/2)-ENEMY_SPAWN_DISTANCE
+        square_top_left_y = player.y - (WIDTH/2)-ENEMY_SPAWN_DISTANCE
+        square_bottom_right_x = player.x + (HEIGHT/2)+ENEMY_SPAWN_DISTANCE
+        square_bottom_right_y = player.y + (WIDTH/2)+ENEMY_SPAWN_DISTANCE
         while True:
             # Generate random x and y coordinates outside the square
-            x = random.uniform(square_top_left_x - 200, square_bottom_right_x + 200)
-            y = random.uniform(square_top_left_y - 200, square_bottom_right_y + 200)
+            x = random.uniform(square_top_left_x - ENEMY_SPAWN_AREA, square_bottom_right_x + ENEMY_SPAWN_AREA)
+            y = random.uniform(square_top_left_y - ENEMY_SPAWN_AREA, square_bottom_right_y + ENEMY_SPAWN_AREA)
             
             # Check if the generated point is outside the square
             if x < square_top_left_x or x > square_bottom_right_x or y < square_top_left_y or y > square_bottom_right_y:

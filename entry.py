@@ -457,8 +457,8 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
         enemy_screen_x = enemy.rect.x - camera_x
         enemy_screen_y = enemy.rect.y - camera_y
         screen.blit(enemy.image, (enemy_screen_x, enemy_screen_y))
-        #debug 
-        pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_SIZE[0], ENEMY_SIZE[1]), 2)
+        #ENEMY HITBOX DEBUGGING 
+        #pygame.draw.rect(screen, (255, 255, 0), (enemy_screen_x, enemy_screen_y, ENEMY_SIZE[0], ENEMY_SIZE[1]), 2)
     
     # Arrow image drawing
     for arrow_R in player_arrows_R:
@@ -487,7 +487,7 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
 
 
     #DEBUGGING PLAYER HITBOX
-    pygame.draw.rect(screen, (0, 255, 0), (player.x - camera_x, player.y - camera_y, player.width, player.height), 2)
+    #pygame.draw.rect(screen, (0, 255, 0), (player.x - camera_x, player.y - camera_y, player.width, player.height), 2)
 
     for pickup in health_pickups:
         screen.blit(health_pickup_image, (pickup.x - camera_x, pickup.y - camera_y -10))
@@ -605,6 +605,22 @@ def add_Enemies(count, enemytype):
             enemy_count +=1
             enemy = Enemy(enemy_type, player, enemy_count)
             enemies.add(enemy)
+
+def handle_Enemy_Collisions(enemies):
+    for enemy in enemies:
+        collided_enemies = pygame.sprite.spritecollide(enemy, enemies, False)
+        for collided_enemy in collided_enemies:
+            if collided_enemy != enemy:  # only if enemy is not itself 
+                #move apart when collided 
+                if enemy.rect.x < collided_enemy.rect.x:
+                    enemy.rect.x -= 1  # Move left
+                else:
+                    enemy.rect.x += 1  # Move right
+                
+                if enemy.rect.y < collided_enemy.rect.y:
+                    enemy.rect.y -= 1  # Move up
+                else:
+                    enemy.rect.y += 1  # Move down
 
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
@@ -787,11 +803,12 @@ def main_loop():
             break
         health_bar.hp = player_health
         print(enemy_count)
-        
+
         #spawn more enemies during game
         if enemy_count<100:
             add_Random_Enemies(100)
         handle_events()
+        handle_Enemy_Collisions(enemies)
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
         update_animation()
         find_player(enemies, player, speed_linear, speed_diagonal)

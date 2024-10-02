@@ -15,7 +15,8 @@ enemy_speed_linear = 2
 enemy_speed_diagonal = 1.414
 
 ############ENEMY############
-ENEMY_SPAWN_RANGE = 200
+ENEMY_SPAWN_AREA = 200 # Density - distance between inner spawn circle and outer spawn circe 
+ENEMY_SPAWN_DISTANCE = 200 # How far does the enemy spawn form the player
 ENEMY_HEALTH = {1: 50, 2: 100, 3: 150}  # Health for each enemy type
 ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.USEREVENT + 4}# hit by enemy 
 BASE_ENEMY_EVENT_ID = pygame.USEREVENT + 5
