@@ -3,7 +3,7 @@ import random
 import spritesheet
 
 from static_variables import *
-from gyatggt import Enemy
+from enemyFile import Enemy
 
 def set_basic_settings():
     """
@@ -597,6 +597,15 @@ def add_Random_Enemies(count):
                 enemy_count +=1
                 enemy = Enemy(enemy_type, player, enemy_count)
                 enemies.add(enemy)
+       
+def add_Enemies(count, enemytype):
+        global enemy_count
+        for _ in range(count):
+            enemy_type = enemytype
+            enemy_count +=1
+            enemy = Enemy(enemy_type, player, enemy_count)
+            enemies.add(enemy)
+
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -777,7 +786,8 @@ def main_loop():
             game_over_screen()
             break
         health_bar.hp = player_health
-        print(enemy_count)\
+        print(enemy_count)
+        
         #spawn more enemies during game
         if enemy_count<100:
             add_Random_Enemies(100)
