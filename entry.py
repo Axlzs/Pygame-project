@@ -242,12 +242,12 @@ def handle_events():
         running: Game status
         last_lift_up: The last key that was released
     """
-    global running, last_lift_up, player_health, last_shot_time, current_time, action, frame, score
+    global running, last_lift_up, player_health, last_shot_time, current_time, action, frame, score, enemy_count
     global modifier
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            running = False 
         elif event.type == pygame.KEYUP:
             last_lift_up = event.key
         elif event.type in ENEMY_HIT_EVENTS.values():
@@ -265,15 +265,16 @@ def handle_events():
                 if damaged_enemy.health <=0:
                     enemies.remove(damaged_enemy)
                     score+=1
+                    enemy_count-=1
                     
         
             #ENEMY_DAMAGE_EVENTS[enemy.id]
-            #because the player has mele attacks as well
-            # for enemy in enemies:  # Assuming enemies is a list containing all enemy objects
-            #     if enemy.type == enemy_type:
-            #         enemy.health -= 30 #PLAYER_DAMAGE[enemy_type]
-            #     if enemy.health <= 0:
-            #         enemies.remove(enemy)
+            # This makes so all of the same type of enemies die if even one of them is killed, idk why it is here
+            #for enemy in enemies:  # Assuming enemies is a list containing all enemy objects
+            #    if enemy.type == enemy_type:
+            #        enemy.health -= 30 #PLAYER_DAMAGE[enemy_type]
+            #    if enemy.health <= 0:
+            #        enemies.remove(enemy)
         
         if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
             if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
@@ -589,13 +590,13 @@ def alive_enemies(enemies):
             alive_count += 1
     return alive_count
 
-# def addEnemies(count):
-#     global enemy_count
-#     for _ in range(count):
-#         enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
-#         enemy_count +=1
-#         enemy = Enemy(enemy_type, player, enemy_count)
-#         enemies.add(enemy)
+def add_Random_Enemies(count):
+    global enemy_count
+    for _ in range(count):
+                enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
+                enemy_count +=1
+                enemy = Enemy(enemy_type, player, enemy_count)
+                enemies.add(enemy)
 def handle_arrows_R(player_arrows_R, action):
     global arrow_R 
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
@@ -723,7 +724,7 @@ class HealthBar():
         ratio = self.hp / self.max_hp
         pygame.draw.rect(screen, RED, (WIDTH/2 - 23, HEIGHT/2 - 60, 50, 10))
         pygame.draw.rect(screen, GREEN, (WIDTH/2 - 23, HEIGHT/2 - 60, 50 * ratio, 10))
-    
+   
 def main_loop():
     """
     Runs the main game loop and processes game events.
@@ -776,7 +777,10 @@ def main_loop():
             game_over_screen()
             break
         health_bar.hp = player_health
-        print(score)
+        print(enemy_count)\
+        #spawn more enemies during game
+        if enemy_count<100:
+            add_Random_Enemies(100)
         handle_events()
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
         update_animation()

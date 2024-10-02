@@ -29,7 +29,7 @@ ENEMY_IMAGES = {
     3: 'images/enemy2.png'}
 ENEMY_ANIMATION_SPEED = 100  # Milliseconds per frame
 ENEMY_DAMAGE = {1: 0, 2: 0, 3: 0 }
-# ENEMY_DAMAGE = {1: 1, 2: 1.5, 3: 2 }
+#ENEMY_DAMAGE = {1: 1, 2: 1.5, 3: 2 }
 
 ###########PLAYER###########
 PLAYER_DAMAGE = {1: 0.8, 2: 0.6, 3: 1}
