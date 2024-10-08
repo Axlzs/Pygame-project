@@ -39,10 +39,9 @@ def load_images():
     """
     global sprite_sheet, iron_arrow_R, iron_arrow_L, iron_arrow_UP, iron_arrow_DOWN
     global health_pickup_image
-
-    sprite_sheet_image = pygame.image.load('images/player.png').convert_alpha()
+ 
+    sprite_sheet_image = pygame.image.load('images/players/player1.png').convert_alpha()
     sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
-
 
 
     iron_arrow_R = pygame.image.load('images/iron arrow R.png')
@@ -265,17 +264,7 @@ def handle_events():
                 if damaged_enemy.health <=0:
                     enemies.remove(damaged_enemy)
                     score+=1
-                    enemy_count-=1
-                    
-        
-            #ENEMY_DAMAGE_EVENTS[enemy.id]
-            # This makes so all of the same type of enemies die if even one of them is killed, idk why it is here
-            #for enemy in enemies:  # Assuming enemies is a list containing all enemy objects
-            #    if enemy.type == enemy_type:
-            #        enemy.health -= 30 #PLAYER_DAMAGE[enemy_type]
-            #    if enemy.health <= 0:
-            #        enemies.remove(enemy)
-        
+                    enemy_count-=1  
         if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
             if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
                 pygame.mixer.Channel(1).play(arrow_shoot)
@@ -472,18 +461,18 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
     health_bar.draw(screen)
 
     # ARROW HITBOX DEBUGGING
-    for arrow_R in player_arrows_R:
-        #RIGHT ARROW
-        pygame.draw.rect(screen, (0, 255, 255), (arrow_R.x - camera_x, arrow_R.y - camera_y, arrow_R.width, arrow_R.height), 2) # Blue
-    for arrow_L in player_arrows_L:
-        #LEFT ARROW
-        pygame.draw.rect(screen, (125, 125, 255), (arrow_L.x - camera_x, arrow_L.y - camera_y, arrow_L.width, arrow_L.height), 2) # Blue
-    for arrow_UP in player_arrows_UP:
-        #UP ARROW
-        pygame.draw.rect(screen, (255, 255, 120), (arrow_UP.x - camera_x, arrow_UP.y - camera_y, arrow_UP.width, arrow_UP.height), 2) # Blue
-    for arrow_DOWN in player_arrows_DOWN:
-        #DOWN ARROW
-        pygame.draw.rect(screen, (255, 0, 255), (arrow_DOWN.x - camera_x, arrow_DOWN.y - camera_y, arrow_DOWN.width, arrow_DOWN.height), 2) # Blue
+    # for arrow_R in player_arrows_R:
+        # #RIGHT ARROW
+        # pygame.draw.rect(screen, (0, 255, 255), (arrow_R.x - camera_x, arrow_R.y - camera_y, arrow_R.width, arrow_R.height), 2) # Blue
+    # for arrow_L in player_arrows_L:
+        # #LEFT ARROW
+        # pygame.draw.rect(screen, (125, 125, 255), (arrow_L.x - camera_x, arrow_L.y - camera_y, arrow_L.width, arrow_L.height), 2) # Blue
+    # for arrow_UP in player_arrows_UP:
+        # #UP ARROW
+        # pygame.draw.rect(screen, (255, 255, 120), (arrow_UP.x - camera_x, arrow_UP.y - camera_y, arrow_UP.width, arrow_UP.height), 2) # Blue
+    # for arrow_DOWN in player_arrows_DOWN:
+        # #DOWN ARROW
+        # pygame.draw.rect(screen, (255, 0, 255), (arrow_DOWN.x - camera_x, arrow_DOWN.y - camera_y, arrow_DOWN.width, arrow_DOWN.height), 2) # Blue
 
 
     #DEBUGGING PLAYER HITBOX
@@ -627,24 +616,14 @@ def handle_arrows_R(player_arrows_R, action):
     for arrow_R in player_arrows_R[:]:  # Iterate over a copy of the list
         if action == 6 or action == 10 or arrow_R.x > player.x:
             arrow_R.x += ARROW_SPEED
-            # if enemy1.colliderect(arrow_R):
-            #     pygame.event.post(pygame.event.Event(ENEMY_HIT1))
-            #     try:
-            #         player_arrows_R.remove(arrow_R)
-            #     except ValueError:
-            #         pass
-            # elif enemy2.colliderect(arrow_R):
-            #     pygame.event.post(pygame.event.Event(ENEMY_HIT2))
-            #     try:
-            #         player_arrows_R.remove(arrow_R)
-            #     except ValueError:
-            #         pass
-            # elif enemy3.colliderect(arrow_R):
-            #     pygame.event.post(pygame.event.Event(ENEMY_HIT3))
-            #     try:
-            #         player_arrows_R.remove(arrow_R)
-            #     except ValueError:
-            #         pass
+            for enemy in enemies:
+                if arrow_R.colliderect(enemy.rect):
+                    # Post the event corresponding to the enemy's ID
+                    pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy.id]))
+                    try:
+                        player_arrows_R.remove(arrow_R)
+                    except ValueError:
+                        pass
             if arrow_R.x > player.x + 700 or arrow_R.x < player.x - 700:
                 try:
                     player_arrows_R.remove(arrow_R)
@@ -661,20 +640,19 @@ def handle_arrows_L(player_arrows_L, action):
     for arrow_L in player_arrows_L[:]:
         if action == 5 or action == 9 or arrow_L.x < player.x:
             arrow_L.x -= ARROW_SPEED
-            try:
-                # if enemy1.colliderect(arrow_L):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT1))
-                #     player_arrows_L.remove(arrow_L)
-                # elif enemy2.colliderect(arrow_L):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT2))
-                #     player_arrows_L.remove(arrow_L)
-                # elif enemy3.colliderect(arrow_L):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT3))
-                #     player_arrows_L.remove(arrow_L)
-                if arrow_L.x > player.x + 700 or arrow_L.x < player.x - 700:
+            for enemy in enemies:
+                if arrow_L.colliderect(enemy.rect):
+                    # Post the event corresponding to the enemy's ID
+                    pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy.id]))
+                    try:
+                        player_arrows_L.remove(arrow_L)
+                    except ValueError:
+                        pass
+            if arrow_L.x > player.x + 700 or arrow_L.x < player.x - 700:
+                try:
                     player_arrows_L.remove(arrow_L)
-            except ValueError:
-                pass
+                except ValueError:
+                    pass
         else:
             try:
                 player_arrows_L.remove(arrow_L)
@@ -686,20 +664,19 @@ def handle_arrows_UP(player_arrows_UP, action):
     for arrow_UP in player_arrows_UP[:]:
         if action == 7 or action == 11 or arrow_UP.y < player.y:
             arrow_UP.y -= ARROW_SPEED
-            try:
-                # if enemy1.colliderect(arrow_UP):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT1))
-                #     player_arrows_UP.remove(arrow_UP)
-                # elif enemy2.colliderect(arrow_UP):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT2))
-                #     player_arrows_UP.remove(arrow_UP)
-                # elif enemy3.colliderect(arrow_UP):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT3))
-                #     player_arrows_UP.remove(arrow_UP)
-                if arrow_UP.y > player.y + 700 or arrow_UP.y < player.y - 700:
+            for enemy in enemies:
+                if arrow_UP.colliderect(enemy.rect):
+                    # Post the event corresponding to the enemy's ID
+                    pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy.id]))
+                    try:
+                        player_arrows_UP.remove(arrow_UP)
+                    except ValueError:
+                        pass
+            if arrow_UP.y > player.y + 700 or arrow_UP.y < player.y - 700:
+                try:
                     player_arrows_UP.remove(arrow_UP)
-            except ValueError:
-                pass
+                except ValueError:
+                    pass
         else:
             try:
                 player_arrows_UP.remove(arrow_UP)
@@ -711,20 +688,19 @@ def handle_arrows_DOWN(player_arrows_DOWN, action):
     for arrow_DOWN in player_arrows_DOWN[:]:
         if action == 4 or action == 8 or arrow_DOWN.y > player.y + 40:
             arrow_DOWN.y += ARROW_SPEED
-            try:
-                # if enemy1.colliderect(arrow_DOWN):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT1))
-                #     player_arrows_DOWN.remove(arrow_DOWN)
-                # elif enemy2.colliderect(arrow_DOWN):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT2))
-                #     player_arrows_DOWN.remove(arrow_DOWN)
-                # elif enemy3.colliderect(arrow_DOWN):
-                #     pygame.event.post(pygame.event.Event(ENEMY_HIT3))
-                #     player_arrows_DOWN.remove(arrow_DOWN)
+            for enemy in enemies:
+                if arrow_DOWN.colliderect(enemy.rect):
+                    # Post the event corresponding to the enemy's ID
+                    pygame.event.post(pygame.event.Event(PLAYER_MELE_HIT[enemy.id]))
+                    try:
+                        player_arrows_DOWN.remove(arrow_DOWN)
+                    except ValueError:
+                        pass
                 if arrow_DOWN.y > player.y + 700 or arrow_DOWN.y < player.y - 700:
-                    player_arrows_DOWN.remove(arrow_DOWN)
-            except ValueError:
-                pass
+                    try:
+                        player_arrows_DOWN.remove(arrow_DOWN)
+                    except ValueError:
+                        pass
         else:
             try:
                 player_arrows_DOWN.remove(arrow_DOWN)
@@ -802,7 +778,6 @@ def main_loop():
             game_over_screen()
             break
         health_bar.hp = player_health
-        print(enemy_count)
 
         #spawn more enemies during game
         if enemy_count<100:
