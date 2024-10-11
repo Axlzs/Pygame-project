@@ -4,6 +4,7 @@ import spritesheet
 
 from static_variables import *
 from enemyFile import Enemy
+from playerFile import *
 
 def set_basic_settings():
     """
@@ -31,18 +32,13 @@ def set_basic_settings():
 
 def load_images():
     """
-    Load and initialize game images (temporary black background, spritesheets, etc.).
+    Load and initialize game images (temporary black background, etc.).
 
     Global variables:
-        sprite_sheet: SpriteSheet object for managing player sprite animations
         black_background: Surface for black background (temporary)
     """
-    global sprite_sheet, iron_arrow_R, iron_arrow_L, iron_arrow_UP, iron_arrow_DOWN
+    global iron_arrow_R, iron_arrow_L, iron_arrow_UP, iron_arrow_DOWN
     global health_pickup_image
- 
-    sprite_sheet_image = pygame.image.load('images/players/player1.png').convert_alpha()
-    sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
-
 
     iron_arrow_R = pygame.image.load('images/iron arrow R.png')
     iron_arrow_L = pygame.image.load('images/iron arrow L.png')
@@ -176,34 +172,6 @@ def game_over_screen():
         pygame.display.update()
         clock.tick(FPS)
 
-
-def create_animation_list():
-    """
-    Creates a list of sprite animations for the player
-    based on the number of steps in each animation.
-    Extracts images from the sprite sheet for each animation sequence.
-    """
-    global animation_list, action, frame, step_counter, last_update, animation_cooldown, last_lift_up, animation_completed
-    animation_list = []
-    animation_steps = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7]
-    last_update = pygame.time.get_ticks() # Controls animation speed
-    animation_cooldown = 150
-    action = 4 # Animation that will be set as default when game starts
-    frame = 0
-    step_counter = 0 # Each step is one frame in the animation
-    last_lift_up = pygame.K_s
-    animation_completed = False
-
-    # Splits the spritesheet into frames
-    for animation in animation_steps:
-        temp_img_list = []
-        for _ in range(animation):
-            temp_img_list.append(sprite_sheet.get_image(step_counter, 48, 48, 3, BLACK))
-            step_counter += 1
-        animation_list.append(temp_img_list)
-
-
-
 def initialize_game():
     """
     Initializes important game functions.
@@ -218,7 +186,6 @@ def initialize_game():
     load_sound_effects()
     load_background_tiles()
     load_game_over_assets()
-    create_animation_list()
 
 # Global dictionary to store enemy damage events
 PLAYER_MELE_HIT = {}
@@ -241,8 +208,8 @@ def handle_events():
         running: Game status
         last_lift_up: The last key that was released
     """
-    global running, last_lift_up, player_health, last_shot_time, current_time, action, frame, score, enemy_count
-    global modifier
+    global running, last_lift_up, player_health, last_shot_time, current_time, action, frame, score, enemy_count, player_type
+    global modifier, player_type
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -252,14 +219,16 @@ def handle_events():
         elif event.type in ENEMY_HIT_EVENTS.values():
             enemy_type = [enemy_type for enemy_type, event_type in ENEMY_HIT_EVENTS.items() if event_type == event.type][0]
             player_health -= ENEMY_DAMAGE[enemy_type]
-        elif event.type in PLAYER_MELE_HIT.values():
+
+        elif event.type in PLAYER_HIT_EVENTS.values():
             # Find the enemy ID associated with the event
-            enemy_id = [enemy_id for enemy_id, event_id in PLAYER_MELE_HIT.items() if event_id == event.type][0]
+            enemy_id = [enemy_id for enemy_id, event_id in PLAYER_HIT_EVENTS.items() if event_id == event.type][0]
             # Find the enemy instance with the corresponding ID
             damaged_enemy = next((enemy for enemy in enemies if enemy.id == enemy_id), None)
             if damaged_enemy:
                 # Decrement the health of the damaged enemy
                 damaged_enemy.health -= 30
+                #damaged_enemy.health -= player.health
                 # Optionally, handle enemy destruction or other effects here
                 if damaged_enemy.health <=0:
                     enemies.remove(damaged_enemy)
@@ -287,25 +256,6 @@ def handle_events():
             #     print("Death triggered")
             #     frame = 0
             #     action = 12
-
-
-def update_animation():
-    """
-    Advances the animation frame based on a specified cooldown time.
-    Ensures that the animation frames cycle through the available frames for
-    the current action. The animation updates are synchronized with the game's time.
-    """
-    global frame, last_update, animation_cooldown, animation_completed, action
-
-    current_time = pygame.time.get_ticks()
-
-    if current_time - last_update >= animation_cooldown:
-        if not animation_completed:
-            frame += 1
-            last_update = current_time
-            if frame >= len(animation_list[action]):
-                frame = 0
-                animation_completed = True
 
 def move_icon():
     """
@@ -740,15 +690,17 @@ def main_loop():
     global enemy_count
 
     health_pickups = []
-
-    player = pygame.Rect(icon_x, icon_y, PLAYER_WIDTH/3,PLAYER_HEIGHT/2)
     health_bar = HealthBar(250, 250, 300, 40, 100)
     player_arrows_R = []
     player_arrows_L = []
     player_arrows_UP = []
     player_arrows_DOWN = []
-    player_health = 100
-
+    # Create player
+    player_count = 1
+    player_type = 1
+    player = Player(player_type, player_count)
+    player.create_animation_list()
+    
     # Create enemies
     enemies = pygame.sprite.Group()
     enemy_count=0
@@ -785,7 +737,7 @@ def main_loop():
         handle_events()
         handle_Enemy_Collisions(enemies)
         handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
-        update_animation()
+        player.update_animation()
         find_player(enemies, player, speed_linear, speed_diagonal)
         move_icon()
         handle_health_pickups()
