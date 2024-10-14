@@ -27,6 +27,7 @@ def set_basic_settings():
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 40)
     running = True
+    #player_animation
     icon_x, icon_y = (screen.get_width() - PLAYER_WIDTH) / 2, (screen.get_height() - PLAYER_HEIGHT) / 2 
 
 def load_images():
@@ -40,6 +41,7 @@ def load_images():
     global sprite_sheet, iron_arrow_R, iron_arrow_L, iron_arrow_UP, iron_arrow_DOWN
     global health_pickup_image
 
+    #player_animation
     sprite_sheet_image = pygame.image.load('images/player.png').convert_alpha()
     sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
 
@@ -177,7 +179,7 @@ def game_over_screen():
         pygame.display.update()
         clock.tick(FPS)
 
-
+#player_animation
 def create_animation_list():
     """
     Creates a list of sprite animations for the player
@@ -196,12 +198,12 @@ def create_animation_list():
     animation_completed = False
 
     # Splits the spritesheet into frames
-    for animation in animation_steps:
-        temp_img_list = []
-        for _ in range(animation):
-            temp_img_list.append(sprite_sheet.get_image(step_counter, 48, 48, 3, BLACK))
-            step_counter += 1
-        animation_list.append(temp_img_list)
+    # for animation in animation_steps:
+    #     temp_img_list = []
+    #     for _ in range(animation):
+    #         temp_img_list.append(sprite_sheet.get_image(step_counter, 48, 48, 3, BLACK))
+    #         step_counter += 1
+    #     animation_list.append(temp_img_list)
 
 
 
@@ -219,7 +221,7 @@ def initialize_game():
     load_sound_effects()
     load_background_tiles()
     load_game_over_assets()
-    create_animation_list()
+    create_animation_list()#player_animation
 
 # Global dictionary to store enemy damage events
 PLAYER_MELE_HIT = {}
@@ -298,7 +300,7 @@ def handle_events():
             #     frame = 0
             #     action = 12
 
-
+#player_animation
 def update_animation():
     """
     Advances the animation frame based on a specified cooldown time.
