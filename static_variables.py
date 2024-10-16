@@ -33,14 +33,13 @@ ENEMY_DAMAGE = {1: 0, 2: 0, 3: 0 }
 #ENEMY_DAMAGE = {1: 1, 2: 1.5, 3: 2 }
 
 ###########PLAYER###########
-PLAYER_WIDTH, PLAYER_HEIGHT = 144, 144 # Attached to some settings in regards to player location on screen
-#1:mele damage; 2:ranged damage
+PLAYER_SCALE = 2 # Scale player
 PLAYER_IMAGES = {
     1: 'images/players/player1.png',
     2: '',
     3: '', 
 }
-PLAYER_ANIMATION_SPEED = 100  # Milliseconds per frame
+COOLDOWNS = {'movement':100,'shoot':100}
 PLAYER_HEALTH = {1: 50, 2: 100, 3: 300}
 PLAYER_DAMAGE = {1: 0.8, 2: 0.6, 3: 1}
 PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6}

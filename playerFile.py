@@ -1,37 +1,89 @@
 import pygame
 from static_variables import *
+from animations import *
 
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_type, player_id):
-        super().__init__()
+    def __init__(self, player_type):
         self.type = player_type
+        self.scale = PLAYER_SCALE
+        self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
+        self.images = self.extract_frames(self.sprite_sheet, 48, 48, scale_factor=self.scale)
+        self.animations = {
+            'walk down' : Animation(self.images['walk down'],COOLDOWNS['movement']),
+            'walk left' : Animation(self.images['walk left'],COOLDOWNS['movement']),
+            'walk right' : Animation(self.images['walk right'],COOLDOWNS['movement']),
+            'walk up' : Animation(self.images['walk up'],COOLDOWNS['movement']),
 
-        self.images = self.load_sprite_sheet(PLAYER_IMAGES[player_type], PLAYER_WIDTH,PLAYER_HEIGHT)
-        self.image_index = 0 # starting frame of animation 
-        self.image = self.images[self.image_index] # this is the image that will be displayed
-        self.last_animation_time = pygame.time.get_ticks()
+            'stand down' : Animation(self.images['stand down'],COOLDOWNS['movement']),
+            'stand left' : Animation(self.images['stand left'],COOLDOWNS['movement']),
+            'stand right' : Animation(self.images['stand right'],COOLDOWNS['movement']),
+            'stand up' : Animation(self.images['stand up'],COOLDOWNS['movement']),
+
+            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot']),
+            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot']),
+            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot']),
+            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot']),
+
+            'death' : Animation(self.images['death'],COOLDOWNS['movement'])
+        }
+        self.start_animation = self.animations['stand down']
+        self.image = self.start_animation.get_current_frame()
+
         self.rect = self.image.get_rect()
-        icon_x, icon_y = (WIDTH - PLAYER_WIDTH) / 2, (HEIGHT - PLAYER_HEIGHT) / 2 
-        self.rect.topleft = pygame.Rect(icon_x, icon_y, PLAYER_WIDTH/3,PLAYER_HEIGHT/2)
-        
+        self.rect.center = (WIDTH // 2, HEIGHT // 2) # Center the player
         self.health = PLAYER_HEALTH[player_type]
-        self.id = player_id
 
-    def load_sprite_sheet(self, filename, sprite_width,sprite_height): # usiversal function
-        sprite_sheet = pygame.image.load(filename).convert_alpha()
-        width, height = sprite_sheet.get_size() # gets the size of sprite sheet 
-        rows = height // sprite_height # sprite_sheet[1] = height
-        columns = width // sprite_width # sprite_sheet[0] = width
-        images = []
-        for row in range(rows):
-            for col in range(columns):
-                rect = pygame.Rect(col * sprite_size[0], row * sprite_size[1], sprite_size[0], sprite_size[1])
-                images.append(sprite_sheet.subsurface(rect))
-        return images
+    def load_sprite_sheet(self, player_type, scale): # usiversal function
+        sprite_sheet = pygame.image.load(PLAYER_IMAGES[player_type]).convert_alpha()
 
-    def create_animation_list(self):
+        if scale !=1:
+            sprite_width, sprite_height = sprite_sheet.get_size()
+            # int is used to negate the appearance of floats
+            scaled_size = (int(sprite_width*scale), int(sprite_height*scale))
+            sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
+        return sprite_sheet
+
+    def create_action_list(self, sprite_sheet):
+        action_list = {}
+        action_mapping = {
+            'walk down': 0,
+            'walk left': 1,
+            'walk right': 2,
+            'walk up': 3,
+            'stand down': 4,
+            'stand left': 5,
+            'stand right': 6,
+            'stand up': 7,
+            'shoot down': 8,
+            'shoot left': 9,
+            'shoot right': 10,
+            'shoot up': 11,
+            'death': 12
+        }
+        frame_width = 48
+        frame_height = 48
+        for row,action in action_mapping.items(): # For loop for tuples can contain multiple variables 
+            action_frames = []
+            for i in range(6): # Each action will have 6 frames
+                x = i * frame_width # Which frame is being copied
+                y = row * frame_height
+                frame = sprite_sheet.subsurface((x, y, 48, 48))
+                action_frames.append(frame)
+            action_list[action] = action_frames
+        return action_list
+    
+    def update(self):
+        self.image = self.start_animation.get_current_frame()
+        #animation changes
+        #player movement
+        #probably player attacks
+        #also probably death as well
+
+
+    
+    def create_animation_list(self, sprite_sheet):
 
         # Creates a list of sprite animations for the player
         # based on the number of steps in each animation.

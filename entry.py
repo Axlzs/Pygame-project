@@ -388,8 +388,6 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
     for tile in tiles:
         x, y, tile_index = tile
         screen.blit(background_tiles[tile_index], (x - camera_x, y - camera_y))
-    #screen.blit(animation_list[action][frame], (icon_x - camera_x, icon_y - camera_y))
-    screen.blit(animation_list[action][frame], (player.x - camera_x - PLAYER_WIDTH/3, player.y - camera_y - PLAYER_HEIGHT/3))
     # Update and draw enemies
     for enemy in enemies:
         enemy.animate()
