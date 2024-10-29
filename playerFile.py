@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         self.type = player_type
         self.scale = PLAYER_SCALE
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
-        self.images = self.extract_frames(self.sprite_sheet, 48, 48, scale_factor=self.scale)
+        self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.animations = {
             'walk down' : Animation(self.images['walk down'],COOLDOWNS['movement']),
             'walk left' : Animation(self.images['walk left'],COOLDOWNS['movement']),
@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
             sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
-    def create_action_list(self, sprite_sheet):
+    def create_action_list(self, sprite_sheet, scale):
         action_list = {}
         action_mapping = {
             'walk down': 0,
@@ -62,14 +62,14 @@ class Player(pygame.sprite.Sprite):
             'shoot up': 11,
             'death': 12
         }
-        frame_width = 48
-        frame_height = 48
-        for row,action in action_mapping.items(): # For loop for tuples can contain multiple variables 
+        frame_width = 48 * scale
+        frame_height = 48 * scale
+        for action, row in action_mapping.items():  # Unpack the dictionary correctly
             action_frames = []
-            for i in range(6): # Each action will have 6 frames
-                x = i * frame_width # Which frame is being copied
-                y = row * frame_height
-                frame = sprite_sheet.subsurface((x, y, 48, 48))
+            for i in range(6):  # Each action will have 6 frames
+                x = i * frame_width  # Which frame is being copied
+                y = row * frame_height  # Row based on action index
+                frame = sprite_sheet.subsurface((x, y, frame_width, frame_height))  # Use the variables correctly
                 action_frames.append(frame)
             action_list[action] = action_frames
         return action_list
@@ -81,46 +81,24 @@ class Player(pygame.sprite.Sprite):
         #probably player attacks
         #also probably death as well
 
+    def handle_movement(self):
+    # Example for movement handling with keyboard inputs
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            print("w in the chat ")
+            #self.rect.y -= speed
+            self.start_animation = self.animations['walk up']
+        if keys[pygame.K_a]:
+            #self.rect.x -= speed
+            self.start_animation = self.animations['walk left']
+        if keys[pygame.K_s]:
+            #self.rect.y -= speed
+            self.start_animation = self.animations['walk down']
+        if keys[pygame.K_d]:
+            #self.rect.x += speed
+            self.start_animation = self.animations['walk right']
 
-    
-    def create_animation_list(self, sprite_sheet):
-
-        # Creates a list of sprite animations for the player
-        # based on the number of steps in each animation.
-        # Extracts images from the sprite sheet for each animation sequence.
-
-        global animation_list, action, frame, step_counter, last_update, animation_cooldown, last_lift_up, animation_completed
-        animation_list = []
-        animation_steps = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7]
-        last_update = pygame.time.get_ticks() # Controls animation speed
-        animation_cooldown = 150
-        action = 4 # Animation that will be set as default when game starts
-        frame = 0
-        step_counter = 0 # Each step is one frame in the animation
-        last_lift_up = pygame.K_s
-        animation_completed = False
-
-        # Splits the spritesheet into frames
-        for animation in animation_steps:
-            temp_img_list = []
-            for _ in range(animation):
-                temp_img_list.append(sprite_sheet.get_image(step_counter, 48, 48, 3, BLACK))
-                step_counter += 1
-            animation_list.append(temp_img_list)
-    def update_animation():
-
-        # Advances the animation frame based on a specified cooldown time.
-        # Ensures that the animation frames cycle through the available frames for
-        # the current action. The animation updates are synchronized with the game's time.
-
-        global frame, last_update, animation_cooldown, animation_completed, action
-
-        current_time = pygame.time.get_ticks()
-
-        if current_time - last_update >= animation_cooldown:
-            if not animation_completed:
-                frame += 1
-                last_update = current_time
-                if frame >= len(animation_list[action]):
-                    frame = 0
-                    animation_completed = True
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.start_animation = self.animations['death']

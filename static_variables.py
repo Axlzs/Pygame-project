@@ -22,7 +22,7 @@ ENEMY_HIT_EVENTS = {1: pygame.USEREVENT + 2, 2: pygame.USEREVENT + 3, 3: pygame.
 BASE_ENEMY_EVENT_ID = pygame.USEREVENT + 5
 
 #PLAYER_MELE_HIT = pygame.USEREVENT + 5
-ENEMY_SIZE = (67, 63)
+ENEMY_SIZE = (48,48)
 #ENEMY_HITBOX = (70, 70)
 ENEMY_IMAGES = {
     1: 'images/enemies/enemy1.png',
@@ -34,6 +34,7 @@ ENEMY_DAMAGE = {1: 0, 2: 0, 3: 0 }
 
 ###########PLAYER###########
 PLAYER_SCALE = 2 # Scale player
+DEFAULT_PLAYER = (48,48)
 PLAYER_IMAGES = {
     1: 'images/players/player1.png',
     2: '',

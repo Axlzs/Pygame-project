@@ -5,6 +5,7 @@ import spritesheet
 from static_variables import *
 from enemyFile import Enemy
 from playerFile import *
+from animations import *
 
 def set_basic_settings():
     """
@@ -28,7 +29,6 @@ def set_basic_settings():
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 40)
     running = True
-    icon_x, icon_y = (screen.get_width() - PLAYER_WIDTH) / 2, (screen.get_height() - PLAYER_HEIGHT) / 2 
 
 def load_images():
     """
@@ -68,21 +68,21 @@ def load_sound_effects():
     level_up.set_volume(0.3)
 
 
-def load_background_tiles():
-    """
-    Loads and scales all background tile images from the 'images' directory.
-    Populates the global 'background_tiles' list with each tile image.
-    Images 'bg-1.png' to 'bg-10.png' are loaded in that order.
+# def load_background_tiles():
+#     """
+#     Loads and scales all background tile images from the 'images' directory.
+#     Populates the global 'background_tiles' list with each tile image.
+#     Images 'bg-1.png' to 'bg-10.png' are loaded in that order.
 
-    Global variables:
-        background_tiles: List of loaded background tile images.
-    """
-    global background_tiles
-    background_tiles = []
-    for i in range(1, 11):
-        image = pygame.image.load(f'images/bg-{i}.png').convert()
-        image = pygame.transform.scale(image, (WIDTH, HEIGHT))
-        background_tiles.append(image)
+#     Global variables:
+#         background_tiles: List of loaded background tile images.
+#     """
+#     global background_tiles
+#     background_tiles = []
+#     for i in range(1, 11):
+#         image = pygame.image.load(f'images/bg-{i}.png').convert()
+#         image = pygame.transform.scale(image, (WIDTH, HEIGHT))
+#         background_tiles.append(image)
 
 def select_tile_index():
     """
@@ -179,24 +179,14 @@ def initialize_game():
     global tile_grid
     tile_grid = {}  # Dictionary to keep track of which tiles are loaded
     pygame.init()
-    # set_static_variables()
-    # set_color_codes()
     set_basic_settings()
     load_images()
     load_sound_effects()
-    load_background_tiles()
+    #load_background_tiles()
     load_game_over_assets()
 
 # Global dictionary to store enemy damage events
 PLAYER_MELE_HIT = {}
-
-# Function to initialize enemy damage events
-def init_enemy_damage_events(enemies):
-    global BASE_ENEMY_EVENT_ID
-    for enemy in enemies:
-        PLAYER_MELE_HIT[enemy.id] = BASE_ENEMY_EVENT_ID
-        BASE_ENEMY_EVENT_ID += 1
-
 def handle_events():
     """
     Iterates through all Pygame events, such as key presses or closing the game window,
@@ -214,48 +204,48 @@ def handle_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False 
-        elif event.type == pygame.KEYUP:
-            last_lift_up = event.key
-        elif event.type in ENEMY_HIT_EVENTS.values():
-            enemy_type = [enemy_type for enemy_type, event_type in ENEMY_HIT_EVENTS.items() if event_type == event.type][0]
-            player_health -= ENEMY_DAMAGE[enemy_type]
+        # elif event.type == pygame.KEYUP:
+        #     last_lift_up = event.key
+        # elif event.type in ENEMY_HIT_EVENTS.values():
+        #     enemy_type = [enemy_type for enemy_type, event_type in ENEMY_HIT_EVENTS.items() if event_type == event.type][0]
+        #     player_health -= ENEMY_DAMAGE[enemy_type]
 
-        elif event.type in PLAYER_HIT_EVENTS.values():
-            # Find the enemy ID associated with the event
-            enemy_id = [enemy_id for enemy_id, event_id in PLAYER_HIT_EVENTS.items() if event_id == event.type][0]
-            # Find the enemy instance with the corresponding ID
-            damaged_enemy = next((enemy for enemy in enemies if enemy.id == enemy_id), None)
-            if damaged_enemy:
-                # Decrement the health of the damaged enemy
-                damaged_enemy.health -= 30
-                #damaged_enemy.health -= player.health
-                # Optionally, handle enemy destruction or other effects here
-                if damaged_enemy.health <=0:
-                    enemies.remove(damaged_enemy)
-                    score+=1
-                    enemy_count-=1  
-        if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
-            if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
-                pygame.mixer.Channel(1).play(arrow_shoot)
-                arrow_R = pygame.Rect(player.x, player.y + player.height//2 - 2, 10, 5)
-                player_arrows_R.append(arrow_R)
-                last_shot_time = current_time
-            if event.key == pygame.K_SPACE and len(player_arrows_L) < MAX_ARROWS:
-                arrow_L = pygame.Rect(player.x, player.y + player.height//2 - 2, 10, 5)
-                last_shot_time = current_time
-                player_arrows_L.append(arrow_L)
-            if event.key == pygame.K_SPACE and len(player_arrows_UP) < MAX_ARROWS:
-                arrow_UP = pygame.Rect(player.x + 18, player.y + player.height//2 - 2, 10, 5)
-                player_arrows_UP.append(arrow_UP)
-                last_shot_time = current_time
-            if event.key == pygame.K_SPACE and len(player_arrows_DOWN) < MAX_ARROWS:
-                arrow_DOWN = pygame.Rect(player.x + 20, player.y + player.height//2 - 2, 10, 5)
-                player_arrows_DOWN.append(arrow_DOWN)
-                last_shot_time = current_time
-            # if event.key == pygame.K_l: #possibility to end game at any time
-            #     print("Death triggered")
-            #     frame = 0
-            #     action = 12
+        # elif event.type in PLAYER_HIT_EVENTS.values():
+        #     # Find the enemy ID associated with the event
+        #     enemy_id = [enemy_id for enemy_id, event_id in PLAYER_HIT_EVENTS.items() if event_id == event.type][0]
+        #     # Find the enemy instance with the corresponding ID
+        #     damaged_enemy = next((enemy for enemy in enemies if enemy.id == enemy_id), None)
+        #     if damaged_enemy:
+        #         # Decrement the health of the damaged enemy
+        #         damaged_enemy.health -= 30
+        #         #damaged_enemy.health -= player.health
+        #         # Optionally, handle enemy destruction or other effects here
+        #         if damaged_enemy.health <=0:
+        #             enemies.remove(damaged_enemy)
+        #             score+=1
+        #             enemy_count-=1  
+        # if event.type == pygame.KEYDOWN and current_time - last_shot_time >= 400:
+        #     if event.key == pygame.K_SPACE and len(player_arrows_R) < MAX_ARROWS:
+        #         pygame.mixer.Channel(1).play(arrow_shoot)
+        #         arrow_R = pygame.Rect(player.x, player.y + player.height//2 - 2, 10, 5)
+        #         player_arrows_R.append(arrow_R)
+        #         last_shot_time = current_time
+        #     if event.key == pygame.K_SPACE and len(player_arrows_L) < MAX_ARROWS:
+        #         arrow_L = pygame.Rect(player.x, player.y + player.height//2 - 2, 10, 5)
+        #         last_shot_time = current_time
+        #         player_arrows_L.append(arrow_L)
+        #     if event.key == pygame.K_SPACE and len(player_arrows_UP) < MAX_ARROWS:
+        #         arrow_UP = pygame.Rect(player.x + 18, player.y + player.height//2 - 2, 10, 5)
+        #         player_arrows_UP.append(arrow_UP)
+        #         last_shot_time = current_time
+        #     if event.key == pygame.K_SPACE and len(player_arrows_DOWN) < MAX_ARROWS:
+        #         arrow_DOWN = pygame.Rect(player.x + 20, player.y + player.height//2 - 2, 10, 5)
+        #         player_arrows_DOWN.append(arrow_DOWN)
+        #         last_shot_time = current_time
+        #     # if event.key == pygame.K_l: #possibility to end game at any time
+        #     #     print("Death triggered")
+        #     #     frame = 0
+        #     #     action = 12
 
 def move_icon():
     """
@@ -385,9 +375,9 @@ def draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arr
     """
 
     tiles = get_background_tiles()
-    for tile in tiles:
-        x, y, tile_index = tile
-        screen.blit(background_tiles[tile_index], (x - camera_x, y - camera_y))
+    # for tile in tiles:
+    #     x, y, tile_index = tile
+    #     screen.blit(background_tiles[tile_index], (x - camera_x, y - camera_y))
     # Update and draw enemies
     for enemy in enemies:
         enemy.animate()
@@ -693,22 +683,7 @@ def main_loop():
     player_arrows_L = []
     player_arrows_UP = []
     player_arrows_DOWN = []
-    # Create player
-    player_count = 1
-    player_type = 1
-    player = Player(player_type, player_count)
-    player.create_animation_list()
     
-    # Create enemies
-    enemies = pygame.sprite.Group()
-    enemy_count=0
-    for _ in range(300):
-        enemy_type = random.choice(list(ENEMY_IMAGES.keys()))
-        enemy_count +=1
-        enemy = Enemy(enemy_type, player, enemy_count)
-        enemies.add(enemy)
-
-    init_enemy_damage_events(enemies)
     score = 0
     modifier = 1
 
@@ -718,34 +693,38 @@ def main_loop():
     start_time = None
     fade_text = ""
     fade_duration = 3000  # Duration of the fade effect in milliseconds (2000 ms = 2 seconds)
+######################################################
+    player = Player(player_type=1)
+######################################################
+
 
 
     while running:
         current_time = pygame.time.get_ticks()
-        # death animation execution
-        if frame == 6 and action == 12:
-            print("Game over")
-            game_over_screen()
-            break
-        health_bar.hp = player_health
-
-        #spawn more enemies during game
-        if enemy_count<100:
-            add_Random_Enemies(100)
-        handle_events()
-        handle_Enemy_Collisions(enemies)
-        handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
-        player.update_animation()
-        find_player(enemies, player, speed_linear, speed_diagonal)
-        move_icon()
-        handle_health_pickups()
-        calculate_camera_offset()
-        player_recieved_damage(player, enemies)
-        player_dealt_damage(player, enemies)
-
-        draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
-        draw_fps_counter()
         
+        #health_bar.hp = player.health
+        screen.fill((0,0,0))
+        keys=pygame.key.get_pressed()
+        player.handle_movement()
+        player.update()
+        screen.blit(player.image, player.rect.topleft)
+############################################################
+        # #spawn more enemies during game
+        # if enemy_count<100:
+        #     add_Random_Enemies(100)
+        # handle_events()
+        # handle_Enemy_Collisions(enemies)
+        # handle_arrows_all(player_arrows_R, player_arrows_L, player_arrows_UP, action)
+        # find_player(enemies, player, speed_linear, speed_diagonal)
+        # move_icon()
+        # handle_health_pickups()
+        # calculate_camera_offset()
+        # player_recieved_damage(player, enemies)
+        # player_dealt_damage(player, enemies)
+
+        # draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
+############################################################
+        draw_fps_counter()
         # Draw fading text if needed
         if start_time is not None:
             draw_fading_text(screen, fade_text, (326, 50), start_time, fade_duration, WHITE, font)
