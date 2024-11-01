@@ -1,5 +1,4 @@
 import pygame
-import spritesheet
 from static_variables import *
 
 class Animation:

@@ -20,7 +20,7 @@ def set_basic_settings():
         running: Game status variable (True if the game is running, False if it's not)
         icon_x, icon_y: Initial coordinates of the player icon
     """
-    global screen, background_surface, icon, clock, font, running, icon_x, icon_y
+    global screen, background_surface, icon, clock, font, running
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     background_surface = pygame.Surface((BACKGROUND_WIDTH, BACKGROUND_HEIGHT))
     icon = pygame.image.load('images/icon.png')
@@ -68,21 +68,20 @@ def load_sound_effects():
     level_up.set_volume(0.3)
 
 
-# def load_background_tiles():
-#     """
-#     Loads and scales all background tile images from the 'images' directory.
-#     Populates the global 'background_tiles' list with each tile image.
-#     Images 'bg-1.png' to 'bg-10.png' are loaded in that order.
-
-#     Global variables:
-#         background_tiles: List of loaded background tile images.
-#     """
-#     global background_tiles
-#     background_tiles = []
-#     for i in range(1, 11):
-#         image = pygame.image.load(f'images/bg-{i}.png').convert()
-#         image = pygame.transform.scale(image, (WIDTH, HEIGHT))
-#         background_tiles.append(image)
+def load_background_tiles():
+    """
+    Loads and scales all background tile images from the 'images' directory.
+    Populates the global 'background_tiles' list with each tile image.
+    Images 'bg-1.png' to 'bg-10.png' are loaded in that order
+    Global variables:
+        background_tiles: List of loaded background tile images.
+    """
+    global background_tiles
+    background_tiles = []
+    for i in range(1, 11):
+        image = pygame.image.load(f'images/bg-{i}.png').convert()
+        image = pygame.transform.scale(image, (WIDTH, HEIGHT))
+        background_tiles.append(image)
 
 def select_tile_index():
     """
@@ -669,31 +668,33 @@ def main_loop():
     Runs the main game loop and processes game events.
     The loop continues until the global variable `running` becomes False, and then quits the game.
     """
-    global running,player_health, player, health_bar, player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, current_time, dead, frame, action, score
-    global enemies
-    global health_pickups
-    global modifier
-    global enemy_speed_linear, enemy_speed_diagonal
-    global level_up
-    global enemy_count
+    # global running,player_health, player, health_bar, player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, current_time, dead, frame, action, score
+    # global enemies
+    # global health_pickups
+    # global modifier
+    # global enemy_speed_linear, enemy_speed_diagonal
+    # global level_up
+    # global enemy_count
 
-    health_pickups = []
-    health_bar = HealthBar(250, 250, 300, 40, 100)
-    player_arrows_R = []
-    player_arrows_L = []
-    player_arrows_UP = []
-    player_arrows_DOWN = []
+    # health_pickups = []
+    # health_bar = HealthBar(250, 250, 300, 40, 100)
+    # player_arrows_R = []
+    # player_arrows_L = []
+    # player_arrows_UP = []
+    # player_arrows_DOWN = []
     
-    score = 0
-    modifier = 1
+    # score = 0
+    # modifier = 1
 
-    dead = False
+    # dead = False
 
-    # Variables for fade-out effect
-    start_time = None
-    fade_text = ""
-    fade_duration = 3000  # Duration of the fade effect in milliseconds (2000 ms = 2 seconds)
+    # # Variables for fade-out effect
+    # start_time = None
+    # fade_text = ""
+    # fade_duration = 3000  # Duration of the fade effect in milliseconds (2000 ms = 2 seconds)
 ######################################################
+    pygame.init()
+    pygame.display.set_mode(WIDTH,HEIGHT)
     player = Player(player_type=1)
 ######################################################
 
@@ -704,9 +705,8 @@ def main_loop():
         
         #health_bar.hp = player.health
         screen.fill((0,0,0))
-        keys=pygame.key.get_pressed()
-        player.handle_movement()
         player.update()
+        player.handle_movement()
         screen.blit(player.image, player.rect.topleft)
 ############################################################
         # #spawn more enemies during game
@@ -724,12 +724,12 @@ def main_loop():
 
         # draw_elements(player_arrows_R, player_arrows_L, player_arrows_UP, player_arrows_DOWN, enemies)
 ############################################################
-        draw_fps_counter()
-        # Draw fading text if needed
-        if start_time is not None:
-            draw_fading_text(screen, fade_text, (326, 50), start_time, fade_duration, WHITE, font)
-            if current_time - start_time > fade_duration:
-                start_time = None  # Reset fade_start_time after the text has faded out
+        # draw_fps_counter()
+        # # Draw fading text if needed
+        # if start_time is not None:
+        #     draw_fading_text(screen, fade_text, (326, 50), start_time, fade_duration, WHITE, font)
+        #     if current_time - start_time > fade_duration:
+        #         start_time = None  # Reset fade_start_time after the text has faded out
 
         pygame.display.update()
         clock.tick(FPS)
