@@ -64,3 +64,80 @@ class WorldMap:
             x, y, tile_index = tile
             screen_position = pygame.Vector2(x,y) - camera_offset
             screen.blit(self.background_tiles[tile_index], screen_position)
+
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction, speed, damage, projectile_type):
+        super().__init__()
+        self.scale = PLAYER_SCALE//2
+        self.projectile_sheet = self.load_projectile_sheet(self.projectile_type,self.scale)
+        self.images = self.create_projectile_actions(self.projectile_sheet,self.scale)
+        self.animations = {
+            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot']),
+            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot']),
+            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot']),
+            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot']),
+        }
+        self.current_animation = self.animations[f'shoot {direction}']
+        self.image = self.current_animation.get_current_frame()
+        self.rect = self.image.get_rect(center=(x, y))
+
+        # Set initial position and movement
+        self.pos = pygame.Vector2(x, y)
+        self.direction = direction
+        self.speed = speed
+        
+        if direction == 'up':
+            self.velocity = pygame.Vector2(0, -speed)
+        elif direction == 'down':
+            self.velocity = pygame.Vector2(0, speed)
+        elif direction == 'left':
+            self.velocity = pygame.Vector2(-speed, 0)
+        elif direction == 'right':
+            self.velocity = pygame.Vector2(speed, 0)
+        self.damage = damage
+        self.projectile_type = projectile_type  # E.g., 'player' or 'enemy'
+        
+        # Lifespan control
+        self.lifespan = 1000  # in milliseconds
+        self.spawn_time = pygame.time.get_ticks()
+
+    def load_projectile_sheet(self,projectile_type,scale)
+        projectile_sheet = pygame.image.load(PROJECTILE_IMAGES[projectile_type]).convert_alpha()
+
+        if scale !=1:
+            projectile_width, projectile_height = projectile_sheet.get_size()
+            # int is used to negate the appearance of floats
+            scaled_size = (int(projectile_width*scale), int(projectile_height*scale))
+            projectile_sheet = pygame.transform.scale(projectile_sheet, scaled_size)
+        return projectile_sheet
+
+    def create_projectile_actions(self,projectile_sheet,scale)
+        projectile_actions = {}
+        projectile_mapping = {
+            'shoot down' : 0,
+            'shoot left' : 1,
+            'shoot right' : 2,
+            'shoot up' : 3
+        }
+        frame_width = 48 * scale
+        frame_height = 48 * scale
+        for action, row in projectile0_mapping.items():  # Unpack the dictionary correctly
+            action_frames = []
+            for i in range(6):  # Each action will have 6 frames
+                x = i * frame_width  # Which frame is being copied
+                y = row * frame_height  # Row based on action index
+                frame = projectile_sheet.subsurface((x, y, frame_width, frame_height))  # Use the variables correctly
+                action_frames.append(frame)
+            projectile_actions[action] = action_frames
+        return projectile_actions
+
+    def update(self):
+        # Update position
+        self.pos += self.velocity
+        self.rect.center = self.pos
+
+        # Check lifespan
+        if pygame.time.get_ticks() - self.spawn_time > self.lifespan:
+            self.kill()  # Remove projectile from all sprite groups
+
+        # Add collision checks here if necessary

@@ -8,7 +8,6 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, player_type):
         self.type = player_type
         self.scale = PLAYER_SCALE
-        self.projectile = PROJECTILE_TYPE[self.type]
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.animations = {
@@ -117,16 +116,6 @@ class Player(pygame.sprite.Sprite):
             self.shooting = True
         else:
             self.shooting = False
-
-    def load_projectile(self):
-        projectile_R = pygame.image.load(f'images/projectiles/{self.projectile} R.png')
-        projectile_L = pygame.image.load(f'images/projectiles/{self.projectile} L.png')
-        projectile_UP = pygame.image.load(f'images/projectiles/{self.projectile} UP.png')
-        projectile_DOWN = pygame.image.load(f'images/projectiles/{self.projectile} DOWN.png')
-        
-    def shoot(self):
-        pass
-
 
     def handle_motion(self):
         if self.shooting:

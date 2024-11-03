@@ -41,9 +41,9 @@ SPEED_DIAGONAL = 2.828 # Coefficient 0.707 in regards to linear SPEEDSPEED = 4
 PLAYER_SCALE = 2 # Scale player
 DEFAULT_PLAYER = (48,48)
 PLAYER_IMAGES = {
-    1: 'images/players/player1.png',
+    1: '',
     2: '',
-    3: '', 
+    3: ''
 }
 
 HITBOX_WIDTH = 16
@@ -54,16 +54,12 @@ PLAYER_ATTACK = {1:1}
 PLAYER_DAMAGE = {1: 0.8, 2: 0.6, 3: 1}
 PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6}
 ##########ATTACKS##############
-PROJECTILE_TYPE = {1:'iron arrow'}
-ARROWS = {
-    'arrow R':'images/projectiles/iron arrow R.png',
-    'arrow L':'images/projectiles/iron arrow L.png',
-    'arrow UP':'images/projectiles/iron arrow UP.png',
-    'arrow DOWN':'images/projectiles/iron arrow DOWN.png'
+PROJECTILE_IMAGES = {
+    1:'images/projectiles/iron arrow.png',
+    2:''
 }
 
 ###############################
-
 
 
 ###########SOME#COLOURS###########
