@@ -43,6 +43,7 @@ while running:
 
     screen.blit(player.image, camera.apply(player.rect))
     pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
+    player.load_projectile()
 
 
 
