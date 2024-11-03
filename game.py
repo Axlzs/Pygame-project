@@ -24,7 +24,9 @@ def draw_fps_counter():
 
 
 ######################################################
-player = Player(player_type=1)  # Pass the appropriate player type here
+projectile_group = pygame.sprite.Group()
+player_type=1
+player = Player(player_type, projectile_group)  # Pass the appropriate player type here
 camera = Camera()
 map = WorldMap()
 
@@ -36,15 +38,20 @@ while running:
     
     draw_fps_counter()
     player.update()
-    camera.update(player.rect)
+    camera.update(player.rect)  
 
     visible_tiles = map.get_background_tiles(player.rect, camera.offset)
     map.render(screen, visible_tiles, camera.offset)
 
     screen.blit(player.image, camera.apply(player.rect))
     pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
-    player.load_projectile()
 
+    projectile_group.update()
+
+    for projectile in projectile_group:
+        offset_rect = camera.apply(projectile.rect)
+        screen.blit(projectile.image, offset_rect)
+        
 
 
     pygame.display.flip()

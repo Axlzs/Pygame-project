@@ -1,13 +1,15 @@
 import pygame
 from static_variables import *
+from static_classes import *
 from animations import *
 
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_type):
+    def __init__(self, player_type,projectile_group):
         self.type = player_type
         self.scale = PLAYER_SCALE
+        self.projectile_group = projectile_group
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.animations = {
@@ -41,6 +43,10 @@ class Player(pygame.sprite.Sprite):
         self.motion = False
         self.direction = 'down'
         self.shooting = False
+        self.last_shot_time = 0
+        self.shoot_cooldown = PROJECTILE_COOLDOWN
+        self.arrow_offset = 0
+        self.arrow_offset = 10*self.scale
 
     def load_sprite_sheet(self, player_type, scale):
         sprite_sheet = pygame.image.load(PLAYER_IMAGES[player_type]).convert_alpha()
@@ -114,16 +120,40 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and self.motion == False:
             self.shooting = True
+            self.shoot(self.projectile_group)
         else:
             self.shooting = False
 
     def handle_motion(self):
         if self.shooting:
             self.start_animation = self.animations[f'shoot {self.direction}']
+
         elif self.motion:
             self.start_animation = self.animations[f'walk {self.direction}']
         else:
             self.start_animation = self.animations[f'stand {self.direction}'] 
+
+    def shoot(self,projectile_group):
+        current_time = pygame.time.get_ticks()
+        # Check if enough time has passed since the last shot
+        if current_time - self.last_shot_time >= self.shoot_cooldown:
+            self.last_shot_time = current_time
+            # Instantiate the projectile
+            recy = self.rect.centery
+            recx = self.rect.centerx
+            if self.direction == 'up':
+                recy -= self.arrow_offset
+            if self.direction == 'dowm':
+                recy += self.arrow_offset
+            if self.direction == 'left':
+                recy += self.scale*5
+                recx -= self.arrow_offset
+            if self.direction == 'right':
+                recy += self.scale*5
+                recx += self.arrow_offset
+            projectile = Projectile(recx, recy, self.direction, damage=10, projectile_type=1)
+            projectile_group.add(projectile)
+
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
