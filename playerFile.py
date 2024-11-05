@@ -9,6 +9,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, player_type,projectile_group):
         self.type = player_type
         self.scale = PLAYER_SCALE
+        self.sprite_size = PLAYER_DATA[player_type]['sprite']
         self.projectile_group = projectile_group
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
@@ -36,7 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH // 2, HEIGHT // 2+3) # Center the player
 
-        self.hitbox = pygame.Rect(0, 0, HITBOX_WIDTH*PLAYER_SCALE, HITBOX_HEIGHT*PLAYER_SCALE)
+        self.hitbox = pygame.Rect(0, 0, PLAYER_DATA[player_type]['hitbox_width']*PLAYER_SCALE, PLAYER_DATA[player_type]['hitbox_height']*PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
         self.health = PLAYER_HEALTH[player_type]
@@ -49,7 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.arrow_offset = 10*self.scale
 
     def load_sprite_sheet(self, player_type, scale):
-        sprite_sheet = pygame.image.load(PLAYER_IMAGES[player_type]).convert_alpha()
+        sprite_sheet = pygame.image.load(PLAYER_DATA[player_type]['image']).convert_alpha()
 
         if scale !=1:
             sprite_width, sprite_height = sprite_sheet.get_size()
@@ -75,8 +76,8 @@ class Player(pygame.sprite.Sprite):
             'shoot up': 11,
             'death': 12
         }
-        frame_width = 48 * scale
-        frame_height = 48 * scale
+        frame_width = self.sprite_size * scale
+        frame_height = self.sprite_size * scale
         for action, row in action_mapping.items():  # Unpack the dictionary correctly
             action_frames = []
             for i in range(6):  # Each action will have 6 frames

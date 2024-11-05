@@ -39,10 +39,10 @@ ENEMY_DAMAGE = {1: 0, 2: 0, 3: 0 }
 SPEED_LINEAR = 4
 SPEED_DIAGONAL = 2.828 # Coefficient 0.707 in regards to linear SPEEDSPEED = 4
 PLAYER_SCALE = 2 # Scale player
-DEFAULT_PLAYER = (48,48)
-PLAYER_IMAGES = {
-    1: 'images/players/player1.png',
-    2: 'images/players/player1.png',
+
+PLAYER_DATA = {
+    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28},
+    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20},
     3: ''
 }
 

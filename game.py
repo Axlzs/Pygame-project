@@ -22,6 +22,17 @@ def draw_fps_counter():
     fps_text = font.render(f"FPS: {int(clock.get_fps())}", True, WHITE)
     screen.blit(fps_text, (10, 10))
 
+def draw_entities():
+    #map stuff
+    visible_tiles = map.get_background_tiles(player.rect, camera.offset)
+    map.render(screen, visible_tiles, camera.offset)
+    #player stuff
+    screen.blit(player.image, camera.apply(player.rect))
+    pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
+    #projectile stuff
+    for projectile in projectile_group:
+        offset_rect = camera.apply(projectile.rect)
+        screen.blit(projectile.image, offset_rect)
 
 ######################################################
 projectile_group = pygame.sprite.Group()
@@ -38,22 +49,10 @@ while running:
     
     draw_fps_counter()
     player.update()
-    camera.update(player.rect)  
-
-    visible_tiles = map.get_background_tiles(player.rect, camera.offset)
-    map.render(screen, visible_tiles, camera.offset)
-
-    screen.blit(player.image, camera.apply(player.rect))
-    pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
-
+    camera.update(player.rect)
     projectile_group.update()
-
-    for projectile in projectile_group:
-        offset_rect = camera.apply(projectile.rect)
-        screen.blit(projectile.image, offset_rect)
+    draw_entities()
         
-
-
     pygame.display.flip()
 
     clock.tick(FPS)
