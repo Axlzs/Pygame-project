@@ -36,7 +36,7 @@ def draw_entities():
 
 ######################################################
 projectile_group = pygame.sprite.Group()
-player_type=1
+player_type=2
 player = Player(player_type, projectile_group)  # Pass the appropriate player type here
 camera = Camera()
 map = WorldMap()

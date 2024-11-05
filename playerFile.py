@@ -10,6 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.type = player_type
         self.scale = PLAYER_SCALE
         self.sprite_size = PLAYER_DATA[player_type]['sprite']
+        self.player_class = PLAYER_DATA[player_type]['class']
         self.projectile_group = projectile_group
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
@@ -40,14 +41,21 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, PLAYER_DATA[player_type]['hitbox_width']*PLAYER_SCALE, PLAYER_DATA[player_type]['hitbox_height']*PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
-        self.health = PLAYER_HEALTH[player_type]
+        self.health = PLAYER_DATA[player_type]['health']
         self.motion = False
         self.direction = 'down'
+
         self.shooting = False
         self.last_shot_time = 0
         self.shoot_cooldown = PROJECTILE_COOLDOWN
         self.arrow_offset = 0
         self.arrow_offset = 10*self.scale
+
+        self.mele_damage = PLAYER_DATA[2]['damage']
+        self.mele_range = PLAYER_DATA[2]['range']
+        self.mele_cooldown = 500
+        self.last_mele_time = 0
+
 
     def load_sprite_sheet(self, player_type, scale):
         sprite_sheet = pygame.image.load(PLAYER_DATA[player_type]['image']).convert_alpha()
@@ -102,26 +110,27 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= SPEED
             self.motion = True
             self.direction = 'up'
-            #self.start_animation = self.animations['walk up']
         if keys[pygame.K_a]:
             self.rect.x -= SPEED
             self.motion = True
             self.direction = 'left'
-            #self.start_animation = self.animations['walk left']
         if keys[pygame.K_s]:
             self.rect.y += SPEED
             self.motion = True
             self.direction = 'down'
-            #self.start_animation = self.animations['walk down']
         if keys[pygame.K_d]:
             self.rect.x += SPEED
             self.motion = True
             self.direction = 'right'
-            #self.start_animation = self.animations['walk right']
-
+        
         if keys[pygame.K_SPACE] and self.motion == False:
             self.shooting = True
-            self.shoot(self.projectile_group)
+            if self.type ==1:
+                self.shoot(self.projectile_group)
+            elif self.type ==2:
+                self.mele_attack()
+            else:
+                print("sum tin wong")
         else:
             self.shooting = False
 
@@ -155,6 +164,9 @@ class Player(pygame.sprite.Sprite):
             projectile = Projectile(recx, recy, self.direction, damage=10, projectile_type=1)
             projectile_group.add(projectile)
 
+    def mele_attack(self):
+        print("dingaling")
+    
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
