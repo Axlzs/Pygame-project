@@ -51,10 +51,10 @@ class Player(pygame.sprite.Sprite):
         self.arrow_offset = 0
         self.arrow_offset = 10*self.scale
 
-        self.mele_damage = PLAYER_DATA[2]['damage']
-        self.mele_range = PLAYER_DATA[2]['range']
-        self.mele_cooldown = 500
-        self.last_mele_time = 0
+        self.melee_damage = PLAYER_DATA[2]['damage']
+        self.melee_range = PLAYER_DATA[2]['range'] * self.scale
+        self.melee_cooldown = 500
+        self.last_melee_time = 0
 
 
     def load_sprite_sheet(self, player_type, scale):
@@ -163,10 +163,25 @@ class Player(pygame.sprite.Sprite):
                 recx += self.arrow_offset
             projectile = Projectile(recx, recy, self.direction, damage=10, projectile_type=1)
             projectile_group.add(projectile)
-
-    def mele_attack(self):
-        print("dingaling")
     
+    def get_melee_hitbox(self):
+        # Create a rect for the melee hitbox based on the player's direction and position
+        if self.direction == 'up':
+            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (7+self.scale), 2*self.melee_range, self.melee_range)
+        elif self.direction == 'down':
+            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.bottom - (self.melee_range + self.scale), 2*self.melee_range, self.melee_range)
+        elif self.direction == 'left':
+            return pygame.Rect(self.rect.left + (7*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+        elif self.direction == 'right':
+            return pygame.Rect(self.rect.right - (self.melee_range + (7*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+        
+    def mele_attack(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_melee_time >= self.melee_cooldown:
+            self.last_melee_time = current_time
+            # Check for collisions with enemies
+            melee_hitbox = self.get_melee_hitbox()
+
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
