@@ -55,9 +55,8 @@ map = WorldMap()
 enemies = pygame.sprite.Group()
 enemy_count = 0
 for _ in range(30):
-    enemy_type = 1
+    enemy_type = random.choice(list(ENEMY_DATA.keys()))
     enemy_count +=1
-    print(enemy_count)
     enemy = Enemy(enemy_type, projectile_group, player)
     enemies.add(enemy)
 
