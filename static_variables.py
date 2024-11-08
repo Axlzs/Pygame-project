@@ -13,8 +13,10 @@ BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each 
 #############ENEMY#############
 ENEMY_SPAWN_AREA = 200 # Density - distance between inner spawn circle and outer spawn circe 
 ENEMY_SPAWN_DISTANCE = 200 # How far does the enemy spawn form the player
-ENEMY_SPEED_LINEAR = 2
-ENEMY_SPEED_DIAGONAL = 1.414
+# ENEMY_SPEED_LINEAR = 2
+# ENEMY_SPEED_DIAGONAL = 1.414
+ENEMY_SPEED_LINEAR = 4
+ENEMY_SPEED_DIAGONAL = 2.828 # Coefficient 0.707 in regards to linear SPEEDSPEED = 4
 
 ENEMY_DATA = {
     1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':1},

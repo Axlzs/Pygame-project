@@ -26,9 +26,8 @@ def draw_entities():
     #map stuff
     visible_tiles = map.get_background_tiles(player.rect, camera.offset)
     map.render(screen, visible_tiles, camera.offset)
-
+    
     screen.blit(player.image, camera.apply(player.rect))
-    screen.blit(enemy.image, camera.apply(enemy.rect))
     #player hitbox
     pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
     
@@ -39,17 +38,28 @@ def draw_entities():
         #arrow hitbox
         pygame.draw.rect(screen, (255,0,0), offset_rect,2)
 
+    for enemy in enemies:
+        offset_rect = camera.apply(enemy.rect)
+        screen.blit(enemy.image, offset_rect)
     #mele hitbox 
     melee_hitbox = player.get_melee_hitbox()
     pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
 
 #setting up game
 projectile_group = pygame.sprite.Group()
-player_type=1
+player_type=2
 player = Player(player_type, projectile_group)  # Pass the appropriate player type here
-enemy = Enemy(player_type, projectile_group,player)
 camera = Camera()
 map = WorldMap()
+
+enemies = pygame.sprite.Group()
+enemy_count = 0
+for _ in range(30):
+    enemy_type = 1
+    enemy_count +=1
+    print(enemy_count)
+    enemy = Enemy(enemy_type, projectile_group, player)
+    enemies.add(enemy)
 
 running = True
 while running:
@@ -59,7 +69,7 @@ while running:
     
     draw_fps_counter()
     player.update()
-    enemy.update()
+    enemies.update()
     camera.update(player.rect)
     projectile_group.update()
     draw_entities()

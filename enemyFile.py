@@ -7,6 +7,7 @@ from animations import *
 # Define the PLayer class
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, enemy_type, projectile_group, player):
+        pygame.sprite.Sprite.__init__(self)
         self.type = enemy_type
         self.scale = PLAYER_SCALE
         self.player = player
@@ -37,7 +38,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.start_animation.get_current_frame()
 
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH // 2, HEIGHT // 2+3) # Center the player
+        self.rect.center = self.get_enemy_spawn() # Enemy spawn coordinates
 
         self.hitbox = pygame.Rect(0, 0, ENEMY_DATA[enemy_type]['hitbox_width']*PLAYER_SCALE, ENEMY_DATA[enemy_type]['hitbox_height']*PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
@@ -97,6 +98,20 @@ class Enemy(pygame.sprite.Sprite):
             action_list[action] = action_frames
         return action_list
     
+    def get_enemy_spawn(self):
+        square_top_left_x = self.player.rect.x - (HEIGHT/2)-ENEMY_SPAWN_DISTANCE
+        square_top_left_y =self.player.rect.y - (WIDTH/2)-ENEMY_SPAWN_DISTANCE
+        square_bottom_right_x =self.player.rect.x + (HEIGHT/2)+ENEMY_SPAWN_DISTANCE
+        square_bottom_right_y =self.player.rect.y + (WIDTH/2)+ENEMY_SPAWN_DISTANCE
+        while True:
+            # Generate random x and y coordinates outside the square
+            x = random.uniform(square_top_left_x - ENEMY_SPAWN_AREA, square_bottom_right_x + ENEMY_SPAWN_AREA)
+            y = random.uniform(square_top_left_y - ENEMY_SPAWN_AREA, square_bottom_right_y + ENEMY_SPAWN_AREA)
+            
+            # Check if the generated point is outside the square
+            if x < square_top_left_x or x > square_bottom_right_x or y < square_top_left_y or y > square_bottom_right_y:
+                return (x, y)
+
     def enemy_actions(self):
 
         self.motion = False
