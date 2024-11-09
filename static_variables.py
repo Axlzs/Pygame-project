@@ -41,10 +41,10 @@ PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6}
 
 ##########ATTACKS##############
 PROJECTILE_IMAGES = {
-    1:'images/projectiles/iron arrow.png',
-    2:'images/projectiles/iron arrow.png'
+    1:'images/projectiles/iron arrow single.png',
+    2:''
 }
-PROJECILE_SPEED = 5
+PROJECTILE_SPEED = 5
 PROJECTILE_COOLDOWN = 600
 ###############################
 

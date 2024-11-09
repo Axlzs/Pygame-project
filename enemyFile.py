@@ -4,7 +4,6 @@ from static_classes import *
 from animations import *
 
 
-# Define the PLayer class
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, enemy_type, projectile_group, player):
         pygame.sprite.Sprite.__init__(self)

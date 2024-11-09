@@ -134,6 +134,32 @@ class Player(pygame.sprite.Sprite):
         else:
             self.shooting = False
 
+    def shoot(self,projectile_group):
+        current_time = pygame.time.get_ticks()
+        # Check if enough time has passed since the last shot
+        if current_time - self.last_shot_time >= self.shoot_cooldown:
+            self.last_shot_time = current_time
+
+            #getting player and the mouse position
+            recy = self.rect.centery
+            recx = self.rect.centerx
+            looking_at = pygame.mouse.get_pos()
+
+            angle = math.degrees(math.atan2(-(looking_at[1] - recy), looking_at[0] - recx))
+            # Determine direction based on angle
+            if -45 <= angle < 45:
+                self.direction = 'right'
+            elif 45 <= angle < 135:
+                self.direction = 'up'
+            elif 135 <= angle or angle < -135:
+                self.direction = 'left'
+            elif -135 <= angle < -45:
+                self.direction = 'down'
+            
+            #x, y, direction, damage, projectile_type
+            projectile = Projectile(recx, recy, looking_at, damage=10, projectile_type=1)
+            projectile_group.add(projectile)
+    
     def handle_motion(self):
         if self.shooting:
             self.start_animation = self.animations[f'shoot {self.direction}']
@@ -143,27 +169,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.start_animation = self.animations[f'stand {self.direction}'] 
 
-    def shoot(self,projectile_group):
-        current_time = pygame.time.get_ticks()
-        # Check if enough time has passed since the last shot
-        if current_time - self.last_shot_time >= self.shoot_cooldown:
-            self.last_shot_time = current_time
-            # Instantiate the projectile
-            recy = self.rect.centery
-            recx = self.rect.centerx
-            if self.direction == 'up':
-                recy -= self.arrow_offset
-            if self.direction == 'dowm':
-                recy += self.arrow_offset
-            if self.direction == 'left':
-                recy += self.scale*5
-                recx -= self.arrow_offset
-            if self.direction == 'right':
-                recy += self.scale*5
-                recx += self.arrow_offset
-            projectile = Projectile(recx, recy, self.direction, damage=10, projectile_type=1)
-            projectile_group.add(projectile)
-    
+ 
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':

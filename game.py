@@ -39,26 +39,39 @@ def draw_entities():
         pygame.draw.rect(screen, (255,0,0), offset_rect,2)
 
     for enemy in enemies:
+
         offset_rect = camera.apply(enemy.rect)
         screen.blit(enemy.image, offset_rect)
+    
     #mele hitbox 
-    melee_hitbox = player.get_melee_hitbox()
-    pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+    #melee_hitbox = player.get_melee_hitbox()
+    #pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+
+def manual_enemy_spawn(enemy_count):
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_e]: # Manualy spawn enemies
+        enemy_type = random.choice(list(ENEMY_DATA.keys()))
+        enemy_count +=1
+        enemy = Enemy(enemy_type, projectile_group, player)
+        enemies.add(enemy)
+    elif keys[pygame.K_k]: # Kill all enemies 
+        enemies.empty()
+
 
 #setting up game
 projectile_group = pygame.sprite.Group()
-player_type=2
+player_type=1
 player = Player(player_type, projectile_group)  # Pass the appropriate player type here
 camera = Camera()
 map = WorldMap()
 
 enemies = pygame.sprite.Group()
 enemy_count = 0
-for _ in range(30):
-    enemy_type = random.choice(list(ENEMY_DATA.keys()))
-    enemy_count +=1
-    enemy = Enemy(enemy_type, projectile_group, player)
-    enemies.add(enemy)
+#for _ in range(30):
+#    enemy_type = random.choice(list(ENEMY_DATA.keys()))
+#    enemy_count +=1
+#    enemy = Enemy(enemy_type, projectile_group, player)
+#    enemies.add(enemy)
 
 running = True
 while running:
@@ -72,6 +85,7 @@ while running:
     camera.update(player.rect)
     projectile_group.update()
     draw_entities()
+    manual_enemy_spawn(enemy_count)
         
     pygame.display.flip()
 
