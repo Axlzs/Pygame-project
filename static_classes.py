@@ -100,7 +100,7 @@ class Projectile(pygame.sprite.Sprite):
         return pygame.Vector2(vx, vy)
 
     def load_projectile_sheet(self, projectile_type, scale):
-        projectile_sheet = pygame.image.load(PROJECTILE_IMAGES[projectile_type]).convert_alpha()
+        projectile_sheet = pygame.image.load(PROJECTILE_DATA[projectile_type]['image']).convert_alpha()
         
         if scale != 1:
             projectile_width, projectile_height = projectile_sheet.get_size()
@@ -110,7 +110,7 @@ class Projectile(pygame.sprite.Sprite):
 
     def create_projectile_image(self, projectile_sheet, scale):
         # Extract a single frame to use as the base image
-        frame_width, frame_height = 48 * scale, 48 * scale
+        frame_width, frame_height = 48 * scale, 5 * scale
         return projectile_sheet.subsurface((0, 0, frame_width, frame_height))
 
     def update(self):

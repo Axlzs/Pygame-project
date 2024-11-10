@@ -51,11 +51,13 @@ class Enemy(pygame.sprite.Sprite):
         self.shoot_cooldown = PROJECTILE_COOLDOWN
         self.arrow_offset = 0
         self.arrow_offset = 10*self.scale
+        self.shoot_dist = ENEMY_DATA[1]['shoot dist']
 
         self.melee_damage = ENEMY_DATA[2]['damage']
         self.melee_range = ENEMY_DATA[2]['range'] * self.scale
         self.melee_cooldown = 500
         self.last_melee_time = 0
+        self.melee_attack_dist = ENEMY_DATA[2]['attack dist'] # When enemy stops moving and starts attacking 
 
 
     def load_sprite_sheet(self, enemy_type, scale):
@@ -140,7 +142,15 @@ class Enemy(pygame.sprite.Sprite):
             self.direction = 'right'
 
         # Handling movement - moving enemy
-        if dist > 0:
+        if self.type ==1 and dist <= self.shoot_dist:
+            self.motion = False
+            self.shooting = True
+        elif self.type ==2 and dist <= self.melee_attack_dist:
+            self.motion = False
+            self.shooting = True
+        else:
+            self.shooting = False
+            self.motion = True
             dx, dy = dx / dist, dy / dist
             self.rect.x += dx * SPEED
             self.rect.y += dy * SPEED
@@ -148,6 +158,10 @@ class Enemy(pygame.sprite.Sprite):
         # Calling animations 
         if self.shooting:
             self.start_animation = self.animations[f'shoot {self.direction}']
+            if self.type ==1:
+                self.shoot(self.projectile_group)
+            elif self.type ==2:
+                self.mele_attack()
         elif self.motion:
             self.start_animation = self.animations[f'walk {self.direction}']
         else:
@@ -158,20 +172,26 @@ class Enemy(pygame.sprite.Sprite):
         # Check if enough time has passed since the last shot
         if current_time - self.last_shot_time >= self.shoot_cooldown:
             self.last_shot_time = current_time
-            # Instantiate the projectile
+
+            #getting player and the mouse position
             recy = self.rect.centery
             recx = self.rect.centerx
-            if self.direction == 'up':
-                recy -= self.arrow_offset
-            if self.direction == 'dowm':
-                recy += self.arrow_offset
-            if self.direction == 'left':
-                recy += self.scale*5
-                recx -= self.arrow_offset
-            if self.direction == 'right':
-                recy += self.scale*5
-                recx += self.arrow_offset
-            projectile = Projectile(recx, recy, self.direction, damage=10, projectile_type=1)
+            targetx = self.player.rect.centerx
+            targety = self.player.rect.centery
+
+            angle = math.degrees(math.atan2(-(targety - recy), targetx - recx))
+            # Determine direction based on angle
+            if -45 <= angle < 45:
+                self.direction = 'right'
+            elif 45 <= angle < 135:
+                self.direction = 'up'
+            elif 135 <= angle or angle < -135:
+                self.direction = 'left'
+            elif -135 <= angle < -45:
+                self.direction = 'down'
+            
+            #x, y, direction, damage, projectile_type
+            projectile = Projectile(recx, recy, (targetx,targety), damage=10, projectile_type=1)
             projectile_group.add(projectile)
     
     def get_melee_hitbox(self):
