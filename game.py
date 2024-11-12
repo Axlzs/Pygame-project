@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Roguelike Game")
 
 clock = pygame.time.Clock()
-font = pygame.font.Font(None, 100)
+font = pygame.font.Font(None, 50)
 
 def draw_fps_counter():
     """
@@ -38,55 +38,76 @@ def draw_entities():
         #arrow hitbox
         pygame.draw.rect(screen, (255,0,0), offset_rect,2)
 
+    for projectile in enemy_projectile_group:
+        offset_rect = camera.apply(projectile.rect)
+        screen.blit(projectile.image, offset_rect)
+        #arrow hitbox
+        pygame.draw.rect(screen, (0,255,0), offset_rect,2)
+
     for enemy in enemies:
 
         offset_rect = camera.apply(enemy.rect)
         screen.blit(enemy.image, offset_rect)
+        melee_hitbox = enemy.get_melee_hitbox()
+        pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+        pygame.draw.rect(screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
     
     #mele hitbox 
-    #melee_hitbox = player.get_melee_hitbox()
-    #pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+    melee_hitbox = player.get_melee_hitbox()
+    pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+
 
 def manual_enemy_spawn(enemy_count):
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_e]: # Manualy spawn enemies
+    if keys[pygame.K_e]: # Manualy spawn enemies 
         enemy_type = random.choice(list(ENEMY_DATA.keys()))
         enemy_count +=1
-        enemy = Enemy(enemy_type, projectile_group, player)
+        enemy = Enemy(enemy_type, enemy_projectile_group, player)
         enemies.add(enemy)
     elif keys[pygame.K_k]: # Kill all enemies 
         enemies.empty()
 
 
+
 #setting up game
 projectile_group = pygame.sprite.Group()
-player_type=1
-player = Player(player_type, projectile_group)  # Pass the appropriate player type here
+enemy_projectile_group = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
+player_type=2
+player = Player(player_type, projectile_group, enemies)  # Pass the appropriate player type here
 camera = Camera()
 map = WorldMap()
 
-enemies = pygame.sprite.Group()
 enemy_count = 0
-#for _ in range(30):
-#    enemy_type = random.choice(list(ENEMY_DATA.key()))
-#    enemy_count +=1
-#    enemy = Enemy(enemy_type, projectile_group, player)
-#    enemies.add(enemy)
 
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    
-    draw_fps_counter()
+##############FUNCTIONS##############
     player.update()
     enemies.update()
     camera.update(player.rect)
     projectile_group.update()
+    enemy_projectile_group.update()             
     draw_entities()
+    draw_fps_counter() 
     manual_enemy_spawn(enemy_count)
-        
+    
+##############HANDLING#DAMAGE##############
+    for projectile in enemy_projectile_group:
+        projectile_hitbox=camera.apply(projectile.rect)
+        if player.hitbox.colliderect(projectile_hitbox):
+            player.take_damage(ENEMY_DATA[1]['damage'])
+
+    for projectile in projectile_group:
+        projectile_hitbox = camera.apply(projectile.rect)
+        for enemy in enemies:
+            enemy_hitbox = camera.apply(enemy.hitbox)
+            if enemy_hitbox.colliderect(projectile_hitbox):
+                enemy.take_damage(PLAYER_DATA[1]['damage'])        
+
     pygame.display.flip()
 
     clock.tick(FPS)

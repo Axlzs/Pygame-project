@@ -15,6 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.projectile_group = projectile_group
         self.sprite_sheet = self.load_sprite_sheet(enemy_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
+        self.camera = Camera()
         self.animations = {
             'walk down' : Animation(self.images['walk down'],COOLDOWNS['movement']),
             'walk left' : Animation(self.images['walk left'],COOLDOWNS['movement']),
@@ -26,10 +27,10 @@ class Enemy(pygame.sprite.Sprite):
             'stand right' : Animation(self.images['stand right'],COOLDOWNS['movement']),
             'stand up' : Animation(self.images['stand up'],COOLDOWNS['movement']),
 
-            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot']),
-            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot']),
-            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot']),
-            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot']),
+            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot animation']),
+            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot animation']),
+            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot animation']),
+            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot animation']),
 
             'death' : Animation(self.images['death'],COOLDOWNS['movement'])
         }
@@ -43,6 +44,11 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
         self.health = ENEMY_DATA[enemy_type]['health']
+        self.is_dying = False
+        self.death_start_time = 0
+        self.death_duration = 700
+        self.damage_cooldown = COOLDOWNS['damage']
+        self.last_damage_time = 0
         self.motion = False
         self.direction = 'down'
 
@@ -55,7 +61,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.melee_damage = ENEMY_DATA[2]['damage']
         self.melee_range = ENEMY_DATA[2]['range'] * self.scale
-        self.melee_cooldown = 500
+        self.melee_cooldown = MELEE_COOLDOWN
         self.last_melee_time = 0
         self.melee_attack_dist = ENEMY_DATA[2]['attack dist'] # When enemy stops moving and starts attacking 
 
@@ -113,6 +119,13 @@ class Enemy(pygame.sprite.Sprite):
             if x < square_top_left_x or x > square_bottom_right_x or y < square_top_left_y or y > square_bottom_right_y:
                 return (x, y)
 
+    def angle_to_player(self):
+        recy = self.rect.centery
+        recx = self.rect.centerx
+        targetx = self.player.rect.centerx
+        targety = self.player.rect.centery
+
+        return math.degrees(math.atan2(-(targety - recy), targetx - recx))
     def enemy_actions(self):
 
         self.motion = False
@@ -127,59 +140,62 @@ class Enemy(pygame.sprite.Sprite):
         else:
             SPEED = ENEMY_SPEED_LINEAR  # Use linear speed for straight movements
 
-        # Understanding which way should the enemy face
-        if dy < 0:
-            self.motion = True
-            self.direction = 'up'
-        else:
-            self.motion = True
-            self.direction = 'down'
-        if dx < 0:
-            self.motion = True
-            self.direction = 'left'
-        else:
-            self.motion = True
-            self.direction = 'right'
 
-        # Handling movement - moving enemy
-        if self.type ==1 and dist <= self.shoot_dist:
-            self.motion = False
-            self.shooting = True
-        elif self.type ==2 and dist <= self.melee_attack_dist:
-            self.motion = False
-            self.shooting = True
-        else:
-            self.shooting = False
-            self.motion = True
-            dx, dy = dx / dist, dy / dist
-            self.rect.x += dx * SPEED
-            self.rect.y += dy * SPEED
+        if self.is_dying == False:
+            # Understanding which way should the enemy face
+            angle = self.angle_to_player()
+            if -45 <= angle < 45:
+                self.direction = 'right'
+                self.motion = True
+            elif 45 <= angle < 135:
+                self.direction = 'up'
+                self.motion = True
+            elif 135 <= angle or angle < -135:
+                self.direction = 'left'
+                self.motion = True
+            elif -135 <= angle < -45:
+                self.direction = 'down'
+                self.motion = True
 
-        # Calling animations 
-        if self.shooting:
-            self.start_animation = self.animations[f'shoot {self.direction}']
-            if self.type ==1:
-                self.shoot(self.projectile_group)
-            elif self.type ==2:
-                self.mele_attack()
-        elif self.motion:
-            self.start_animation = self.animations[f'walk {self.direction}']
-        else:
-            self.start_animation = self.animations[f'stand {self.direction}']
+            # Handling movement - moving enemy
+            if self.type ==1 and dist <= self.shoot_dist:
+                self.motion = False
+                self.shooting = True
+            elif self.type ==2 and dist <= self.melee_attack_dist:
+                self.motion = False
+                self.shooting = True
+            else:
+                self.shooting = False
+                self.motion = True
+                dx, dy = dx / dist, dy / dist
+                self.rect.x += dx * SPEED
+                self.rect.y += dy * SPEED
 
+            # Calling animations 
+            if self.shooting:
+                self.start_animation = self.animations[f'shoot {self.direction}']
+                if self.type ==1:
+                    self.shoot(self.projectile_group)
+                elif self.type ==2:
+                    self.mele_attack()
+            elif self.motion:
+                self.start_animation = self.animations[f'walk {self.direction}']
+            else:
+                self.start_animation = self.animations[f'stand {self.direction}']
+        else:
+            self.start_animation = self.animations['death']
     def shoot(self,projectile_group):
         current_time = pygame.time.get_ticks()
         # Check if enough time has passed since the last shot
         if current_time - self.last_shot_time >= self.shoot_cooldown:
             self.last_shot_time = current_time
 
-            #getting player and the mouse position
             recy = self.rect.centery
             recx = self.rect.centerx
             targetx = self.player.rect.centerx
             targety = self.player.rect.centery
 
-            angle = math.degrees(math.atan2(-(targety - recy), targetx - recx))
+            angle = self.angle_to_player()
             # Determine direction based on angle
             if -45 <= angle < 45:
                 self.direction = 'right'
@@ -197,13 +213,13 @@ class Enemy(pygame.sprite.Sprite):
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':
-            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (7+self.scale), 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (14*self.scale), 2*self.melee_range, self.melee_range)
         elif self.direction == 'down':
             return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.bottom - (self.melee_range + self.scale), 2*self.melee_range, self.melee_range)
         elif self.direction == 'left':
-            return pygame.Rect(self.rect.left + (7*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.rect.left + (14*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
         elif self.direction == 'right':
-            return pygame.Rect(self.rect.right - (self.melee_range + (7*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.rect.right - (self.melee_range + (14*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
         
     def mele_attack(self):
         current_time = pygame.time.get_ticks()
@@ -212,16 +228,35 @@ class Enemy(pygame.sprite.Sprite):
             # Check for collisions with enemies
             melee_hitbox = self.get_melee_hitbox()
 
+            mele_range = self.camera.apply(melee_hitbox)
+            if mele_range.colliderect(self.player.hitbox):
+                self.player.take_damage(ENEMY_DATA[2]['damage'])
+
+
     def take_damage(self, amount):
-        self.health -= amount
-        if self.health <= 0:
-            self.start_animation = self.animations['death']
+        current_time = pygame.time.get_ticks()
+        if self.is_dying == False:
+            if current_time - self.last_damage_time >= self.damage_cooldown:
+                self.last_damage_time = current_time
+                self.health -= amount
+                if self.health <= 0:
+                    self.start_death_sequence()
+        else: pass
+
+    def start_death_sequence(self):
+        self.is_dying = True
+        self.death_start_time = pygame.time.get_ticks()
 
     def update(self):
-        #Get image -> determine correct action -> add animation to the action 
-        self.image = self.start_animation.get_current_frame()
+    #UPDATES STUFF
+    #CHECKS IF PLAYER IS DEAD
+    #ALIGNS HITBOXES
+        if self.is_dying:
+            self.image = self.start_animation.play_once()
+            if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
+                self.kill()
+        else:
+            #Get image -> determine correct action -> add animation to the action 
+            self.image = self.start_animation.get_current_frame()
         self.enemy_actions()
-        #animation changes
-        #player movement
-        #probably player attacks
-        #also probably death as well
+        self.hitbox.center = self.rect.center  # Align hitbox and sprite position

@@ -6,14 +6,16 @@ from animations import *
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_type,projectile_group):
+    def __init__(self, player_type,projectile_group, enemies):
         self.type = player_type
         self.scale = PLAYER_SCALE
         self.sprite_size = PLAYER_DATA[player_type]['sprite']
         self.player_class = PLAYER_DATA[player_type]['class']
         self.projectile_group = projectile_group
+        self.enemies = enemies
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
+        self.camera = Camera()
         self.animations = {
             'walk down' : Animation(self.images['walk down'],COOLDOWNS['movement']),
             'walk left' : Animation(self.images['walk left'],COOLDOWNS['movement']),
@@ -25,10 +27,10 @@ class Player(pygame.sprite.Sprite):
             'stand right' : Animation(self.images['stand right'],COOLDOWNS['movement']),
             'stand up' : Animation(self.images['stand up'],COOLDOWNS['movement']),
 
-            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot']),
-            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot']),
-            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot']),
-            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot']),
+            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot animation']),
+            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot animation']),
+            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot animation']),
+            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot animation']),
 
             'death' : Animation(self.images['death'],COOLDOWNS['movement'])
         }
@@ -42,6 +44,11 @@ class Player(pygame.sprite.Sprite):
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
         self.health = PLAYER_DATA[player_type]['health']
+        self.is_dying = False
+        self.death_start_time = 0
+        self.death_duration = 700
+        self.damage_cooldown = COOLDOWNS['damage']
+        self.last_damage_time = 0
         self.motion = False
         self.direction = 'down'
 
@@ -53,7 +60,7 @@ class Player(pygame.sprite.Sprite):
 
         self.melee_damage = PLAYER_DATA[2]['damage']
         self.melee_range = PLAYER_DATA[2]['range'] * self.scale
-        self.melee_cooldown = 500
+        self.melee_cooldown = MELEE_COOLDOWN
         self.last_melee_time = 0
 
 
@@ -105,34 +112,44 @@ class Player(pygame.sprite.Sprite):
             SPEED = SPEED_DIAGONAL  # Reduce SPEED for diagonal movement
         else:
             SPEED = SPEED_LINEAR  # Adjust SPEED for non-diagonal movement
+        if self.is_dying == False:
+            if keys[pygame.K_w]:
+                self.rect.y -= SPEED
+                self.motion = True
+                self.direction = 'up'
+            if keys[pygame.K_a]:
+                self.rect.x -= SPEED
+                self.motion = True
+                self.direction = 'left'
+            if keys[pygame.K_s]:
+                self.rect.y += SPEED
+                self.motion = True
+                self.direction = 'down'
+            if keys[pygame.K_d]:
+                self.rect.x += SPEED
+                self.motion = True
+                self.direction = 'right'
 
-        if keys[pygame.K_w]:
-            self.rect.y -= SPEED
-            self.motion = True
-            self.direction = 'up'
-        if keys[pygame.K_a]:
-            self.rect.x -= SPEED
-            self.motion = True
-            self.direction = 'left'
-        if keys[pygame.K_s]:
-            self.rect.y += SPEED
-            self.motion = True
-            self.direction = 'down'
-        if keys[pygame.K_d]:
-            self.rect.x += SPEED
-            self.motion = True
-            self.direction = 'right'
-        
-        if keys[pygame.K_SPACE] and self.motion == False:
-            self.shooting = True
-            if self.type ==1:
-                self.shoot(self.projectile_group)
-            elif self.type ==2:
-                self.mele_attack()
+            #This handles shooting - detects input->Determines the player type and weather the player is moving
+            if keys[pygame.K_SPACE] and self.motion == False:
+                self.shooting = True
+                if self.type ==1:
+                    self.shoot(self.projectile_group)
+                elif self.type ==2:
+                    self.mele_attack()
+                else:
+                    print("sum tin wong")
             else:
-                print("sum tin wong")
+            
+                self.shooting = False
+            if self.shooting:
+                self.start_animation = self.animations[f'shoot {self.direction}']
+            elif self.motion:
+                self.start_animation = self.animations[f'walk {self.direction}']
+            else:
+                self.start_animation = self.animations[f'stand {self.direction}'] 
         else:
-            self.shooting = False
+            self.start_animation = self.animations['death']
 
     def shoot(self,projectile_group):
         current_time = pygame.time.get_ticks()
@@ -143,7 +160,9 @@ class Player(pygame.sprite.Sprite):
             #getting player and the mouse position
             recy = self.rect.centery
             recx = self.rect.centerx
-            looking_at = pygame.mouse.get_pos()
+            self.camera.update(self.rect)
+            mouse_pos = pygame.mouse.get_pos()
+            looking_at = pygame.Vector2(mouse_pos[0] + self.camera.offset.x, mouse_pos[1] + self.camera.offset.y)
 
             angle = math.degrees(math.atan2(-(looking_at[1] - recy), looking_at[0] - recx))
             # Determine direction based on angle
@@ -159,16 +178,6 @@ class Player(pygame.sprite.Sprite):
             #x, y, direction, damage, projectile_type
             projectile = Projectile(recx, recy, looking_at, damage=10, projectile_type=1)
             projectile_group.add(projectile)
-    
-    def handle_motion(self):
-        if self.shooting:
-            self.start_animation = self.animations[f'shoot {self.direction}']
-
-        elif self.motion:
-            self.start_animation = self.animations[f'walk {self.direction}']
-        else:
-            self.start_animation = self.animations[f'stand {self.direction}'] 
-
  
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
@@ -188,16 +197,33 @@ class Player(pygame.sprite.Sprite):
             # Check for collisions with enemies
             melee_hitbox = self.get_melee_hitbox()
 
+            for enemy in self.enemies:
+                if melee_hitbox.colliderect(enemy.hitbox):
+                    enemy.take_damage(PLAYER_DATA[2]['damage'])
+
     def take_damage(self, amount):
-        self.health -= amount
-        if self.health <= 0:
-            self.start_animation = self.animations['death']
+        current_time = pygame.time.get_ticks()
+        if self.is_dying == False:
+            if current_time - self.last_damage_time >= self.damage_cooldown:
+                self.last_damage_time = current_time
+                self.health -= amount
+                if self.health <= 0:
+                    self.start_death_sequence()
+        else: pass
+
+    def start_death_sequence(self):
+        self.is_dying = True
+        self.death_start_time = pygame.time.get_ticks()
 
     def update(self):
-        #Get image -> determine correct action -> add animation to the action 
-        self.image = self.start_animation.get_current_frame()
+        if self.is_dying:
+            self.image = self.start_animation.play_once()
+            if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
+                self.kill()  # Pretty self explanatory
+        else:
+            #Get image -> determine correct action -> add animation to the action 
+            self.image = self.start_animation.get_current_frame()
         self.handle_movement()
-        self.handle_motion()
         #animation changes
         #player movement
         #probably player attacks

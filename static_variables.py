@@ -18,8 +18,8 @@ ENEMY_SPEED_DIAGONAL = 1.414
 
 
 ENEMY_DATA = {
-    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':1,'shoot dist':300},
-    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':15,'attack dist':40,'range':20}
+    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':0,'shoot dist':300},
+    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':0,'attack dist':40,'range':10}
 }
 ################################
 
@@ -29,16 +29,13 @@ SPEED_DIAGONAL = 2.828 # Coefficient 0.707 in regards to linear SPEEDSPEED = 4
 PLAYER_SCALE = 2 # Scale player
 
 PLAYER_DATA = {
-    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100},
-    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':15,'range':20},
+    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':100},
+    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':100,'range':20},
     3: ''
 }
-
-HITBOX_WIDTH = 16
-HITBOX_HEIGHT = 28 
-COOLDOWNS = {'movement':100,'shoot':100}
-PLAYER_DAMAGE = {1: 0.8, 2: 0.6, 3: 1}
-PLAYER_HIT_EVENTS = {1: pygame.USEREVENT + 5, 2: pygame.USEREVENT + 6}
+COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
+PROJECTILE_COOLDOWN = COOLDOWNS['shoot animation'] *6
+MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5
 
 ##########ATTACKS##############
 PROJECTILE_DATA = {
@@ -46,7 +43,6 @@ PROJECTILE_DATA = {
     2:''
 }
 PROJECTILE_SPEED = 5
-PROJECTILE_COOLDOWN = 600
 ###############################
 
 ###########SOME#COLOURS###########

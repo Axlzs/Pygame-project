@@ -27,6 +27,16 @@ class Animation:
                 
             self.last_update = current_time  # Update the last update time
         return self.frames[self.frame_index]  # Return the current frame based on frame_index
+    
+    def play_once(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_update > self.cooldown:
+            if self.frame_index < len(self.frames) - 1:
+                self.frame_index += 1  # Advance frame until the last one
+            else:
+                self.is_playing = False  # Stop animation if it reaches the end without looping
+            self.last_update = current_time
+        return self.frames[self.frame_index]
 
     def is_completed(self):
         return self.frame_index == len(self.frames) - 1 and not self.loop
