@@ -1,5 +1,6 @@
 import pygame
-import entry  # Game code module
+from static_variables import *
+import game  # Game code module
 
 # Function to load sounds
 def load_sounds():
@@ -37,7 +38,6 @@ def main_menu():
     Handles button animations like hovers and presses in the main menu.
     """
     pygame.init()
-    WIDTH, HEIGHT = 1000, 800
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     icon = pygame.image.load('images/icon.png')
     pygame.display.set_icon(icon)
@@ -110,7 +110,7 @@ def main_menu():
                                 pygame.mixer.Channel(6).play(game_music, loops=-1)
                                 pygame.time.delay(100)
                                 running = False
-                                entry.start_game()
+                                game.start_game()
                             elif button_name == "info":
                                 screen.blit(info_buttons[current_button_images["info"]], button_rects["info"])
                                 pygame.display.update()

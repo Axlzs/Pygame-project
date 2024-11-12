@@ -45,6 +45,7 @@ class Player(pygame.sprite.Sprite):
 
         self.health = PLAYER_DATA[player_type]['health']
         self.is_dying = False
+        self.officially_dead = False
         self.death_start_time = 0
         self.death_duration = 700
         self.damage_cooldown = COOLDOWNS['damage']
@@ -129,6 +130,10 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x += SPEED
                 self.motion = True
                 self.direction = 'right'
+
+            if keys[pygame.K_l]:
+                self.start_death_sequence()
+                self.health = 0
 
             #This handles shooting - detects input->Determines the player type and weather the player is moving
             if keys[pygame.K_SPACE] and self.motion == False:
@@ -219,12 +224,8 @@ class Player(pygame.sprite.Sprite):
         if self.is_dying:
             self.image = self.start_animation.play_once()
             if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
-                self.kill()  # Pretty self explanatory
+                self.officially_dead = True
         else:
             #Get image -> determine correct action -> add animation to the action 
             self.image = self.start_animation.get_current_frame()
         self.handle_movement()
-        #animation changes
-        #player movement
-        #probably player attacks
-        #also probably death as well
