@@ -2,6 +2,7 @@ import pygame
 from static_variables import *
 from static_classes import *
 from animations import *
+from collections import deque
 
 
 # Define the PLayer class
@@ -13,6 +14,9 @@ class Player(pygame.sprite.Sprite):
         self.player_class = PLAYER_DATA[player_type]['class']
         self.projectile_group = projectile_group
         self.enemies = enemies
+        self.enemies_killed = 0
+        self.maxXp = 100
+        self.level = 1
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.camera = Camera()
@@ -35,6 +39,8 @@ class Player(pygame.sprite.Sprite):
             'death' : Animation(self.images['death'],COOLDOWNS['movement'])
         }
         self.start_animation = self.animations['stand down']
+        self.animation_queue = deque()
+        self.is_animating = False
         self.image = self.start_animation.get_current_frame()
 
         self.rect = self.image.get_rect()
@@ -43,7 +49,12 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, PLAYER_DATA[player_type]['hitbox_width']*PLAYER_SCALE, PLAYER_DATA[player_type]['hitbox_height']*PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
-        self.health = PLAYER_DATA[player_type]['health']
+        self.health = PLAYER_DATA[self.type]['health']
+        self.target_health = self.health
+        self.maxhealth = self.health
+        self.health_bar_length = self.maxhealth* PLAYER_SCALE * PLAYER_SCALE# sprite means the length of one player frame 
+        self.health_ratio = self.maxhealth/self.health_bar_length
+        self.health_change_speed = 1
         self.is_dying = False
         self.officially_dead = False
         self.death_start_time = 0
@@ -107,61 +118,61 @@ class Player(pygame.sprite.Sprite):
     def handle_movement(self):
         keys = pygame.key.get_pressed()
         self.motion = False
-
-        # Adjust SPEED based on linear or diagonal movement
-        if (keys[pygame.K_w] or keys[pygame.K_s]) and (keys[pygame.K_a] or keys[pygame.K_d]):
-            SPEED = SPEED_DIAGONAL  # Reduce SPEED for diagonal movement
+        if self.is_animating:  # Block movement if an attack is playing
+            return
         else:
-            SPEED = SPEED_LINEAR  # Adjust SPEED for non-diagonal movement
-        if self.is_dying == False:
-            if keys[pygame.K_w]:
-                self.rect.y -= SPEED
-                self.motion = True
-                self.direction = 'up'
-            if keys[pygame.K_a]:
-                self.rect.x -= SPEED
-                self.motion = True
-                self.direction = 'left'
-            if keys[pygame.K_s]:
-                self.rect.y += SPEED
-                self.motion = True
-                self.direction = 'down'
-            if keys[pygame.K_d]:
-                self.rect.x += SPEED
-                self.motion = True
-                self.direction = 'right'
+            # Adjust SPEED based on linear or diagonal movement
+            if (keys[pygame.K_w] or keys[pygame.K_s]) and (keys[pygame.K_a] or keys[pygame.K_d]):
+                SPEED = SPEED_DIAGONAL  # Reduce SPEED for diagonal movement
+            else:
+                SPEED = SPEED_LINEAR  # Adjust SPEED for non-diagonal movement
 
-            if keys[pygame.K_l]:
-                self.start_death_sequence()
-                self.health = 0
+            if self.is_dying == False:
+                if keys[pygame.K_w]:
+                    self.rect.y -= SPEED
+                    self.motion = True
+                    self.direction = 'up'
+                if keys[pygame.K_a]:
+                    self.rect.x -= SPEED
+                    self.motion = True
+                    self.direction = 'left'
+                if keys[pygame.K_s]:
+                    self.rect.y += SPEED
+                    self.motion = True
+                    self.direction = 'down'
+                if keys[pygame.K_d]:
+                    self.rect.x += SPEED
+                    self.motion = True
+                    self.direction = 'right'
 
-            #This handles shooting - detects input->Determines the player type and weather the player is moving
-            if keys[pygame.K_SPACE] and self.motion == False:
-                self.shooting = True
-                if self.type ==1:
-                    self.shoot(self.projectile_group)
-                elif self.type ==2:
-                    self.mele_attack()
+                if keys[pygame.K_l]:
+                    self.start_death_sequence()
+                    self.health = 0
+                if keys[pygame.K_RIGHT]:
+                    self.heal(10)
+                if keys[pygame.K_LEFT]:
+                    self.take_damage(25)
+
+                #This handles shooting - detects input->Determines the player type and weather the player is moving
+                if keys[pygame.K_SPACE]:
+                    self.motion == False
+                    self.shooting = True
+                    if self.type ==1:
+                        self.shoot(self.projectile_group)
+                    elif self.type ==2:
+                        self.mele_attack()
+                    else:
+                        print("sum tin wong")
                 else:
-                    print("sum tin wong")
+                    self.shooting = False 
             else:
-            
-                self.shooting = False
-            if self.shooting:
-                self.start_animation = self.animations[f'shoot {self.direction}']
-            elif self.motion:
-                self.start_animation = self.animations[f'walk {self.direction}']
-            else:
-                self.start_animation = self.animations[f'stand {self.direction}'] 
-        else:
-            self.start_animation = self.animations['death']
+                pass
 
     def shoot(self,projectile_group):
         current_time = pygame.time.get_ticks()
         # Check if enough time has passed since the last shot
         if current_time - self.last_shot_time >= self.shoot_cooldown:
-            self.last_shot_time = current_time
-
+            
             #getting player and the mouse position
             recy = self.rect.centery
             recx = self.rect.centerx
@@ -179,7 +190,10 @@ class Player(pygame.sprite.Sprite):
                 self.direction = 'left'
             elif -135 <= angle < -45:
                 self.direction = 'down'
-            
+
+            self.animation_queue.append(f'shoot {self.direction}')
+            self.is_animating = True
+            self.last_shot_time = current_time
             #x, y, direction, damage, projectile_type
             projectile = Projectile(recx, recy, looking_at, damage=10, projectile_type=1)
             projectile_group.add(projectile)
@@ -199,33 +213,76 @@ class Player(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_melee_time >= self.melee_cooldown:
             self.last_melee_time = current_time
+
+            self.animation_queue.append(f'shoot {self.direction}')
+            self.is_animating = True
+
             # Check for collisions with enemies
             melee_hitbox = self.get_melee_hitbox()
-
-            for enemy in self.enemies:
-                if melee_hitbox.colliderect(enemy.hitbox):
-                    enemy.take_damage(PLAYER_DATA[2]['damage'])
+            if self.last_melee_time == 0:
+                pass
+            else:
+                for enemy in self.enemies:
+                    if melee_hitbox.colliderect(enemy.hitbox):
+                        enemy.take_damage(PLAYER_DATA[2]['damage'])
 
     def take_damage(self, amount):
         current_time = pygame.time.get_ticks()
         if self.is_dying == False:
             if current_time - self.last_damage_time >= self.damage_cooldown:
                 self.last_damage_time = current_time
-                self.health -= amount
-                if self.health <= 0:
+                self.target_health -= amount
+                if self.target_health <= 0:
                     self.start_death_sequence()
+                    self.target_health = 0
         else: pass
+    
+    def heal(self, amount):
+        if self.target_health < self.maxhealth:
+            self.target_health = min(self.target_health + amount, self.maxhealth)
 
     def start_death_sequence(self):
         self.is_dying = True
         self.death_start_time = pygame.time.get_ticks()
 
+    def update_projectile_attacks(self,projectile_group):
+        for projectile in projectile_group:
+            projectile_hitbox = self.camera.apply(projectile.rect)
+            for enemy in self.enemies:
+                enemy_hitbox = self.camera.apply(enemy.hitbox)
+                if enemy_hitbox.colliderect(projectile_hitbox):
+                    enemy.take_damage(PLAYER_DATA[1]['damage'])
+
+    def add_to_killed_enemies(self):
+        self.enemies_killed+=1
+
     def update(self):
+        # Handle queued animations
+        if self.animation_queue:
+            animation_name = self.animation_queue[0]  # Peek at the front of the queue
+            self.start_animation = self.animations[animation_name]
+            self.image = self.start_animation.play_once()
+
+            # If the animation is done, remove it from the queue
+            if self.start_animation.is_completed():
+                self.start_animation.reset() # Sets the animation to the starting frame
+                self.animation_queue.popleft()
+                self.is_animating = False  # Reset to allow new actions
+
+        # If no animations are queued, proceed with normal movement or idle animations
+        elif not self.is_animating:
+            self.handle_movement()
+            if self.motion:
+                self.start_animation = self.animations[f'walk {self.direction}']
+            else:
+                self.start_animation = self.animations[f'stand {self.direction}']
+            self.image = self.start_animation.get_current_frame()
+
+        # Handle player death
         if self.is_dying:
+            self.start_animation = self.animations['death']
             self.image = self.start_animation.play_once()
             if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
                 self.officially_dead = True
-        else:
-            #Get image -> determine correct action -> add animation to the action 
-            self.image = self.start_animation.get_current_frame()
-        self.handle_movement()
+        
+        self.update_projectile_attacks(self.projectile_group)

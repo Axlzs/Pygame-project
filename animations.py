@@ -13,8 +13,8 @@ class Animation:
         self.loop = True # Some animations need to run only once, others more than once
 
     def get_current_frame(self):
-        # print("i try")
         # Returns the current frame
+        self.loop = True
         if not self.is_playing:
             return self.frames[self.frame_index]  # Return the current frame instead of the whole list
         current_time = pygame.time.get_ticks()
@@ -29,6 +29,7 @@ class Animation:
         return self.frames[self.frame_index]  # Return the current frame based on frame_index
     
     def play_once(self):
+        self.loop = False
         current_time = pygame.time.get_ticks()
         if current_time - self.last_update > self.cooldown:
             if self.frame_index < len(self.frames) - 1:

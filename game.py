@@ -22,6 +22,7 @@ def load_game_over_assets():
     start_sound.set_volume(0.1)
     backquit_sound.set_volume(0.1)
 
+
 def initialize_game():
     global screen,clock,font
     pygame.init()
@@ -30,7 +31,7 @@ def initialize_game():
     pygame.display.set_caption("Roguelike Game")
 
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 50)
+    font = pygame.font.Font(None, 20)
     
     load_game_over_assets()
 
@@ -38,15 +39,13 @@ def game_over_screen():
     """
     Displays the game over screen with interactive buttons.
     """
-    global running, score
     mainmenu_rect = pygame.Rect((WIDTH // 2 + 50, HEIGHT // 2 + 280), (300, 100))
     restart_rect = pygame.Rect((WIDTH // 2 - 350, HEIGHT // 2 + 280), (250, 100))
-    score =1 
     while True:
         screen.blit(gameover_img, (0, 0))
 
         font = pygame.font.Font(None, 100)
-        score_text = font.render(f"{int(score)}", True, WHITE)
+        score_text = font.render(f"{int(player.enemies_killed)}", True, WHITE)
         screen.blit(score_text, (WIDTH // 2 + 40, HEIGHT // 2 + 135))
 
         mouse_pos = pygame.mouse.get_pos()
@@ -98,7 +97,7 @@ def draw_fps_counter():
     the specified font and displays it at the top-left corner of the game screendow.
     """
     fps_text = font.render(f"FPS: {int(clock.get_fps())}", True, WHITE)
-    screen.blit(fps_text, (10, 10))
+    screen.blit(fps_text, (WIDTH-50, 10))
 
 def draw_entities():
     #map stuff
@@ -130,10 +129,47 @@ def draw_entities():
         pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
         pygame.draw.rect(screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
     
-    #mele hitbox 
-    melee_hitbox = player.get_melee_hitbox()
-    pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+    #mele hitbox
+    if player.type==2:
+        melee_hitbox = player.get_melee_hitbox()
+        pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
 
+def player_healthbar_activate(player):
+    transition_width = 0 # This makes the bar initally invisible 
+    transition_colour = (255,0,0)
+
+    #healing
+    if player.health < player.target_health:
+        player.health += player.health_change_speed
+        transition_width = int((player.target_health-player.health)/player.health_ratio)
+        transition_colour = (0,255,0)
+
+    #taking damage
+    if player.health > player.target_health:
+        player.health -= player.health_change_speed
+        transition_width = int((player.target_health-player.health)/player.health_ratio)
+        transition_colour = (255,255,0)
+
+    health_bar_rect = pygame.Rect(10,10,player.health/player.health_ratio,10)
+    transition_bar_rect = pygame.Rect(health_bar_rect.right,10,transition_width,10)
+
+    pygame.draw.rect(screen,transition_colour,transition_bar_rect)
+    pygame.draw.rect(screen,(255,0,0),health_bar_rect)
+    pygame.draw.rect(screen,(255,255,255),(10,10,player.health_bar_length,10),2)
+
+def xp_bar(player):
+    pygame.draw.rect(screen, (0,0,255),(10,21,player.enemies_killed,10))
+    pygame.draw.rect(screen, (255,255,255),(10,21,100*PLAYER_SCALE,10),2)
+
+def enemy_healthbar_activate(enemy):
+    offset_rect = camera.apply(enemy.hitbox)
+    if enemy.type ==1:
+        pygame.draw.rect(screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,10))
+        pygame.draw.rect(screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,10),1)
+
+    if enemy.type ==2:
+        pygame.draw.rect(screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,10))
+        pygame.draw.rect(screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,10),1)
 
 def manual_enemy_spawn(enemy_count):
     keys = pygame.key.get_pressed()
@@ -151,7 +187,7 @@ def main_loop():
     projectile_group = pygame.sprite.Group()
     enemy_projectile_group = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
-    player_type=2
+    player_type=1
     player = Player(player_type, projectile_group, enemies)  # Pass the appropriate player type here
     camera = Camera()
     map = WorldMap()
@@ -172,19 +208,15 @@ def main_loop():
         draw_entities()
         draw_fps_counter() 
         manual_enemy_spawn(enemy_count)
-
+        player_healthbar_activate(player)
+        xp_bar(player)
+        for enemy in enemies:
+            enemy_healthbar_activate(enemy)
     ##############HANDLING#DAMAGE##############
         for projectile in enemy_projectile_group:
             projectile_hitbox=camera.apply(projectile.rect)
             if player.hitbox.colliderect(projectile_hitbox):
-                player.take_damage(ENEMY_DATA[1]['damage'])
-
-        for projectile in projectile_group:
-            projectile_hitbox = camera.apply(projectile.rect)
-            for enemy in enemies:
-                enemy_hitbox = camera.apply(enemy.hitbox)
-                if enemy_hitbox.colliderect(projectile_hitbox):
-                    enemy.take_damage(PLAYER_DATA[1]['damage'])        
+                player.take_damage(ENEMY_DATA[1]['damage'])     
 
         if player.officially_dead:
             game_over_screen()

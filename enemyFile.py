@@ -43,7 +43,10 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, ENEMY_DATA[enemy_type]['hitbox_width']*PLAYER_SCALE, ENEMY_DATA[enemy_type]['hitbox_height']*PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
-        self.health = ENEMY_DATA[enemy_type]['health']
+        self.health = ENEMY_DATA[self.type]['health']
+        self.maxhealth = ENEMY_DATA[self.type]['health']
+        self.health_bar_length = 20* PLAYER_SCALE# sprite means the length of one player frame 
+        self.health_ratio = self.maxhealth/self.health_bar_length
         self.is_dying = False
         self.death_start_time = 0
         self.death_duration = 700
@@ -54,7 +57,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.shooting = False
         self.last_shot_time = 0
-        self.shoot_cooldown = PROJECTILE_COOLDOWN
+        self.shoot_cooldown = ENEMY_PROJECTILE_COOLDOWN
         self.arrow_offset = 0
         self.arrow_offset = 10*self.scale
         self.shoot_dist = ENEMY_DATA[1]['shoot dist']
@@ -220,7 +223,7 @@ class Enemy(pygame.sprite.Sprite):
             return pygame.Rect(self.rect.left + (14*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
         elif self.direction == 'right':
             return pygame.Rect(self.rect.right - (self.melee_range + (14*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
-        
+
     def mele_attack(self):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_melee_time >= self.melee_cooldown:
@@ -255,6 +258,7 @@ class Enemy(pygame.sprite.Sprite):
             self.image = self.start_animation.play_once()
             if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
                 self.kill()
+                self.player.add_to_killed_enemies()
         else:
             #Get image -> determine correct action -> add animation to the action 
             self.image = self.start_animation.get_current_frame()

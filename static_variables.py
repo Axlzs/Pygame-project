@@ -16,9 +16,10 @@ ENEMY_SPAWN_DISTANCE = 200 # How far does the enemy spawn form the player
 ENEMY_SPEED_LINEAR = 2
 ENEMY_SPEED_DIAGONAL = 1.414
 ENEMY_DATA = {
-    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':0,'shoot dist':300},
-    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':0,'attack dist':40,'range':10}
+    1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':20,'damage':10,'shoot dist':300},
+    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':20,'damage':12,'attack dist':40,'range':10}
 }
+ENEMY_PROJECTILE_COOLDOWN = 1000
 ################################
 
 #############PLAYER#############
@@ -31,8 +32,9 @@ PLAYER_DATA = {
     3: ''
 }
 COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
-PROJECTILE_COOLDOWN = COOLDOWNS['shoot animation'] *6
-MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5
+PROJECTILE_COOLDOWN = 300
+MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5 #500
+
 
 ##########ATTACKS##############
 PROJECTILE_DATA = {
