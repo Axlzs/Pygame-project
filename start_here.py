@@ -38,7 +38,6 @@ def main_menu():
     Handles button animations like hovers and presses in the main menu.
     """
     pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     icon = pygame.image.load('images/icon.png')
     pygame.display.set_icon(icon)
     pygame.display.set_caption("IKONIKS")

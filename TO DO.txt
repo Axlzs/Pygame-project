@@ -1,0 +1,38 @@
+
+[+]starting resolution 
+[-]resolution settings
+[-]choice for fullscreen and windowed
+[-]a way to save the resolution for next time 
+
+[-]Upgrade screen
+[-]Pause screen
+
+[-]Get consistent sprites
+  [~]animation class upgrade 
+[+]Start screen
+[+]Score system
+
+[-]make mele usable
+  [+]deflect arrows - problem - the hitbox appears for a very brief period 
+  [-]attack while walking (we have animations for that)
+    [-]remake enemy class again 
+[-]think about autoaim 
+[-]think about game scaling 
+[-]think about game difficulty
+[-]think about gameplay loop
+[-]think about gamemodes
+[-]special powers
+  [-]circular melee attack 
+  [-]arrow rain or some shit 
+
+[+]deflect arrows - problem - the hitbox appears for a very brief period
+[+]Start screen
+[+]starting resolution 
+[+]Score system
+[+]understand resolution stuff
+[+]stuff now adapts to different resolutions
+[+]found the button pack used
+[+]proper xp bar
+[+]levels are displayed now 
+[+]leveling up works/ scale needs some work 
+[+]new font added 

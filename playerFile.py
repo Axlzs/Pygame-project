@@ -7,16 +7,12 @@ from collections import deque
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_type,projectile_group, enemies):
+    def __init__(self, player_type,projectile_group, enemy_projectile_group, enemies):
         self.type = player_type
         self.scale = PLAYER_SCALE
         self.sprite_size = PLAYER_DATA[player_type]['sprite']
         self.player_class = PLAYER_DATA[player_type]['class']
         self.projectile_group = projectile_group
-        self.enemies = enemies
-        self.enemies_killed = 0
-        self.maxXp = 100
-        self.level = 1
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.camera = Camera()
@@ -49,6 +45,15 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, PLAYER_DATA[player_type]['hitbox_width']*PLAYER_SCALE, PLAYER_DATA[player_type]['hitbox_height']*PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
+        self.enemies = enemies
+        self.total_enemies_killed = 0
+        self.enemies_killed_for_lvl =0
+        self.max_xp = STARTING_XP
+        self.xp_scale = XP_SCALE
+        self.xp_bar_length = 100*PLAYER_SCALE
+        self.xp_bar_ratio = self.max_xp/self.xp_bar_length
+        self.level = 1
+
         self.health = PLAYER_DATA[self.type]['health']
         self.target_health = self.health
         self.maxhealth = self.health
@@ -64,6 +69,7 @@ class Player(pygame.sprite.Sprite):
         self.motion = False
         self.direction = 'down'
 
+        self.enemy_projectile_group = enemy_projectile_group
         self.shooting = False
         self.last_shot_time = 0
         self.shoot_cooldown = PROJECTILE_COOLDOWN
@@ -225,6 +231,10 @@ class Player(pygame.sprite.Sprite):
                 for enemy in self.enemies:
                     if melee_hitbox.colliderect(enemy.hitbox):
                         enemy.take_damage(PLAYER_DATA[2]['damage'])
+                for projectile in self.enemy_projectile_group:
+                    if melee_hitbox.colliderect(projectile.rect):
+                        projectile.kill()
+
 
     def take_damage(self, amount):
         current_time = pygame.time.get_ticks()
@@ -254,7 +264,13 @@ class Player(pygame.sprite.Sprite):
                     enemy.take_damage(PLAYER_DATA[1]['damage'])
 
     def add_to_killed_enemies(self):
-        self.enemies_killed+=1
+        self.total_enemies_killed+=1
+        self.enemies_killed_for_lvl+=1
+        if self.enemies_killed_for_lvl >= self.max_xp:
+            self.enemies_killed_for_lvl = 0
+            self.level+=1
+            self.max_xp += int(math.log(self.max_xp,2))
+            self.xp_bar_ratio = self.max_xp/self.xp_bar_length
 
     def update(self):
         # Handle queued animations

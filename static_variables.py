@@ -1,8 +1,9 @@
 import pygame 
 
-WIDTH, HEIGHT = 1000, 700
 BACKGROUND_WIDTH, BACKGROUND_HEIGHT = 100, 100 # Black background size (UNUSED!!)
 FPS = 60 # Framerate value for game
+screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+WIDTH, HEIGHT = screen.get_size()
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 
 ############MAP_DATA############
@@ -12,12 +13,13 @@ BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each 
 
 #############ENEMY#############
 ENEMY_SPAWN_AREA = 200 # Density - distance between inner spawn circle and outer spawn circe 
-ENEMY_SPAWN_DISTANCE = 200 # How far does the enemy spawn form the player
+ENEMY_SPAWN_DISTANCE = 250 # How far does the enemy spawn form the player
 ENEMY_SPEED_LINEAR = 2
+ENEMY_SPAWN_COOLDOWN = 500
 ENEMY_SPEED_DIAGONAL = 1.414
 ENEMY_DATA = {
     1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':20,'damage':10,'shoot dist':300},
-    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':20,'damage':12,'attack dist':40,'range':10}
+    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':20,'damage':10,'attack dist':40,'range':10}
 }
 ENEMY_PROJECTILE_COOLDOWN = 1000
 ################################
@@ -26,6 +28,8 @@ ENEMY_PROJECTILE_COOLDOWN = 1000
 SPEED_LINEAR = 4
 SPEED_DIAGONAL = 2.828 # Coefficient 0.707 in regards to linear SPEEDSPEED = 4
 PLAYER_SCALE = 2 # Scale player
+XP_SCALE = 1.25
+STARTING_XP = 4
 PLAYER_DATA = {
     1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':100},
     2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':100,'range':20},

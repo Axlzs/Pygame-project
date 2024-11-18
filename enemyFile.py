@@ -243,6 +243,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.last_damage_time = current_time
                 self.health -= amount
                 if self.health <= 0:
+                    self.player.add_to_killed_enemies() # this is here, because this must run only once on enemy death
                     self.start_death_sequence()
         else: pass
 
@@ -258,7 +259,6 @@ class Enemy(pygame.sprite.Sprite):
             self.image = self.start_animation.play_once()
             if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
                 self.kill()
-                self.player.add_to_killed_enemies()
         else:
             #Get image -> determine correct action -> add animation to the action 
             self.image = self.start_animation.get_current_frame()
