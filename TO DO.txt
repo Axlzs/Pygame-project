@@ -1,5 +1,3 @@
-
-
 [-]resolution settings
 [-]choice for fullscreen and windowed
 [-]a way to save the resolution for next time 
@@ -11,14 +9,9 @@
 
 [-]Get consistent sprites
   [~]animation class upgrade 
-[+]Score system
-[+]Map scales with resolution
-[+]simple main menu screen
-[+]Game over screen
 [-]options menu
 
 [-]make mele usable 
-  [+]heal on kill
   [-]attack while walking (we have animations for that)
     [-]remake enemy class again 
 [-]think about autoaim 
@@ -29,3 +22,7 @@
 [-]special powers
   [-]circular melee attack 
   [-]arrow rain or some shit 
+
+icon = pygame.image.load('images/icon.png')
+pygame.display.set_icon(icon)
+pygame.display.set_caption("IKONIKS")

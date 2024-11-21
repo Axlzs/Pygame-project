@@ -4,10 +4,13 @@ from static_classes import *
 from playerFile import Player
 from enemyFile import Enemy
 
+
 def load_game_over_assets():
+    global WIDTH,HEIGHT
     """
     Load images and sounds for the game over screen.
     """
+
     global background1,background2,background3,background4, mainmenu_imgs, restart_imgs, backquit_sound, start_sound
     background1 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/1.png").convert()
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/2.png").convert_alpha()

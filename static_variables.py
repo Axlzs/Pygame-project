@@ -2,18 +2,12 @@ import pygame
 import json
 import os
 
-CONFIG_PATH = "config.json"
-
-BACKGROUND_WIDTH, BACKGROUND_HEIGHT = 100, 100 # Black background size (UNUSED!!)
 CLOCK = pygame.time.Clock()
 FPS = 60 # Framerate value for game
-screen = pygame.display.set_mode((0, 0),pygame.FULLSCREEN)
-#screen = pygame.display.set_mode((1000, 700))
-WIDTH, HEIGHT = screen.get_size()
-WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+#WIN = pygame.display.set_mode((WIDTH,HEIGHT)) # idk if it is needed prolly not
 RECT_MODE = False # lets one see rects(hitboxes)
-fullscreen = True
-
+MIN_WIDTH = 800
+MIN_HEIGHT = 600
 ############MAP_DATA############
 TILE_WIDTH = 800
 TILE_HEIGHT = 600
@@ -59,7 +53,6 @@ PROJECTILE_SPEED = 5
 ###############################
 
 ##########BUTTONS##############
-BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Metal Buttons Text.png").convert_alpha()
 BUTTON_DATA = {
     'start' : {'x':0,'y':0,'width':64,'height':32},
     'play' : {'x':0,'y':32,'width':64,'height':32},
