@@ -8,9 +8,17 @@ def load_game_over_assets():
     """
     Load images and sounds for the game over screen.
     """
-    global gameover_img, mainmenu_imgs, restart_imgs, backquit_sound, start_sound
-    gameover_img = pygame.image.load('images/gameover.png').convert_alpha()
-    gameover_img = pygame.transform.scale(gameover_img, (WIDTH, HEIGHT))
+    global background1,background2,background3,background4, mainmenu_imgs, restart_imgs, backquit_sound, start_sound
+    background1 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/1.png").convert()
+    background2 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/2.png").convert_alpha()
+    background3 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/3.png").convert_alpha()
+    background4 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/4.png").convert_alpha()
+
+    # Scale the background image to match the screen size
+    background1 = pygame.transform.scale(background1, (WIDTH+80, HEIGHT+80))
+    background2 = pygame.transform.scale(background2, (WIDTH+80, HEIGHT+80))
+    background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
+    background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
     # Load button images and rescale them
     mainmenu_imgs = [pygame.transform.scale(pygame.image.load(f'images/mainmenu-{i}.png'), (300, 100)) for i in range(1, 4)]
@@ -24,12 +32,11 @@ def load_game_over_assets():
 
 
 def initialize_game():
-    global screen,clock,font,spawned_enemies
+    global font,spawned_enemies
     pygame.init()
-
+    
     pygame.display.set_caption("Roguelike Game")
 
-    clock = pygame.time.Clock()
     font = pygame.font.Font("font/Minecraft.ttf", 20)
     
     load_game_over_assets()
@@ -38,104 +45,105 @@ def game_over_screen():
     """
     Displays the game over screen with interactive buttons.
     """
-    mainmenu_rect = pygame.Rect((WIDTH // 2 + 50, HEIGHT // 2 + 280), (300, 100))
-    restart_rect = pygame.Rect((WIDTH // 2 - 350, HEIGHT // 2 + 280), (250, 100))
+
+    main_menu = Button(screen, BUTTON_SPRITE_SHEET, "mainmenu", (WIDTH // 2 + 32*PLAYER_SCALE, HEIGHT // 2 + 280))
+    restart = Button(screen, BUTTON_SPRITE_SHEET, "restart", (WIDTH // 2 - 128*PLAYER_SCALE, HEIGHT // 2 + 280))
+
     while True:
-        screen.blit(gameover_img, (0, 0))
+        mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        font = pygame.font.Font(None, 100)
-        score_text = font.render(f"{int(player.total_enemies_killed)}", True, WHITE)
-        screen.blit(score_text, (WIDTH // 2 + 40, HEIGHT // 2 + 135))
+        # Calculate offsets for each layer based on mouse position
+        offset_2 = (mouse_x * 0.01, mouse_y * 0.01)
+        offset_3 = (mouse_x * 0.02, mouse_y * 0.02)
+        offset_4 = (mouse_x * 0.03, mouse_y * 0.03)  # Most movement
 
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_click = False
+        # Draw layers with parallax effect
+        screen.blit(background1, (0,0))
+        screen.blit(background2, (-offset_2[0], -offset_2[1]))
+        screen.blit(background3, (-offset_3[0], -offset_3[1]))
+        screen.blit(background4, (-offset_4[0], -offset_4[1]))
+
+        main_menu.draw()
+        restart.draw()
+
+        font = pygame.font.Font("font/Minecraft.ttf", 30*PLAYER_SCALE)
+        game_over_font = pygame.font.Font("font/Minecraft.ttf", 50*PLAYER_SCALE)
+
+        score_text = font.render(f"ENEMIES KILLED: {int(player.total_enemies_killed)}", True, WHITE)
+        game_over_text = game_over_font.render("GAME OVER", True, WHITE)
+
+        screen.blit(score_text, ((WIDTH - 285*PLAYER_SCALE) //2, HEIGHT // 2))
+        screen.blit(game_over_text, ((WIDTH - 285*PLAYER_SCALE) //2, (HEIGHT // 2) - 64*PLAYER_SCALE))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    mouse_click = True
-            # Perform any necessary actions based on the enemy event
-            # For example, you could handle different enemy events differently
-        if mainmenu_rect.collidepoint(mouse_pos):
-            screen.blit(mainmenu_imgs[1], mainmenu_rect.topleft)
-            if mouse_click:
-                screen.blit(mainmenu_imgs[2], mainmenu_rect.topleft)
-                screen.blit(restart_imgs[0], restart_rect.topleft)
-                pygame.display.update()
-                pygame.mixer.Channel(5).play(backquit_sound)
-                pygame.time.delay(100)  # Delay to see the 'clicking' image
-                import start_here  # Import the script containing the main menu
-                pygame.mixer.stop()
-                start_here.main_menu()  # Call main_menu function from start_here
-                break
-        else:
-            screen.blit(mainmenu_imgs[0], mainmenu_rect.topleft)
-
-        if restart_rect.collidepoint(mouse_pos):
-            screen.blit(restart_imgs[1], restart_rect.topleft)
-            if mouse_click:
-                screen.blit(restart_imgs[2], restart_rect.topleft)
-                screen.blit(mainmenu_imgs[0], mainmenu_rect.topleft)
-                pygame.display.update()
-                pygame.mixer.Channel(4).play(start_sound)
+            # Handle button events
+            if main_menu.handle_event(event):
                 pygame.time.delay(100)
-                start_game()  # Restart the game
-                break
-        else:
-            screen.blit(restart_imgs[0], restart_rect.topleft)
+                import start
+                start.main_menu()
+            if restart.handle_event(event):
+                pygame.time.delay(100)
+                start_game()
 
         pygame.display.update()
-        clock.tick(FPS)
+        CLOCK.tick(FPS)
 
 def draw_fps_counter():
     """
     Renders the current frames per second (FPS) on the screen using
     the specified font and displays it at the top-left corner of the game screendow.
     """
-    fps_text = font.render(f"FPS: {int(clock.get_fps())}", True, WHITE)
+    fps_text = font.render(f"FPS: {int(CLOCK.get_fps())}", True, WHITE)
     screen.blit(fps_text, (WIDTH-100, 10))
-
 def draw_entities():
     #map stuff
-    visible_tiles = map.get_background_tiles(player.rect, camera.offset)
-    map.render(screen, visible_tiles, camera.offset)
+    # visible_tiles = map.get_background_tiles(player.rect, camera.offset)
+    # map.render(screen, visible_tiles, camera.offset)
+
+    tiles = map.get_background_tiles(player.rect, camera.offset, WIDTH, HEIGHT)
+    map.render(screen, tiles, camera.offset)
     
     screen.blit(player.image, camera.apply(player.rect))
     #player hitbox
-    #pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
+    if RECT_MODE:
+        pygame.draw.rect(screen, (0, 255, 0), player.hitbox,2)
     
     #projectile stuff
     for projectile in projectile_group:
         offset_rect = camera.apply(projectile.rect)
         screen.blit(projectile.image, offset_rect)
         #arrow hitbox
-        #pygame.draw.rect(screen, (255,0,0), offset_rect,2)
+        if RECT_MODE:
+            pygame.draw.rect(screen, (255,0,0), offset_rect,2)
 
     for projectile in enemy_projectile_group:
         offset_rect = camera.apply(projectile.rect)
         screen.blit(projectile.image, offset_rect)
         #arrow hitbox
-        #pygame.draw.rect(screen, (0,255,0), offset_rect,2)
+        if RECT_MODE:
+            pygame.draw.rect(screen, (0,255,0), offset_rect,2)
 
     for enemy in enemies:
 
         offset_rect = camera.apply(enemy.rect)
         screen.blit(enemy.image, offset_rect)
         #enemy hitboxes
-        #melee_hitbox = enemy.get_melee_hitbox()
-        #if enemy.type ==2:
-        #    pygame.draw.rect(screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
-        #    pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
-        #else:
-        #    pygame.draw.rect(screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
+        if RECT_MODE:
+            melee_hitbox = enemy.get_melee_hitbox()
+            if enemy.type ==2:
+                pygame.draw.rect(screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
+                pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+            else:
+                pygame.draw.rect(screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
     
     #mele hitbox
-    #if player.type==2:
-    #    melee_hitbox = player.get_melee_hitbox()
-    #    pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+    if RECT_MODE:
+        if player.type==2:
+            melee_hitbox = player.get_melee_hitbox()
+            pygame.draw.rect(screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
 
 def player_healthbar_activate(player):
     transition_width = 0 # This makes the bar initally invisible 
@@ -199,8 +207,8 @@ def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
 
 def main_loop():
     global projectile_group, enemy_projectile_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies
-    #setting up game
 
+    #setting up game
     last_enemy_spawn = 0
     projectile_group = pygame.sprite.Group()
     enemy_projectile_group = pygame.sprite.Group()
@@ -208,7 +216,7 @@ def main_loop():
     player_type=2
     player = Player(player_type, projectile_group, enemy_projectile_group, enemies)  # Pass the appropriate player type here
     camera = Camera()
-    map = WorldMap()
+    map = WorldMap(TILE_WIDTH, TILE_HEIGHT)
 
     spawned_enemies = 0
     enemy_count = 0
@@ -245,7 +253,7 @@ def main_loop():
 
  
         pygame.display.flip()
-        clock.tick(FPS)
+        CLOCK.tick(FPS)
     pygame.quit()
     exit()
 

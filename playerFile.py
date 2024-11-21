@@ -271,6 +271,7 @@ class Player(pygame.sprite.Sprite):
             self.level+=1
             self.max_xp += int(math.log(self.max_xp,2))
             self.xp_bar_ratio = self.max_xp/self.xp_bar_length
+        self.heal(20)
 
     def update(self):
         # Handle queued animations

@@ -216,13 +216,13 @@ class Enemy(pygame.sprite.Sprite):
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':
-            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (14*self.scale), 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (7+self.scale), 2*self.melee_range, self.melee_range)
         elif self.direction == 'down':
             return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.bottom - (self.melee_range + self.scale), 2*self.melee_range, self.melee_range)
         elif self.direction == 'left':
-            return pygame.Rect(self.rect.left + (14*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.rect.left + (7*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
         elif self.direction == 'right':
-            return pygame.Rect(self.rect.right - (self.melee_range + (14*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.rect.right - (self.melee_range + (7*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
 
     def mele_attack(self):
         current_time = pygame.time.get_ticks()
@@ -231,7 +231,7 @@ class Enemy(pygame.sprite.Sprite):
             # Check for collisions with enemies
             melee_hitbox = self.get_melee_hitbox()
 
-            mele_range = self.camera.apply(melee_hitbox)
+            mele_range = self.camera.apply(self.player.hitbox)
             if mele_range.colliderect(self.player.hitbox):
                 self.player.take_damage(ENEMY_DATA[2]['damage'])
 

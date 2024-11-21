@@ -18,33 +18,40 @@ class Camera:
         return rect.move(-self.offset.x, -self.offset.y)
     
 class WorldMap:
-    def __init__(self):
+    def __init__(self, tile_width, tile_height):
+        self.tile_width = tile_width
+        self.tile_height = tile_height
         self.background_tiles = self.load_background_tiles()
         self.tile_grid = {}
 
     def load_background_tiles(self):
         background_tiles = []
-        for i in range(1,TOTAL_BG+1):
+        for i in range(1, TOTAL_BG + 1):
             image = pygame.image.load(f'images/backgrounds/bg-{i}.png').convert()
-            image = pygame.transform.scale(image, (WIDTH, HEIGHT))
+            image = pygame.transform.scale(image, (self.tile_width, self.tile_height))
             background_tiles.append(image)
         return background_tiles
-        
+
     def select_tile_index(self):
-        #Selects random tile based on weights
-        tiles = list(range(TOTAL_BG))  # Tile indices from 0 to 9
+        # Selects random tile based on weights
+        tiles = list(range(TOTAL_BG))  # Tile indices from 0 to TOTAL_BG - 1
         return random.choices(tiles, weights=BG_CHANCE, k=1)[0]
-    
-    def get_background_tiles(self, target_rect, camera_offset):
-        # Calculate visible tiles based on the player's position and camera offset
+
+    def get_background_tiles(self, target_rect, camera_offset, screen_width, screen_height):
+        # Calculate visible tiles based on the player's position, camera offset, and screen size
         tiles = []
 
-        start_x = int(target_rect.centerx //WIDTH) * WIDTH
-        start_y = int(target_rect.centery //HEIGHT) * HEIGHT
+        # Number of tiles required to fill the screen
+        tiles_x = (screen_width // self.tile_width) + 3
+        tiles_y = (screen_height // self.tile_height) + 3
 
-        for x in range(start_x - WIDTH, start_x + 2 * WIDTH, WIDTH):
-            for y in range(start_y - HEIGHT, start_y + 2 * HEIGHT, HEIGHT):
-                grid_x, grid_y = x // WIDTH, y // HEIGHT
+        # Start position for tile grid
+        start_x = ((target_rect.centerx - screen_width // 2) // self.tile_width) * self.tile_width - self.tile_width
+        start_y = ((target_rect.centery - screen_height // 2) // self.tile_height) * self.tile_height - self.tile_height
+
+        for x in range(start_x - self.tile_width, start_x + tiles_x * self.tile_width, self.tile_width):
+            for y in range(start_y - self.tile_height, start_y + tiles_y * self.tile_height, self.tile_height):
+                grid_x, grid_y = x // self.tile_width, y // self.tile_height
 
                 # If tile at (grid_x, grid_y) isn't generated, add it
                 if (grid_x, grid_y) not in self.tile_grid:
@@ -58,8 +65,9 @@ class WorldMap:
     def render(self, screen, tiles, camera_offset):
         for tile in tiles:
             x, y, tile_index = tile
-            screen_position = pygame.Vector2(x,y) - camera_offset
+            screen_position = pygame.Vector2(x, y) - camera_offset
             screen.blit(self.background_tiles[tile_index], screen_position)
+
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, target_pos, damage, projectile_type):
@@ -121,3 +129,49 @@ class Projectile(pygame.sprite.Sprite):
         # Check lifespan
         if pygame.time.get_ticks() - self.spawn_time > self.lifespan:
             self.kill()  # Remove projectile from all sprite groups
+
+class Button:
+    def __init__(self, screen, sprite_sheet, button_type, pos):
+        self.screen = screen
+        self.scale = PLAYER_SCALE
+        self.type = button_type
+        self.sprite_sheet = sprite_sheet
+        self.data = BUTTON_DATA[self.type]
+        self.pos = pos
+        self.rect = pygame.Rect(self.pos, (self.data["width"]*PLAYER_SCALE, self.data["height"]*PLAYER_SCALE))
+
+        # Extract button images for each state
+        self.images = []
+        for i in range(3):  # Buttons have 3 states states (normal, hover, clicked)
+            rect = pygame.Rect(
+                self.data["x"] + (i * self.data["width"]),
+                self.data["y"],
+                self.data["width"],
+                self.data["height"],
+            )
+            image = self.sprite_sheet.subsurface(rect)
+
+            if self.scale != 1.0:
+                scaled_width = int(self.data["width"] * self.scale)
+                scaled_height = int(self.data["height"] * self.scale)
+                image = pygame.transform.scale(image, (scaled_width, scaled_height))
+            self.images.append(image)
+
+        self.current_image = self.images[0]
+    def draw(self):
+        """Draw the button on the screen."""
+        self.screen.blit(self.current_image, self.pos)
+
+    def handle_event(self, event):
+        #handling the change between button states
+        mouse_pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(mouse_pos):
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.current_image = self.images[2]  # Clicked state
+                return True
+            elif event.type == pygame.MOUSEMOTION:
+                self.current_image = self.images[1]  # Hover state
+        else:
+            self.current_image = self.images[0]  # Normal state
+        return False
