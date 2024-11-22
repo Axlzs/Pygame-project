@@ -97,6 +97,10 @@ BUTTON_DATA = {
     'leaderboards' : {'x':384,'y':374,'width':128,'height':32},
 }
 
+KNOPKAS_DATA = {
+    '1': {'x':192,'y':160,'width':32,'height':32},
+}
+
 ###########SOME#COLOURS###########
 BLACK, WHITE = (0, 0, 0), (255, 255, 255)
 RED, GREEN, BLUE = (255, 0, 0), (0, 255, 0), (0, 0, 255)
