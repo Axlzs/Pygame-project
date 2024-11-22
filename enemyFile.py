@@ -2,7 +2,9 @@ import pygame
 from static_variables import *
 from static_classes import *
 from animations import *
+from game_manager import game_manager
 
+WIDTH, HEIGHT = game_manager.update_dimensions()
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, enemy_type, projectile_group, player):

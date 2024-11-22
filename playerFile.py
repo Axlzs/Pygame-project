@@ -3,7 +3,9 @@ from static_variables import *
 from static_classes import *
 from animations import *
 from collections import deque
+from game_manager import game_manager
 
+WIDTH, HEIGHT = game_manager.update_dimensions()
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
@@ -80,6 +82,7 @@ class Player(pygame.sprite.Sprite):
         self.melee_range = PLAYER_DATA[2]['range'] * self.scale
         self.melee_cooldown = MELEE_COOLDOWN
         self.last_melee_time = 0
+        self.heal_factor = PLAYER_DATA[2]['heal_factor']
 
 
     def load_sprite_sheet(self, player_type, scale):
@@ -271,7 +274,7 @@ class Player(pygame.sprite.Sprite):
             self.level+=1
             self.max_xp += int(math.log(self.max_xp,2))
             self.xp_bar_ratio = self.max_xp/self.xp_bar_length
-        self.heal(20)
+        self.heal(self.heal_factor)
 
     def update(self):
         # Handle queued animations

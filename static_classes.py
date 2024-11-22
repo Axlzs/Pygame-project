@@ -3,6 +3,9 @@ import random
 import math
 from static_variables import *
 from animations import Animation
+from game_manager import game_manager
+
+WIDTH, HEIGHT = game_manager.update_dimensions()
 
 class Camera:
     def __init__(self):

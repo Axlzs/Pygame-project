@@ -6,8 +6,6 @@ import game  # Game code module
 
 
 pygame.init()
-
-
 BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Metal Buttons Text.png").convert_alpha()
 def options():
     WIDTH, HEIGHT = game_manager.update_dimensions()

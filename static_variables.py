@@ -2,6 +2,7 @@ import pygame
 import json
 import os
 
+
 CLOCK = pygame.time.Clock()
 FPS = 60 # Framerate value for game
 #WIN = pygame.display.set_mode((WIDTH,HEIGHT)) # idk if it is needed prolly not
@@ -36,7 +37,7 @@ XP_SCALE = 1.25
 STARTING_XP = 4
 PLAYER_DATA = {
     1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':100},
-    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':100,'range':20},
+    2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':100,'range':20,'heal_factor':15},
     3: ''
 }
 COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
@@ -53,6 +54,7 @@ PROJECTILE_SPEED = 5
 ###############################
 
 ##########BUTTONS##############
+
 BUTTON_DATA = {
     'start' : {'x':0,'y':0,'width':64,'height':32},
     'play' : {'x':0,'y':32,'width':64,'height':32},
