@@ -211,7 +211,7 @@ def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
     return enemy_count,spawned_enemies,last_enemy_spawn
 
 def main_loop(chosen_player):
-    global projectile_group, enemy_projectile_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies
+    global projectile_group, enemy_projectile_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies,WIDTH,HEIGHT
 
     #setting up game
     last_enemy_spawn = 0
@@ -223,38 +223,54 @@ def main_loop(chosen_player):
     camera = Camera()
     map = WorldMap(TILE_WIDTH, TILE_HEIGHT)
 
+    current_level = player.level
     spawned_enemies = 0
     enemy_count = 0
 
     running = True
+    paused = False
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                paused = not paused
     
         enemy_count = spawned_enemies - player.total_enemies_killed
     ##############FUNCTIONS##############
-        player.update()
-        enemies.update()
-        camera.update(player.rect)
-        projectile_group.update()
-        enemy_projectile_group.update()             
-        draw_entities()
-        draw_fps_counter() 
-        manual_enemy_spawn(spawned_enemies,player)
-        enemy_count, spawned_enemies, last_enemy_spawn = enemy_spawn(enemy_count, spawned_enemies, player, last_enemy_spawn)
-        player_healthbar_activate(player)
-        xp_bar(player)
-        for enemy in enemies:
-            enemy_healthbar_activate(enemy)
-    ##############HANDLING#DAMAGE##############
-        for projectile in enemy_projectile_group:
-            projectile_hitbox=camera.apply(projectile.rect)
-            if player.hitbox.colliderect(projectile_hitbox):
-                player.take_damage(ENEMY_DATA[1]['damage'])     
+        if paused:
+            for enemy in enemies:
+                enemy.motion = False
+                enemy.shooting = False
+            player.motion = False
+            
+            font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
+            text = font.render("Paused - Press 'P' to Resume", True, WHITE)
+            game_manager.screen.blit(text, (WIDTH//2-100*PLAYER_SCALE, HEIGHT//2))
+        else:
+            player.update()
+            enemies.update()
+            camera.update(player.rect)
+            projectile_group.update()
+            enemy_projectile_group.update()             
+            draw_entities()
+            draw_fps_counter() 
+            manual_enemy_spawn(spawned_enemies,player)
+            enemy_count, spawned_enemies, last_enemy_spawn = enemy_spawn(enemy_count, spawned_enemies, player, last_enemy_spawn)
+            player_healthbar_activate(player)
+            xp_bar(player)
+            for enemy in enemies:
+                enemy_healthbar_activate(enemy)
+        ##############HANDLING#DAMAGE##############
+            for projectile in enemy_projectile_group:
+                projectile_hitbox=camera.apply(projectile.rect)
+                if player.hitbox.colliderect(projectile_hitbox):
+                    player.take_damage(ENEMY_DATA[1]['damage'])     
 
-        if player.officially_dead:
-            game_over_screen(player_type)
+            if player.level>current_level:
+
+            if player.officially_dead:
+                game_over_screen(player_type)
 
  
         pygame.display.flip()
@@ -267,8 +283,10 @@ def start_game(chosen_player):
     Starts the main game initialization.
     """
     initialize_game()
+    game_manager.apply_settings()
     main_loop(chosen_player)
 
 # Check if this script is being run directly (not imported as a module)
 if __name__ == "__main__":
-    start_game(chosen_player)
+    start_game(1)
+    #start_game(chosen_player)
