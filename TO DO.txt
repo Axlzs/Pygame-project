@@ -1,15 +1,18 @@
-[-]resolution settings
-[-]choice for fullscreen and windowed
-[-]a way to save the resolution for next time 
+[~]resolution setting
+[+]choice for fullscreen and windowed
+[+]a way to save the resolution for next time 
 [-]dropables
 
-[-]Upgrade screen
-[-]Pause screen
+[~]Upgrade screen
+[+]Pause screen
 
+[~]options menu
+[+]bug fix game centers player now 
+[+]bug fix cannot change res while ingame
+[+]bug fix settings load properly 
 
-[-]Get consistent sprites
-  [~]animation class upgrade 
-[-]options menu
+[-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
+
 
 [-]make mele usable 
   [-]attack while walking (we have animations for that)
@@ -22,7 +25,3 @@
 [-]special powers
   [-]circular melee attack 
   [-]arrow rain or some shit 
-
-icon = pygame.image.load('images/icon.png')
-pygame.display.set_icon(icon)
-pygame.display.set_caption("IKONIKS")

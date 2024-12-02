@@ -44,12 +44,13 @@ def options():
                 continue
 
             if yes_button.handle_event(event):
+                transitioning = True
                 game_manager.settings["screen_mode"] = "windowed"
                 game_manager.screen = game_manager.apply_settings()
-                WIDTH, HEIGHT = game_manager.settings["resolution"]
                 pygame.time.wait(100)  # Stabilize transition
                 pygame.event.clear()  # Clear resize events
                 transitioning = False
+                WIDTH, HEIGHT = game_manager.settings["resolution"]
 
                 # Scale the background image to match the screen size
                 background1 = pygame.transform.scale(background1, (WIDTH+80, HEIGHT+80))
@@ -80,7 +81,6 @@ def options():
                 back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
                 yes_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "yes", (WIDTH//5, HEIGHT//10))
                 no_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "no", (WIDTH//5, HEIGHT//10))
-                game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*PLAYER_SCALE, yes_button.rect.midleft[1]))
 
             elif event.type == pygame.VIDEORESIZE:  # Windowed resize
                 if not transitioning:
@@ -98,7 +98,7 @@ def options():
                 back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
                 yes_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "yes", (WIDTH//5, HEIGHT//10))
                 no_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "no", (WIDTH//5, HEIGHT//10))
-                game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*PLAYER_SCALE, yes_button.rect.midleft[1]))
+
 
         
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -112,6 +112,8 @@ def options():
         game_manager.screen.blit(background2, (-offset_2[0], -offset_2[1]))
         game_manager.screen.blit(background3, (-offset_3[0], -offset_3[1]))
         game_manager.screen.blit(background4, (-offset_4[0], -offset_4[1]))
+
+        game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*PLAYER_SCALE, yes_button.rect.midleft[1]))
 
         if game_manager.settings["screen_mode"] == "fullscreen":
             yes_button.draw()
@@ -167,8 +169,8 @@ def choose_player():
                 exit()
             # Handle button events
             if start_button.handle_event(event):
-                pygame.time.delay(100)
                 game_manager.save_settings()
+                pygame.time.delay(100)
                 running = False
                 if player1_selected:
                     game.start_game(1)
@@ -176,6 +178,7 @@ def choose_player():
                     game.start_game(2)
             if back_button.handle_event(event):
                 pygame.time.delay(100)
+                game_manager.apply_settings()
                 main_menu()
 
             if event.type == pygame.VIDEORESIZE: # resizes the screen only when the window acually resizes
@@ -276,16 +279,20 @@ def main_menu():
                 pygame.time.delay(100)
                 game_manager.save_settings()
                 running = False
-                game_manager.screen = pygame.display.set_mode(
-                game_manager.settings["resolution"],
-                pygame.FULLSCREEN if game_manager.settings["screen_mode"] == "fullscreen" else 0)  # No RESIZABLE flag
-                WIDTH, HEIGHT = game_manager.update_dimensions()
+                
+                if game_manager.settings["screen_mode"] == "fullscreen":
+                    pass
+                else:
+                    WIDTH, HEIGHT = game_manager.update_dimensions()
+                    game_manager.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
                 choose_player()
             if info_button.handle_event(event):
                 pygame.time.delay(100)
                 print("Start button presseed!")
             if option_button.handle_event(event):
                 pygame.time.delay(100)
+                game_manager.save_settings()
                 options()
             if quit_button.handle_event(event):
                 pygame.time.delay(100)

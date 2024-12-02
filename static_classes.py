@@ -10,11 +10,12 @@ WIDTH, HEIGHT = game_manager.update_dimensions()
 class Camera:
     def __init__(self):
         self.offset = pygame.Vector2(0, 0)
+        self.width, self.height = game_manager.update_dimensions()
 
     def update(self, target_rect):
         # Calculate the offset to keep the target (player) centered
-        self.offset.x = target_rect.centerx - WIDTH // 2
-        self.offset.y = target_rect.centery - HEIGHT // 2
+        self.offset.x = target_rect.centerx - self.width // 2
+        self.offset.y = target_rect.centery - self.height // 2
         
     def apply(self, rect):
         # Return the adjusted position of any rect based on the camera offset

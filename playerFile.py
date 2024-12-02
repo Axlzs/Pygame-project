@@ -5,12 +5,10 @@ from animations import *
 from collections import deque
 from game_manager import game_manager
 
-game_manager.screen = game_manager.apply_settings()
-WIDTH, HEIGHT = game_manager.update_dimensions()
-
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_type,projectile_group, enemy_projectile_group, enemies):
+        game_manager.load_settings()
         self.type = player_type
         self.scale = PLAYER_SCALE
         self.sprite_size = PLAYER_DATA[player_type]['sprite']

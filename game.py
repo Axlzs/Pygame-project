@@ -5,8 +5,10 @@ from playerFile import Player
 from enemyFile import Enemy
 from game_manager import game_manager
 
-game_manager.screen = game_manager.apply_settings()
-WIDTH, HEIGHT = game_manager.update_dimensions()
+game_manager.load_settings()
+game_manager.apply_settings()
+WIDTH,HEIGHT = game_manager.update_dimensions()
+
 BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Metal Buttons Text.png").convert_alpha()
 def load_game_over_assets():
     global WIDTH,HEIGHT
@@ -88,6 +90,7 @@ def game_over_screen(player_type):
             # Handle button events
             if main_menu.handle_event(event):
                 pygame.time.delay(100)
+                game_manager.apply_settings()
                 import start
                 start.main_menu()
             if restart.handle_event(event):
@@ -256,11 +259,13 @@ def upgrade_screen(player_type):
                 SPEED_DIAGONAL *1.5
                 SPEED_LINEAR * 1.5
                 running = False
+        pygame.display.update()
+        CLOCK.tick(FPS)
             
 
 def main_loop(chosen_player):
     global projectile_group, enemy_projectile_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies,WIDTH,HEIGHT,SPEED_DIAGONAL, SPEED_LINEAR
-
+    WIDTH, HEIGHT = game_manager.update_dimensions()
     #setting up game
     last_enemy_spawn = 0
     projectile_group = pygame.sprite.Group()
@@ -268,6 +273,7 @@ def main_loop(chosen_player):
     enemies = pygame.sprite.Group()
     player_type=chosen_player
     player = Player(player_type, projectile_group, enemy_projectile_group, enemies)  # Pass the appropriate player type here
+    
     camera = Camera()
     map = WorldMap(TILE_WIDTH, TILE_HEIGHT)
 
@@ -300,55 +306,9 @@ def main_loop(chosen_player):
             game_manager.screen.blit(text, (WIDTH//2-100*PLAYER_SCALE, HEIGHT//2))
         elif upgrade_due:
 
-            BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Debuff buttons.png").convert_alpha()
-            health_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "health", (100, HEIGHT//2))
-            strength_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "strengthen", (200, HEIGHT//2))
-            attack_speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "swing", (300, HEIGHT//2))
-            speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "levelup", (400, HEIGHT//2))
-
-            font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
-            text = font.render("Choose upgrades", True, WHITE)
-            game_manager.screen.blit(text, (WIDTH//2-100*PLAYER_SCALE, HEIGHT//2))
-
-            running_upgrade = True
-            while running_upgrade:
-                pygame.display.flip()
-                health_uppgrade.draw()
-                strength_uppgrade.draw()
-                attack_speed_uppgrade.draw()
-                speed_uppgrade.draw()
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        game_manager.save_settings()
-                        exit()
-                    if health_uppgrade.handle_event(event):
-                        pygame.time.delay(100)
-                        player.maxhealth += 20
-                        running_upgrade = False
-                    if strength_uppgrade.handle_event(event):
-                        pygame.time.delay(100)
-                        PLAYER_DATA[player_type]['damage'] += 5
-                        running_upgrade = False
-                    if attack_speed_uppgrade.handle_event(event):
-                        pygame.time.delay(100)
-                        if player_type ==1:
-                            COOLDOWNS['shoot animation'] = 10
-                            player.shoot_cooldown = 10
-                            running_upgrade = False
-
-                        if player.melee_cooldown > 10 and player_type ==2:
-                            player.melee_cooldown - 50
-                            running_upgrade = False
-
-                    if speed_uppgrade.handle_event(event):
-                        pygame.time.delay(100)
-                        new_speed = SPEED_LINEAR * 10 
-                        SPEED_LINEAR = new_speed
-                        running_upgrade = False
+            upgrade_screen(player_type)
             current_level = player.level
             upgrade_due = False
-
         else:
             player.update()
             enemies.update()
@@ -372,7 +332,6 @@ def main_loop(chosen_player):
             if player.level>current_level:
                 upgrade_due  = True
             if player.officially_dead:
-                print(PLAYER_DATA[player_type]['damage'])
                 game_over_screen(player_type)
 
  
@@ -386,7 +345,6 @@ def start_game(chosen_player):
     """
     Starts the main game initialization.
     """
-    game_manager.screen = game_manager.apply_settings()
     WIDTH, HEIGHT = game_manager.update_dimensions()
     initialize_game()
     main_loop(chosen_player)
