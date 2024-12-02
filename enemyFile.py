@@ -19,22 +19,22 @@ class Enemy(pygame.sprite.Sprite):
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.camera = Camera()
         self.animations = {
-            'walk down' : Animation(self.images['walk down'],COOLDOWNS['movement']),
-            'walk left' : Animation(self.images['walk left'],COOLDOWNS['movement']),
-            'walk right' : Animation(self.images['walk right'],COOLDOWNS['movement']),
-            'walk up' : Animation(self.images['walk up'],COOLDOWNS['movement']),
+            'walk down' : Animation(self.images['walk down'],ENEMY_COOLDOWNS['movement']),
+            'walk left' : Animation(self.images['walk left'],ENEMY_COOLDOWNS['movement']),
+            'walk right' : Animation(self.images['walk right'],ENEMY_COOLDOWNS['movement']),
+            'walk up' : Animation(self.images['walk up'],ENEMY_COOLDOWNS['movement']),
 
-            'stand down' : Animation(self.images['stand down'],COOLDOWNS['movement']),
-            'stand left' : Animation(self.images['stand left'],COOLDOWNS['movement']),
-            'stand right' : Animation(self.images['stand right'],COOLDOWNS['movement']),
-            'stand up' : Animation(self.images['stand up'],COOLDOWNS['movement']),
+            'stand down' : Animation(self.images['stand down'],ENEMY_COOLDOWNS['movement']),
+            'stand left' : Animation(self.images['stand left'],ENEMY_COOLDOWNS['movement']),
+            'stand right' : Animation(self.images['stand right'],ENEMY_COOLDOWNS['movement']),
+            'stand up' : Animation(self.images['stand up'],ENEMY_COOLDOWNS['movement']),
 
-            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot animation']),
-            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot animation']),
-            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot animation']),
-            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot animation']),
+            'shoot down' : Animation(self.images['shoot down'],ENEMY_COOLDOWNS['shoot animation']),
+            'shoot left' : Animation(self.images['shoot left'],ENEMY_COOLDOWNS['shoot animation']),
+            'shoot right' : Animation(self.images['shoot right'],ENEMY_COOLDOWNS['shoot animation']),
+            'shoot up' : Animation(self.images['shoot up'],ENEMY_COOLDOWNS['shoot animation']),
 
-            'death' : Animation(self.images['death'],COOLDOWNS['movement'])
+            'death' : Animation(self.images['death'],ENEMY_COOLDOWNS['movement'])
         }
         self.start_animation = self.animations['stand down']
         self.image = self.start_animation.get_current_frame()
@@ -52,7 +52,7 @@ class Enemy(pygame.sprite.Sprite):
         self.is_dying = False
         self.death_start_time = 0
         self.death_duration = 700
-        self.damage_cooldown = COOLDOWNS['damage']
+        self.damage_cooldown = ENEMY_COOLDOWNS['damage']
         self.last_damage_time = 0
         self.motion = False
         self.direction = 'down'

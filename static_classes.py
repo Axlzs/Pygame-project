@@ -94,7 +94,7 @@ class Projectile(pygame.sprite.Sprite):
         self.velocity = self.calculate_velocity(self.angle)
         
         self.damage = damage
-        self.lifespan = 2000
+        self.lifespan = ARROW_LIFESPAN
         self.spawn_time = pygame.time.get_ticks()
 
     def calculate_angle_to_target(self):
@@ -133,6 +133,7 @@ class Projectile(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.spawn_time > self.lifespan:
             self.kill()  # Remove projectile from all sprite groups
 
+#Buttons with 3 states located inside BUTTON_DATA
 class Button:
     def __init__(self, screen, sprite_sheet, button_type, pos):
         self.screen = screen
@@ -175,6 +176,53 @@ class Button:
                 return True
             elif event.type == pygame.MOUSEMOTION:
                 self.current_image = self.images[1]  # Hover state
+        else:
+            self.current_image = self.images[0]  # Normal state
+        return False
+    
+#LesserButtons with 2 states located inside LESSER_BUTTON_DATA
+class LesserButton:
+    def __init__(self, screen, sprite_sheet, button_type, pos):
+        self.screen = screen
+        self.scale = PLAYER_SCALE
+        self.type = button_type
+        self.sprite_sheet = sprite_sheet
+        self.data = LESSER_BUTTON_DATA[self.type]
+        self.pos = pos
+        self.rect = pygame.Rect(
+            self.pos,
+            (self.data["width"] * PLAYER_SCALE, self.data["height"] * PLAYER_SCALE)
+        )
+
+        self.images = []
+        for i in range(2):  # Buttons have 2 states: normal, hover
+            rect = pygame.Rect(
+                self.data["x"] + (i * self.data["width"]),
+                self.data["y"],
+                self.data["width"],
+                self.data["height"],
+            )
+            image = self.sprite_sheet.subsurface(rect)
+
+            if self.scale != 1.0:
+                scaled_width = int(self.data["width"] * self.scale+3)
+                scaled_height = int(self.data["height"] * self.scale+3)
+                image = pygame.transform.scale(image, (scaled_width, scaled_height))
+            self.images.append(image)
+
+        self.current_image = self.images[0]
+
+    def draw(self):
+        """Draw the button on the screen."""
+        self.screen.blit(self.current_image, self.pos)
+
+    def handle_event(self, event):
+        mouse_pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(mouse_pos):
+            self.current_image = self.images[1]  # Hover state
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                return True  # Button clicked
         else:
             self.current_image = self.images[0]  # Normal state
         return False

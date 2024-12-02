@@ -5,6 +5,7 @@ from animations import *
 from collections import deque
 from game_manager import game_manager
 
+game_manager.screen = game_manager.apply_settings()
 WIDTH, HEIGHT = game_manager.update_dimensions()
 
 # Define the PLayer class
@@ -78,7 +79,6 @@ class Player(pygame.sprite.Sprite):
         self.arrow_offset = 0
         self.arrow_offset = 10*self.scale
 
-        self.melee_damage = PLAYER_DATA[2]['damage']
         self.melee_range = PLAYER_DATA[2]['range'] * self.scale
         self.melee_cooldown = MELEE_COOLDOWN
         self.last_melee_time = 0
