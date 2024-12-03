@@ -170,18 +170,22 @@ def player_healthbar_activate(player):
         transition_width = int((player.target_health-player.health)/player.health_ratio)
         transition_colour = (255,255,0)
 
-    health_bar_rect = pygame.Rect(10,10,player.health/player.health_ratio,10)
-    transition_bar_rect = pygame.Rect(health_bar_rect.right,10,transition_width,10)
+    health_font = pygame.font.Font("font/Minecraft.ttf", 12)
+    health_text = health_font.render(str(player.health)+"/"+str(player.maxhealth), True, WHITE)
+
+    health_bar_rect = pygame.Rect(10,10,player.health/player.health_ratio,20)
+    transition_bar_rect = pygame.Rect(health_bar_rect.right,10,transition_width,20)
 
     pygame.draw.rect(game_manager.screen,transition_colour,transition_bar_rect)
     pygame.draw.rect(game_manager.screen,(255,0,0),health_bar_rect)
-    pygame.draw.rect(game_manager.screen,(255,255,255),(10,10,player.health_bar_length,10),2)
+    pygame.draw.rect(game_manager.screen,(255,255,255),(10,10,player.health_bar_length,20),2)
+    game_manager.screen.blit(health_text, (50,15))
 
 def xp_bar(player):
-    pygame.draw.rect(game_manager.screen, (0,0,255),(10,21,player.enemies_killed_for_lvl/player.xp_bar_ratio,10))
-    pygame.draw.rect(game_manager.screen, (255,255,255),(10,21,player.xp_bar_length,10),2)
+    pygame.draw.rect(game_manager.screen, (0,0,255),(10,31,player.enemies_killed_for_lvl/player.xp_bar_ratio,10))
+    pygame.draw.rect(game_manager.screen, (255,255,255),(10,31,player.xp_bar_length,10),2)
     lvl_text = font.render(f"LEVEL: {player.level}", True, WHITE)
-    game_manager.screen.blit(lvl_text, (12, 40))
+    game_manager.screen.blit(lvl_text, (12, 45))
 
 
 def enemy_healthbar_activate(enemy):
@@ -216,14 +220,25 @@ def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
 
 def upgrade_screen(player_type):
     BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Debuff buttons.png").convert_alpha()
-    health_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "health", (100, HEIGHT//2))
-    strength_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "strengthen", (200, HEIGHT//2))
-    attack_speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "swing", (300, HEIGHT//2))
-    speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "levelup", (400, HEIGHT//2))
+    health_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "health", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2 +98*PLAYER_SCALE))
+    strength_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "strengthen", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2 +49*PLAYER_SCALE))
+    attack_speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "swing", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2))
+    speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "levelup", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2 -49*PLAYER_SCALE))
 
-    font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
-    text = font.render("Choose upgrades", True, WHITE)
-    game_manager.screen.blit(text, (WIDTH//2-100*PLAYER_SCALE, HEIGHT//2))
+    upgrade_font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
+    icon_font = pygame.font.Font("font/Minecraft.ttf", 19*PLAYER_SCALE)
+    upgrade_text = upgrade_font.render("Choose upgrades", True, WHITE)
+    health_text = icon_font.render("Health upgrade", True, WHITE)
+    strength_text = icon_font.render("Damage upgrade", True, WHITE)
+    attack_speed_text = icon_font.render("Increase attack speed", True, WHITE)
+    speed_text = icon_font.render("Increase Movement speed ", True, WHITE)
+
+    game_manager.screen.blit(upgrade_text, (WIDTH//2-75*PLAYER_SCALE, HEIGHT//2 -100*PLAYER_SCALE))
+    game_manager.screen.blit(health_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2 +107*PLAYER_SCALE))
+    game_manager.screen.blit(strength_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2 +58*PLAYER_SCALE))
+    game_manager.screen.blit(attack_speed_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2+9*PLAYER_SCALE))
+    game_manager.screen.blit(speed_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2 -40*PLAYER_SCALE))
+    
 
     running = True
     while running:
@@ -239,11 +254,13 @@ def upgrade_screen(player_type):
                 exit()
             if health_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                player.maxhealth += 20
+                player.maxhealth += 5
+                player.heal(5)
+                player.health_ratio = player.maxhealth/player.health_bar_length
                 running = False
             if strength_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                PLAYER_DATA[player_type]['damage'] += 10
+                PLAYER_DATA[player_type]['damage'] += 5
                 running = False
             if attack_speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
@@ -256,9 +273,10 @@ def upgrade_screen(player_type):
                     running = False
             if speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                SPEED_DIAGONAL *1.5
-                SPEED_LINEAR * 1.5
+                player.speed_linear *= 2
+                player.speed_diagonal *= 2
                 running = False
+            player.heal(5)
         pygame.display.update()
         CLOCK.tick(FPS)
             
@@ -292,6 +310,13 @@ def main_loop(chosen_player):
                 paused = not paused
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 player.level +=1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                player.heal(10)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                player.take_damage(25)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:
+                player.start_death_sequence()
+                player.health = 0
     
         enemy_count = spawned_enemies - player.total_enemies_killed
     ##############FUNCTIONS##############
@@ -331,6 +356,8 @@ def main_loop(chosen_player):
 
             if player.level>current_level:
                 upgrade_due  = True
+                # ENEMY_SPAWN_COOLDOWN = min(ENEMY_SPAWN_COOLDOWN - 50, 100)
+                # MAX_ENEMY_SPAWN +=2             
             if player.officially_dead:
                 game_over_screen(player_type)
 

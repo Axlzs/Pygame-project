@@ -1,15 +1,8 @@
-[~]resolution setting
-[+]choice for fullscreen and windowed
-[+]a way to save the resolution for next time 
-[-]dropables
+[+]better upgrade screen
+[+]movement speed now upgradeable 
+[+]little adjustments to the player io
+[+]added visible hitpoints in health bar
 
-[~]Upgrade screen
-[+]Pause screen
-
-[~]options menu
-[+]bug fix game centers player now 
-[+]bug fix cannot change res while ingame
-[+]bug fix settings load properly 
 
 [-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
 

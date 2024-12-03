@@ -49,6 +49,8 @@ class Player(pygame.sprite.Sprite):
         self.enemies = enemies
         self.total_enemies_killed = 0
         self.enemies_killed_for_lvl =0
+        self.speed_linear = SPEED_LINEAR
+        self.speed_diagonal = SPEED_DIAGONAL
         self.max_xp = STARTING_XP
         self.xp_scale = XP_SCALE
         self.xp_bar_length = 100*PLAYER_SCALE
@@ -130,9 +132,9 @@ class Player(pygame.sprite.Sprite):
         else:
             # Adjust SPEED based on linear or diagonal movement
             if (keys[pygame.K_w] or keys[pygame.K_s]) and (keys[pygame.K_a] or keys[pygame.K_d]):
-                SPEED = SPEED_DIAGONAL  # Reduce SPEED for diagonal movement
+                SPEED = self.speed_diagonal  # Reduce SPEED for diagonal movement
             else:
-                SPEED = SPEED_LINEAR  # Adjust SPEED for non-diagonal movement
+                SPEED = self.speed_linear  # Adjust SPEED for non-diagonal movement
 
             if self.is_dying == False:
                 if keys[pygame.K_w]:
@@ -151,14 +153,6 @@ class Player(pygame.sprite.Sprite):
                     self.rect.x += SPEED
                     self.motion = True
                     self.direction = 'right'
-
-                if keys[pygame.K_l]:
-                    self.start_death_sequence()
-                    self.health = 0
-                if keys[pygame.K_RIGHT]:
-                    self.heal(10)
-                if keys[pygame.K_LEFT]:
-                    self.take_damage(25)
 
                 #This handles shooting - detects input->Determines the player type and weather the player is moving
                 if keys[pygame.K_SPACE]:

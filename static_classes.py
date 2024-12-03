@@ -192,7 +192,7 @@ class LesserButton:
         self.pos = pos
         self.rect = pygame.Rect(
             self.pos,
-            (self.data["width"] * PLAYER_SCALE, self.data["height"] * PLAYER_SCALE)
+            (self.data["width"] * PLAYER_SCALE+30, self.data["height"] * PLAYER_SCALE+30)
         )
 
         self.images = []
@@ -206,8 +206,8 @@ class LesserButton:
             image = self.sprite_sheet.subsurface(rect)
 
             if self.scale != 1.0:
-                scaled_width = int(self.data["width"] * self.scale+3)
-                scaled_height = int(self.data["height"] * self.scale+3)
+                scaled_width = int(self.data["width"] * self.scale+30)
+                scaled_height = int(self.data["height"] * self.scale+30)
                 image = pygame.transform.scale(image, (scaled_width, scaled_height))
             self.images.append(image)
 

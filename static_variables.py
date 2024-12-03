@@ -18,9 +18,10 @@ BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each 
 
 #############ENEMY#############
 ENEMY_SPAWN_AREA = 200 # Density - distance between inner spawn circle and outer spawn circe 
-ENEMY_SPAWN_DISTANCE = 250 # How far does the enemy spawn form the player
+ENEMY_SPAWN_DISTANCE = 100 # How far does the enemy spawn form the player vision
 ENEMY_SPEED_LINEAR = 2
 ENEMY_SPAWN_COOLDOWN = 500
+MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
 ENEMY_SPEED_DIAGONAL = 1.414
 ENEMY_DATA = {
     1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':20,'damage':10,'shoot dist':300},
@@ -28,6 +29,8 @@ ENEMY_DATA = {
 }
 ENEMY_PROJECTILE_COOLDOWN = 1000
 ENEMY_COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
+
+
 ################################
 
 #############PLAYER#############

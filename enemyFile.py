@@ -111,10 +111,10 @@ class Enemy(pygame.sprite.Sprite):
         return action_list
     
     def get_enemy_spawn(self):
-        square_top_left_x = self.player.rect.x - (HEIGHT/2)-ENEMY_SPAWN_DISTANCE
-        square_top_left_y =self.player.rect.y - (WIDTH/2)-ENEMY_SPAWN_DISTANCE
-        square_bottom_right_x =self.player.rect.x + (HEIGHT/2)+ENEMY_SPAWN_DISTANCE
-        square_bottom_right_y =self.player.rect.y + (WIDTH/2)+ENEMY_SPAWN_DISTANCE
+        square_top_left_x = self.player.rect.x - (HEIGHT-ENEMY_SPAWN_DISTANCE)
+        square_top_left_y =self.player.rect.y - (WIDTH-ENEMY_SPAWN_DISTANCE)
+        square_bottom_right_x =self.player.rect.x + (HEIGHT+ENEMY_SPAWN_DISTANCE)
+        square_bottom_right_y =self.player.rect.y + (WIDTH+ENEMY_SPAWN_DISTANCE)
         while True:
             # Generate random x and y coordinates outside the square
             x = random.uniform(square_top_left_x - ENEMY_SPAWN_AREA, square_bottom_right_x + ENEMY_SPAWN_AREA)
@@ -138,6 +138,9 @@ class Enemy(pygame.sprite.Sprite):
         dx = self.player.rect.centerx - self.rect.centerx # Distance between player.x and enemy.x
         dy = self.player.rect.centery - self.rect.centery # Distance between player.y and enemy.y
         dist = (dx**2 + dy**2) ** 0.5 # Basically pythagoream theorem, straightest path between enemy and player
+
+        if dist>3000:
+            self.rect.center = self.get_enemy_spawn()
 
         # Adjust SPEED based on linear or diagonal movement
         if dx != 0 and dy != 0:
