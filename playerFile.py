@@ -1,5 +1,5 @@
 import pygame
-from static_variables import *
+from static_variables import Static_variables
 from static_classes import *
 from animations import *
 from collections import deque
@@ -10,30 +10,30 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, player_type,projectile_group, enemy_projectile_group, enemies):
         game_manager.load_settings()
         self.type = player_type
-        self.scale = PLAYER_SCALE
-        self.sprite_size = PLAYER_DATA[player_type]['sprite']
-        self.player_class = PLAYER_DATA[player_type]['class']
+        self.scale = Static_variables.PLAYER_SCALE
+        self.sprite_size = Static_variables.PLAYER_DATA[player_type]['sprite']
+        self.player_class = Static_variables.PLAYER_DATA[player_type]['class']
         self.projectile_group = projectile_group
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.camera = Camera()
         self.animations = {
-            'walk down' : Animation(self.images['walk down'],COOLDOWNS['movement']),
-            'walk left' : Animation(self.images['walk left'],COOLDOWNS['movement']),
-            'walk right' : Animation(self.images['walk right'],COOLDOWNS['movement']),
-            'walk up' : Animation(self.images['walk up'],COOLDOWNS['movement']),
+            'walk down' : Animation(self.images['walk down'],Static_variables.COOLDOWNS['movement']),
+            'walk left' : Animation(self.images['walk left'],Static_variables.COOLDOWNS['movement']),
+            'walk right' : Animation(self.images['walk right'],Static_variables.COOLDOWNS['movement']),
+            'walk up' : Animation(self.images['walk up'],Static_variables.COOLDOWNS['movement']),
 
-            'stand down' : Animation(self.images['stand down'],COOLDOWNS['movement']),
-            'stand left' : Animation(self.images['stand left'],COOLDOWNS['movement']),
-            'stand right' : Animation(self.images['stand right'],COOLDOWNS['movement']),
-            'stand up' : Animation(self.images['stand up'],COOLDOWNS['movement']),
+            'stand down' : Animation(self.images['stand down'],Static_variables.COOLDOWNS['idle']),
+            'stand left' : Animation(self.images['stand left'],Static_variables.COOLDOWNS['idle']),
+            'stand right' : Animation(self.images['stand right'],Static_variables.COOLDOWNS['idle']),
+            'stand up' : Animation(self.images['stand up'],Static_variables.COOLDOWNS['idle']),
 
-            'shoot down' : Animation(self.images['shoot down'],COOLDOWNS['shoot animation']),
-            'shoot left' : Animation(self.images['shoot left'],COOLDOWNS['shoot animation']),
-            'shoot right' : Animation(self.images['shoot right'],COOLDOWNS['shoot animation']),
-            'shoot up' : Animation(self.images['shoot up'],COOLDOWNS['shoot animation']),
+            'shoot down' : Animation(self.images['shoot down'],Static_variables.COOLDOWNS['shoot animation']),
+            'shoot left' : Animation(self.images['shoot left'],Static_variables.COOLDOWNS['shoot animation']),
+            'shoot right' : Animation(self.images['shoot right'],Static_variables.COOLDOWNS['shoot animation']),
+            'shoot up' : Animation(self.images['shoot up'],Static_variables.COOLDOWNS['shoot animation']),
 
-            'death' : Animation(self.images['death'],COOLDOWNS['movement'])
+            'death' : Animation(self.images['death'],Static_variables.COOLDOWNS['movement'])
         }
         self.start_animation = self.animations['stand down']
         self.animation_queue = deque()
@@ -43,31 +43,31 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH // 2, HEIGHT // 2+3) # Center the player
 
-        self.hitbox = pygame.Rect(0, 0, PLAYER_DATA[player_type]['hitbox_width']*PLAYER_SCALE, PLAYER_DATA[player_type]['hitbox_height']*PLAYER_SCALE)
+        self.hitbox = pygame.Rect(0, 0, Static_variables.PLAYER_DATA[player_type]['hitbox_width']*Static_variables.PLAYER_SCALE, Static_variables.PLAYER_DATA[player_type]['hitbox_height']*Static_variables.PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
         self.enemies = enemies
         self.total_enemies_killed = 0
         self.enemies_killed_for_lvl =0
-        self.speed_linear = SPEED_LINEAR
-        self.speed_diagonal = SPEED_DIAGONAL
-        self.max_xp = STARTING_XP
-        self.xp_scale = XP_SCALE
-        self.xp_bar_length = 100*PLAYER_SCALE
+        self.speed_linear = Static_variables.SPEED_LINEAR
+        self.speed_diagonal = Static_variables.SPEED_DIAGONAL
+        self.max_xp = Static_variables.STARTING_XP
+        self.xp_scale = Static_variables.XP_SCALE
+        self.xp_bar_length = 100*Static_variables.PLAYER_SCALE
         self.xp_bar_ratio = self.max_xp/self.xp_bar_length
         self.level = 1
 
-        self.health = PLAYER_DATA[self.type]['health']
+        self.health = Static_variables.PLAYER_DATA[self.type]['health']
         self.target_health = self.health
         self.maxhealth = self.health
-        self.health_bar_length = self.maxhealth* PLAYER_SCALE * PLAYER_SCALE# sprite means the length of one player frame 
+        self.health_bar_length = self.maxhealth* Static_variables.PLAYER_SCALE * Static_variables.PLAYER_SCALE# sprite means the length of one player frame 
         self.health_ratio = self.maxhealth/self.health_bar_length
         self.health_change_speed = 1
         self.is_dying = False
         self.officially_dead = False
         self.death_start_time = 0
         self.death_duration = 700
-        self.damage_cooldown = COOLDOWNS['damage']
+        self.damage_cooldown = Static_variables.COOLDOWNS['damage']
         self.last_damage_time = 0
         self.motion = False
         self.direction = 'down'
@@ -75,18 +75,37 @@ class Player(pygame.sprite.Sprite):
         self.enemy_projectile_group = enemy_projectile_group
         self.shooting = False
         self.last_shot_time = 0
-        self.shoot_cooldown = PROJECTILE_COOLDOWN
+        self.shoot_cooldown = Static_variables.PROJECTILE_COOLDOWN
         self.arrow_offset = 0
         self.arrow_offset = 10*self.scale
 
-        self.melee_range = PLAYER_DATA[2]['range'] * self.scale
-        self.melee_cooldown = MELEE_COOLDOWN
+        self.melee_range = Static_variables.PLAYER_DATA[2]['range'] * self.scale
+        self.melee_cooldown = Static_variables.MELEE_COOLDOWN
         self.last_melee_time = 0
-        self.heal_factor = PLAYER_DATA[2]['heal_factor']
+        self.heal_factor = Static_variables.PLAYER_DATA[2]['heal_factor']
 
+    def update_animation_speed(self):
+        self.animations = {
+            'walk down' : Animation(self.images['walk down'],Static_variables.COOLDOWNS['movement']),
+            'walk left' : Animation(self.images['walk left'],Static_variables.COOLDOWNS['movement']),
+            'walk right' : Animation(self.images['walk right'],Static_variables.COOLDOWNS['movement']),
+            'walk up' : Animation(self.images['walk up'],Static_variables.COOLDOWNS['movement']),
+
+            'stand down' : Animation(self.images['stand down'],Static_variables.COOLDOWNS['idle']),
+            'stand left' : Animation(self.images['stand left'],Static_variables.COOLDOWNS['idle']),
+            'stand right' : Animation(self.images['stand right'],Static_variables.COOLDOWNS['idle']),
+            'stand up' : Animation(self.images['stand up'],Static_variables.COOLDOWNS['idle']),
+
+            'shoot down' : Animation(self.images['shoot down'],Static_variables.COOLDOWNS['shoot animation']),
+            'shoot left' : Animation(self.images['shoot left'],Static_variables.COOLDOWNS['shoot animation']),
+            'shoot right' : Animation(self.images['shoot right'],Static_variables.COOLDOWNS['shoot animation']),
+            'shoot up' : Animation(self.images['shoot up'],Static_variables.COOLDOWNS['shoot animation']),
+
+            'death' : Animation(self.images['death'],Static_variables.COOLDOWNS['movement'])
+        }   
 
     def load_sprite_sheet(self, player_type, scale):
-        sprite_sheet = pygame.image.load(PLAYER_DATA[player_type]['image']).convert_alpha()
+        sprite_sheet = pygame.image.load(Static_variables.PLAYER_DATA[player_type]['image']).convert_alpha()
 
         if scale !=1:
             sprite_width, sprite_height = sprite_sheet.get_size()
@@ -225,7 +244,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 for enemy in self.enemies:
                     if melee_hitbox.colliderect(enemy.hitbox):
-                        enemy.take_damage(PLAYER_DATA[2]['damage'])
+                        enemy.take_damage(Static_variables.PLAYER_DATA[2]['damage'])
                 for projectile in self.enemy_projectile_group:
                     if melee_hitbox.colliderect(projectile.rect):
                         projectile.kill()
@@ -256,7 +275,7 @@ class Player(pygame.sprite.Sprite):
             for enemy in self.enemies:
                 enemy_hitbox = self.camera.apply(enemy.hitbox)
                 if enemy_hitbox.colliderect(projectile_hitbox):
-                    enemy.take_damage(PLAYER_DATA[1]['damage'])
+                    enemy.take_damage(Static_variables.PLAYER_DATA[1]['damage'])
 
     def add_to_killed_enemies(self):
         self.total_enemies_killed+=1

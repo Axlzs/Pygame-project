@@ -1,7 +1,7 @@
 import pygame
 import random
 import math
-from static_variables import *
+from static_variables import Static_variables
 from animations import Animation
 from game_manager import game_manager
 
@@ -30,7 +30,7 @@ class WorldMap:
 
     def load_background_tiles(self):
         background_tiles = []
-        for i in range(1, TOTAL_BG + 1):
+        for i in range(1, Static_variables.TOTAL_BG + 1):
             image = pygame.image.load(f'images/backgrounds/bg-{i}.png').convert()
             image = pygame.transform.scale(image, (self.tile_width, self.tile_height))
             background_tiles.append(image)
@@ -38,8 +38,8 @@ class WorldMap:
 
     def select_tile_index(self):
         # Selects random tile based on weights
-        tiles = list(range(TOTAL_BG))  # Tile indices from 0 to TOTAL_BG - 1
-        return random.choices(tiles, weights=BG_CHANCE, k=1)[0]
+        tiles = list(range(Static_variables.TOTAL_BG))  # Tile indices from 0 to Static_variables.TOTAL_BG - 1
+        return random.choices(tiles, weights=Static_variables.BG_CHANCE, k=1)[0]
 
     def get_background_tiles(self, target_rect, camera_offset, screen_width, screen_height):
         # Calculate visible tiles based on the player's position, camera offset, and screen size
@@ -76,7 +76,7 @@ class WorldMap:
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y, target_pos, damage, projectile_type):
         super().__init__()
-        self.scale = PLAYER_SCALE // 2
+        self.scale = Static_variables.PLAYER_SCALE // 2
         self.projectile_type = projectile_type
         self.projectile_sheet = self.load_projectile_sheet(self.projectile_type, self.scale)
         
@@ -91,11 +91,11 @@ class Projectile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
         
         # Velocity stuff
-        self.speed = PROJECTILE_SPEED
+        self.speed = Static_variables.PROJECTILE_SPEED
         self.velocity = self.calculate_velocity(self.angle)
         
         self.damage = damage
-        self.lifespan = ARROW_LIFESPAN
+        self.lifespan = Static_variables.ARROW_LIFESPAN
         self.spawn_time = pygame.time.get_ticks()
 
     def calculate_angle_to_target(self):
@@ -112,7 +112,7 @@ class Projectile(pygame.sprite.Sprite):
         return pygame.Vector2(vx, vy)
 
     def load_projectile_sheet(self, projectile_type, scale):
-        projectile_sheet = pygame.image.load(PROJECTILE_DATA[projectile_type]['image']).convert_alpha()
+        projectile_sheet = pygame.image.load(Static_variables.PROJECTILE_DATA[projectile_type]['image']).convert_alpha()
         
         if scale != 1:
             projectile_width, projectile_height = projectile_sheet.get_size()
@@ -138,12 +138,12 @@ class Projectile(pygame.sprite.Sprite):
 class Button:
     def __init__(self, screen, sprite_sheet, button_type, pos):
         self.screen = screen
-        self.scale = PLAYER_SCALE
+        self.scale = Static_variables.PLAYER_SCALE
         self.type = button_type
         self.sprite_sheet = sprite_sheet
-        self.data = BUTTON_DATA[self.type]
+        self.data = Static_variables.BUTTON_DATA[self.type]
         self.pos = pos
-        self.rect = pygame.Rect(self.pos, (self.data["width"]*PLAYER_SCALE, self.data["height"]*PLAYER_SCALE))
+        self.rect = pygame.Rect(self.pos, (self.data["width"]*Static_variables.PLAYER_SCALE, self.data["height"]*Static_variables.PLAYER_SCALE))
 
         # Extract button images for each state
         self.images = []
@@ -185,14 +185,14 @@ class Button:
 class LesserButton:
     def __init__(self, screen, sprite_sheet, button_type, pos):
         self.screen = screen
-        self.scale = PLAYER_SCALE
+        self.scale = Static_variables.PLAYER_SCALE
         self.type = button_type
         self.sprite_sheet = sprite_sheet
-        self.data = LESSER_BUTTON_DATA[self.type]
+        self.data = Static_variables.LESSER_BUTTON_DATA[self.type]
         self.pos = pos
         self.rect = pygame.Rect(
             self.pos,
-            (self.data["width"] * PLAYER_SCALE+30, self.data["height"] * PLAYER_SCALE+30)
+            (self.data["width"] * Static_variables.PLAYER_SCALE+30, self.data["height"] * Static_variables.PLAYER_SCALE+30)
         )
 
         self.images = []

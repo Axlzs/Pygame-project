@@ -1,5 +1,4 @@
 import pygame
-from static_variables import *
 
 class Animation:
     # Sprite sheet  has all the animations in a single line

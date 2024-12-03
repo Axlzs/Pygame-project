@@ -1,11 +1,5 @@
-[+]better upgrade screen
-[+]movement speed now upgradeable 
-[+]little adjustments to the player io
-[+]added visible hitpoints in health bar
-
 
 [-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
-
 
 [-]make mele usable 
   [-]attack while walking (we have animations for that)

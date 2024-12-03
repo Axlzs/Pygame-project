@@ -1,5 +1,5 @@
 import pygame
-from static_variables import *
+from static_variables import Static_variables
 from static_classes import Button
 from game_manager import game_manager
 import game  # Game code module
@@ -14,15 +14,15 @@ def options():
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/3.png").convert_alpha()
     background4 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/4.png").convert_alpha()
 
-    font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
-    fullscreen_option = font.render("Fullscreen", True, BLACK)
+    font = pygame.font.Font("font/Minecraft.ttf", 15*Static_variables.PLAYER_SCALE)
+    fullscreen_option = font.render("Fullscreen", True, Static_variables.BLACK)
 
     background1 = pygame.transform.scale(background1, (WIDTH+80, HEIGHT+80))
     background2 = pygame.transform.scale(background2, (WIDTH+80, HEIGHT+80))
     background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
     background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
     
-    back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+    back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
     yes_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "yes", (WIDTH//5, HEIGHT//10))
     no_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "no", (WIDTH//5, HEIGHT//10))
 
@@ -58,10 +58,10 @@ def options():
                 background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
-                back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+                back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
                 yes_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "yes", (WIDTH//5, HEIGHT//10))
                 no_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "no", (WIDTH//5, HEIGHT//10))
-                game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*PLAYER_SCALE, yes_button.rect.midleft[1]))
+                game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*Static_variables.PLAYER_SCALE, yes_button.rect.midleft[1]))
 
             if no_button.handle_event(event):  # Fullscreen toggle
                 transitioning = True
@@ -78,14 +78,14 @@ def options():
                 background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
-                back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+                back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
                 yes_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "yes", (WIDTH//5, HEIGHT//10))
                 no_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "no", (WIDTH//5, HEIGHT//10))
 
             elif event.type == pygame.VIDEORESIZE:  # Windowed resize
                 if not transitioning:
-                    new_width = max(event.w, MIN_WIDTH)
-                    new_height = max(event.h, MIN_HEIGHT)
+                    new_width = max(event.w, Static_variables.MIN_WIDTH)
+                    new_height = max(event.h, Static_variables.MIN_HEIGHT)
                     game_manager.settings["resolution"] = (new_width, new_height)
                     game_manager.screen = game_manager.apply_settings()
                     WIDTH, HEIGHT = game_manager.update_dimensions()
@@ -95,7 +95,7 @@ def options():
                 background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
-                back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+                back_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
                 yes_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "yes", (WIDTH//5, HEIGHT//10))
                 no_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "no", (WIDTH//5, HEIGHT//10))
 
@@ -113,7 +113,7 @@ def options():
         game_manager.screen.blit(background3, (-offset_3[0], -offset_3[1]))
         game_manager.screen.blit(background4, (-offset_4[0], -offset_4[1]))
 
-        game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*PLAYER_SCALE, yes_button.rect.midleft[1]))
+        game_manager.screen.blit(fullscreen_option,(yes_button.rect.x-80*Static_variables.PLAYER_SCALE, yes_button.rect.midleft[1]))
 
         if game_manager.settings["screen_mode"] == "fullscreen":
             yes_button.draw()
@@ -123,7 +123,7 @@ def options():
 
 
         pygame.display.flip()
-        CLOCK.tick(FPS)
+        Static_variables.CLOCK.tick(Static_variables.FPS)
 
 def choose_player():
     WIDTH, HEIGHT = game_manager.update_dimensions()
@@ -132,8 +132,8 @@ def choose_player():
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/2.png").convert_alpha()
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/3.png").convert_alpha()
     background4 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/4.png").convert_alpha()
-    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*PLAYER_SCALE), HEIGHT//2+(80*PLAYER_SCALE)))
-    back_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(40*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE)))
+    back_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
 
     player1_sheet = pygame.image.load("images/players/player1.png").convert_alpha()
     player2_sheet = pygame.image.load("images/players/player2.png").convert_alpha()
@@ -183,8 +183,8 @@ def choose_player():
 
             if event.type == pygame.VIDEORESIZE: # resizes the screen only when the window acually resizes
                 # Enforce minimum resolution
-                new_width = max(event.w, MIN_WIDTH)
-                new_height = max(event.h, MIN_HEIGHT)
+                new_width = max(event.w, Static_variables.MIN_WIDTH)
+                new_height = max(event.h, Static_variables.MIN_HEIGHT)
                 game_manager.settings["resolution"] = new_width,new_height
 
                 # Apply the adjusted size to the window
@@ -196,8 +196,8 @@ def choose_player():
                 background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
-                start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*PLAYER_SCALE), HEIGHT//2+(80*PLAYER_SCALE)))
-                back_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+                start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE)))
+                back_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check for mouse click inside the rectangle
                 if event.button == 1:  # Left mouse button
@@ -226,27 +226,27 @@ def choose_player():
         game_manager.screen.blit(player2_frame, (WIDTH/2+100, 100))
 
         if player1_selected:
-            pygame.draw.rect(game_manager.screen, GREEN, player1_rect, 5)
+            pygame.draw.rect(game_manager.screen, Static_variables.GREEN, player1_rect, 5)
             player_choice = 1
         else:
-            pygame.draw.rect(game_manager.screen, RED, player1_rect, 5)
+            pygame.draw.rect(game_manager.screen, Static_variables.RED, player1_rect, 5)
 
         if player2_selected:
-            pygame.draw.rect(game_manager.screen, GREEN, player2_rect, 5)
+            pygame.draw.rect(game_manager.screen, Static_variables.GREEN, player2_rect, 5)
             player_choice = 2
         else:
-            pygame.draw.rect(game_manager.screen, RED, player2_rect, 5)
+            pygame.draw.rect(game_manager.screen, Static_variables.RED, player2_rect, 5)
 
         # Draw everything
         start_button.draw()
         back_button.draw()
 
-        if RECT_MODE:
+        if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (255, 0, 0), start_button.rect, 2)
             pygame.draw.rect(game_manager.screen, (255, 0, 0), back_button.rect, 2)
 
         pygame.display.flip()
-        CLOCK.tick(FPS)
+        Static_variables.CLOCK.tick(Static_variables.FPS)
 
 def main_menu():
 
@@ -257,10 +257,10 @@ def main_menu():
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/2.png").convert_alpha()
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/3.png").convert_alpha()
     background4 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/4.png").convert_alpha()
-    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2))
-    info_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "info", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(40 *PLAYER_SCALE)))
-    option_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "option", (WIDTH//2-(40*PLAYER_SCALE), HEIGHT//2+(80*PLAYER_SCALE)))
-    quit_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "quit", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2))
+    info_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "info", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(40 *Static_variables.PLAYER_SCALE)))
+    option_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "option", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE)))
+    quit_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "quit", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
 
     # Scale the background image to match the screen size
     background1 = pygame.transform.scale(background1, (WIDTH+80, HEIGHT+80))
@@ -301,8 +301,8 @@ def main_menu():
                 exit()
             if event.type == pygame.VIDEORESIZE: # resizes the screen only when the window acually resizes
                 # Enforce minimum resolution
-                new_width = max(event.w, MIN_WIDTH)
-                new_height = max(event.h, MIN_HEIGHT)
+                new_width = max(event.w, Static_variables.MIN_WIDTH)
+                new_height = max(event.h, Static_variables.MIN_HEIGHT)
                 game_manager.settings["resolution"] = new_width,new_height
 
                 # Apply the adjusted size to the window
@@ -314,10 +314,10 @@ def main_menu():
                 background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
-                start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2))
-                info_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "info", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(40 *PLAYER_SCALE)))
-                option_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "option", (WIDTH//2-(40*PLAYER_SCALE), HEIGHT//2+(80*PLAYER_SCALE)))
-                quit_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "quit", (WIDTH//2-(32*PLAYER_SCALE), HEIGHT//2+(120*PLAYER_SCALE)))
+                start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2))
+                info_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "info", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(40 *Static_variables.PLAYER_SCALE)))
+                option_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "option", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE)))
+                quit_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "quit", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
 
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -339,14 +339,14 @@ def main_menu():
         option_button.draw()
         quit_button.draw()
 
-        if RECT_MODE:
+        if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (255, 0, 0), start_button.rect, 2)
             pygame.draw.rect(game_manager.screen, (255, 0, 0), info_button.rect, 2)
             pygame.draw.rect(game_manager.screen, (255, 0, 0), option_button.rect, 2)
             pygame.draw.rect(game_manager.screen, (255, 0, 0), quit_button.rect, 2)
 
         pygame.display.flip()
-        CLOCK.tick(FPS)
+        Static_variables.CLOCK.tick(Static_variables.FPS)
 
 
 if __name__ == "__main__":

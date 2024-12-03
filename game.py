@@ -1,5 +1,5 @@
 import pygame
-from static_variables import *
+from static_variables import Static_variables
 from static_classes import *
 from playerFile import Player
 from enemyFile import Enemy
@@ -54,8 +54,8 @@ def game_over_screen(player_type):
     Displays the game over game_manager.screen with interactive buttons.
     """
 
-    main_menu = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "mainmenu", (WIDTH // 2 + 32*PLAYER_SCALE, HEIGHT // 2 + 280))
-    restart = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "restart", (WIDTH // 2 - 128*PLAYER_SCALE, HEIGHT // 2 + 280))
+    main_menu = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "mainmenu", (WIDTH // 2 + 32*Static_variables.PLAYER_SCALE, HEIGHT // 2 + 280))
+    restart = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "restart", (WIDTH // 2 - 128*Static_variables.PLAYER_SCALE, HEIGHT // 2 + 280))
 
     while True:
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -74,14 +74,14 @@ def game_over_screen(player_type):
         main_menu.draw()
         restart.draw()
 
-        font = pygame.font.Font("font/Minecraft.ttf", 30*PLAYER_SCALE)
-        game_over_font = pygame.font.Font("font/Minecraft.ttf", 50*PLAYER_SCALE)
+        font = pygame.font.Font("font/Minecraft.ttf", 30*Static_variables.PLAYER_SCALE)
+        game_over_font = pygame.font.Font("font/Minecraft.ttf", 50*Static_variables.PLAYER_SCALE)
 
-        score_text = font.render(f"ENEMIES KILLED: {int(player.total_enemies_killed)}", True, WHITE)
-        game_over_text = game_over_font.render("GAME OVER", True, WHITE)
+        score_text = font.render(f"ENEMIES KILLED: {int(player.total_enemies_killed)}", True, Static_variables.WHITE)
+        game_over_text = game_over_font.render("GAME OVER", True, Static_variables.WHITE)
 
-        game_manager.screen.blit(score_text, ((WIDTH - 285*PLAYER_SCALE) //2, HEIGHT // 2))
-        game_manager.screen.blit(game_over_text, ((WIDTH - 285*PLAYER_SCALE) //2, (HEIGHT // 2) - 64*PLAYER_SCALE))
+        game_manager.screen.blit(score_text, ((WIDTH - 285*Static_variables.PLAYER_SCALE) //2, HEIGHT // 2))
+        game_manager.screen.blit(game_over_text, ((WIDTH - 285*Static_variables.PLAYER_SCALE) //2, (HEIGHT // 2) - 64*Static_variables.PLAYER_SCALE))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -98,14 +98,14 @@ def game_over_screen(player_type):
                 start_game(player_type)
 
         pygame.display.update()
-        CLOCK.tick(FPS)
+        Static_variables.CLOCK.tick(Static_variables.FPS)
 
 def draw_fps_counter():
     """
     Renders the current frames per second (FPS) on the game_manager.screen using
     the specified font and displays it at the top-left corner of the game screendow.
     """
-    fps_text = font.render(f"FPS: {int(CLOCK.get_fps())}", True, WHITE)
+    fps_text = font.render(f"FPS: {int(Static_variables.CLOCK.get_fps())}", True, Static_variables.WHITE)
     game_manager.screen.blit(fps_text, (WIDTH-100, 10))
 def draw_entities():
     #map stuff
@@ -117,7 +117,7 @@ def draw_entities():
     
     game_manager.screen.blit(player.image, camera.apply(player.rect))
     #player hitbox
-    if RECT_MODE:
+    if Static_variables.RECT_MODE:
         pygame.draw.rect(game_manager.screen, (0, 255, 0), player.hitbox,2)
     
     #projectile stuff
@@ -125,14 +125,14 @@ def draw_entities():
         offset_rect = camera.apply(projectile.rect)
         game_manager.screen.blit(projectile.image, offset_rect)
         #arrow hitbox
-        if RECT_MODE:
+        if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (255,0,0), offset_rect,2)
 
     for projectile in enemy_projectile_group:
         offset_rect = camera.apply(projectile.rect)
         game_manager.screen.blit(projectile.image, offset_rect)
         #arrow hitbox
-        if RECT_MODE:
+        if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (0,255,0), offset_rect,2)
 
     for enemy in enemies:
@@ -140,7 +140,7 @@ def draw_entities():
         offset_rect = camera.apply(enemy.rect)
         game_manager.screen.blit(enemy.image, offset_rect)
         #enemy hitboxes
-        if RECT_MODE:
+        if Static_variables.RECT_MODE:
             melee_hitbox = enemy.get_melee_hitbox()
             if enemy.type ==2:
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
@@ -149,7 +149,7 @@ def draw_entities():
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
     
     #mele hitbox
-    if RECT_MODE:
+    if Static_variables.RECT_MODE:
         if player.type==2:
             melee_hitbox = player.get_melee_hitbox()
             pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
@@ -171,7 +171,7 @@ def player_healthbar_activate(player):
         transition_colour = (255,255,0)
 
     health_font = pygame.font.Font("font/Minecraft.ttf", 12)
-    health_text = health_font.render(str(player.health)+"/"+str(player.maxhealth), True, WHITE)
+    health_text = health_font.render(str(player.health)+"/"+str(player.maxhealth), True, Static_variables.WHITE)
 
     health_bar_rect = pygame.Rect(10,10,player.health/player.health_ratio,20)
     transition_bar_rect = pygame.Rect(health_bar_rect.right,10,transition_width,20)
@@ -184,7 +184,7 @@ def player_healthbar_activate(player):
 def xp_bar(player):
     pygame.draw.rect(game_manager.screen, (0,0,255),(10,31,player.enemies_killed_for_lvl/player.xp_bar_ratio,10))
     pygame.draw.rect(game_manager.screen, (255,255,255),(10,31,player.xp_bar_length,10),2)
-    lvl_text = font.render(f"LEVEL: {player.level}", True, WHITE)
+    lvl_text = font.render(f"LEVEL: {player.level}", True, Static_variables.WHITE)
     game_manager.screen.blit(lvl_text, (12, 45))
 
 
@@ -201,7 +201,7 @@ def enemy_healthbar_activate(enemy):
 def manual_enemy_spawn(spawned_enemies,player):
     keys = pygame.key.get_pressed()
     if keys[pygame.K_e]: # Manualy spawn enemies 
-        enemy_type = random.choice(list(ENEMY_DATA.keys()))
+        enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
         enemy = Enemy(enemy_type, enemy_projectile_group, player)
         enemies.add(enemy)
@@ -210,8 +210,8 @@ def manual_enemy_spawn(spawned_enemies,player):
 
 def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
     current_time = pygame.time.get_ticks()
-    if enemy_count <10 and current_time - last_enemy_spawn >= ENEMY_SPAWN_COOLDOWN:
-        enemy_type = random.choice(list(ENEMY_DATA.keys()))
+    if enemy_count <10 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
+        enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
         enemy = Enemy(enemy_type, enemy_projectile_group, player)
         enemies.add(enemy)
@@ -220,24 +220,24 @@ def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
 
 def upgrade_screen(player_type):
     BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Debuff buttons.png").convert_alpha()
-    health_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "health", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2 +98*PLAYER_SCALE))
-    strength_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "strengthen", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2 +49*PLAYER_SCALE))
-    attack_speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "swing", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2))
-    speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "levelup", (WIDTH//2-57*PLAYER_SCALE, HEIGHT//2 -49*PLAYER_SCALE))
+    health_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "health", (WIDTH//2-57*Static_variables.PLAYER_SCALE, HEIGHT//2 +98*Static_variables.PLAYER_SCALE))
+    strength_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "strengthen", (WIDTH//2-57*Static_variables.PLAYER_SCALE, HEIGHT//2 +49*Static_variables.PLAYER_SCALE))
+    attack_speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "swing", (WIDTH//2-57*Static_variables.PLAYER_SCALE, HEIGHT//2))
+    speed_uppgrade = LesserButton(game_manager.screen, BUTTON_SPRITE_SHEET, "levelup", (WIDTH//2-57*Static_variables.PLAYER_SCALE, HEIGHT//2 -49*Static_variables.PLAYER_SCALE))
 
-    upgrade_font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
-    icon_font = pygame.font.Font("font/Minecraft.ttf", 19*PLAYER_SCALE)
-    upgrade_text = upgrade_font.render("Choose upgrades", True, WHITE)
-    health_text = icon_font.render("Health upgrade", True, WHITE)
-    strength_text = icon_font.render("Damage upgrade", True, WHITE)
-    attack_speed_text = icon_font.render("Increase attack speed", True, WHITE)
-    speed_text = icon_font.render("Increase Movement speed ", True, WHITE)
+    upgrade_font = pygame.font.Font("font/Minecraft.ttf", 15*Static_variables.PLAYER_SCALE)
+    icon_font = pygame.font.Font("font/Minecraft.ttf", 19*Static_variables.PLAYER_SCALE)
+    upgrade_text = upgrade_font.render("Choose upgrades", True, Static_variables.WHITE)
+    health_text = icon_font.render("Health upgrade", True, Static_variables.WHITE)
+    strength_text = icon_font.render("Damage upgrade", True, Static_variables.WHITE)
+    attack_speed_text = icon_font.render("Increase attack speed", True, Static_variables.WHITE)
+    speed_text = icon_font.render("Increase Movement speed ", True, Static_variables.WHITE)
 
-    game_manager.screen.blit(upgrade_text, (WIDTH//2-75*PLAYER_SCALE, HEIGHT//2 -100*PLAYER_SCALE))
-    game_manager.screen.blit(health_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2 +107*PLAYER_SCALE))
-    game_manager.screen.blit(strength_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2 +58*PLAYER_SCALE))
-    game_manager.screen.blit(attack_speed_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2+9*PLAYER_SCALE))
-    game_manager.screen.blit(speed_text, (WIDTH//2-19*PLAYER_SCALE, HEIGHT//2 -40*PLAYER_SCALE))
+    game_manager.screen.blit(upgrade_text, (WIDTH//2-75*Static_variables.PLAYER_SCALE, HEIGHT//2 -100*Static_variables.PLAYER_SCALE))
+    game_manager.screen.blit(health_text, (WIDTH//2-19*Static_variables.PLAYER_SCALE, HEIGHT//2 +107*Static_variables.PLAYER_SCALE))
+    game_manager.screen.blit(strength_text, (WIDTH//2-19*Static_variables.PLAYER_SCALE, HEIGHT//2 +58*Static_variables.PLAYER_SCALE))
+    game_manager.screen.blit(attack_speed_text, (WIDTH//2-19*Static_variables.PLAYER_SCALE, HEIGHT//2+9*Static_variables.PLAYER_SCALE))
+    game_manager.screen.blit(speed_text, (WIDTH//2-19*Static_variables.PLAYER_SCALE, HEIGHT//2 -40*Static_variables.PLAYER_SCALE))
     
 
     running = True
@@ -260,25 +260,29 @@ def upgrade_screen(player_type):
                 running = False
             if strength_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                PLAYER_DATA[player_type]['damage'] += 5
+                Static_variables.PLAYER_DATA[player_type]['damage'] += 5
                 running = False
             if attack_speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                if player.shoot_cooldown > 10 and player_type ==1:
-                    player.shoot_cooldown - 50
+                if player.shoot_cooldown > 30 and player_type ==1:
+                    Static_variables.COOLDOWNS['shoot animation'] /0.2
+                    player.shoot_cooldown //0.2
                     running = False
 
                 if player.melee_cooldown > 10 and player_type ==2:
                     player.melee_cooldown - 50
                     running = False
+                player.update_animation_speed()
             if speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                player.speed_linear *= 2
-                player.speed_diagonal *= 2
+                player.speed_linear *= 1.2
+                player.speed_diagonal *= 1.2
+                Static_variables.COOLDOWNS['movement'] //0.2
+                player.update_animation_speed()
                 running = False
             player.heal(5)
         pygame.display.update()
-        CLOCK.tick(FPS)
+        Static_variables.CLOCK.tick(Static_variables.FPS)
             
 
 def main_loop(chosen_player):
@@ -293,7 +297,7 @@ def main_loop(chosen_player):
     player = Player(player_type, projectile_group, enemy_projectile_group, enemies)  # Pass the appropriate player type here
     
     camera = Camera()
-    map = WorldMap(TILE_WIDTH, TILE_HEIGHT)
+    map = WorldMap(Static_variables.TILE_WIDTH, Static_variables.TILE_HEIGHT)
 
     current_level = player.level
     spawned_enemies = 0
@@ -326,9 +330,9 @@ def main_loop(chosen_player):
                 enemy.shooting = False
             player.motion = False
             
-            font = pygame.font.Font("font/Minecraft.ttf", 15*PLAYER_SCALE)
-            text = font.render("Paused - Press 'ESCAPE' to Resume", True, WHITE)
-            game_manager.screen.blit(text, (WIDTH//2-100*PLAYER_SCALE, HEIGHT//2))
+            font = pygame.font.Font("font/Minecraft.ttf", 15*Static_variables.PLAYER_SCALE)
+            text = font.render("Paused - Press 'ESCAPE' to Resume", True, Static_variables.WHITE)
+            game_manager.screen.blit(text, (WIDTH//2-100*Static_variables.PLAYER_SCALE, HEIGHT//2))
         elif upgrade_due:
 
             upgrade_screen(player_type)
@@ -352,18 +356,18 @@ def main_loop(chosen_player):
             for projectile in enemy_projectile_group:
                 projectile_hitbox=camera.apply(projectile.rect)
                 if player.hitbox.colliderect(projectile_hitbox):
-                    player.take_damage(ENEMY_DATA[1]['damage'])     
+                    player.take_damage(Static_variables.ENEMY_DATA[1]['damage'])     
 
             if player.level>current_level:
                 upgrade_due  = True
-                # ENEMY_SPAWN_COOLDOWN = min(ENEMY_SPAWN_COOLDOWN - 50, 100)
-                # MAX_ENEMY_SPAWN +=2             
+                Static_variables.ENEMY_SPAWN_COOLDOWN = min(Static_variables.ENEMY_SPAWN_COOLDOWN - 50, 100)
+                Static_variables.MAX_ENEMY_SPAWN +=2             
             if player.officially_dead:
                 game_over_screen(player_type)
 
  
         pygame.display.flip()
-        CLOCK.tick(FPS)
+        Static_variables.CLOCK.tick(Static_variables.FPS)
     pygame.quit()
     exit()
 
