@@ -1,5 +1,5 @@
 import pygame
-from static_variables import Static_variables#Static_variables
+from static_variables import Static_variables
 from static_classes import *
 from animations import *
 from game_manager import game_manager
@@ -7,7 +7,7 @@ from game_manager import game_manager
 WIDTH, HEIGHT = game_manager.update_dimensions()
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, enemy_type, projectile_group, player):
+    def __init__(self, enemy_type, projectile_group, player, droppable_group):
         pygame.sprite.Sprite.__init__(self)
         self.type = enemy_type
         self.scale = Static_variables.PLAYER_SCALE
@@ -15,6 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         self.sprite_size = Static_variables.ENEMY_DATA[enemy_type]['sprite']
         self.player_class = Static_variables.ENEMY_DATA[enemy_type]['class']
         self.projectile_group = projectile_group
+        self.droppable_group = droppable_group
         self.sprite_sheet = self.load_sprite_sheet(enemy_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.camera = Camera()
@@ -248,13 +249,19 @@ class Enemy(pygame.sprite.Sprite):
                 self.last_damage_time = current_time
                 self.health -= amount
                 if self.health <= 0:
-                    self.player.add_to_killed_enemies() # this is here, because this must run only once on enemy death
+                    #self.player.gain_xp() # this is here, because this must run only once on enemy death
                     self.start_death_sequence()
         else: pass
 
     def start_death_sequence(self):
         self.is_dying = True
         self.death_start_time = pygame.time.get_ticks()
+
+    def drop_something(self,droppable_group):
+        what_drop = random.choices(Static_variables.POPULATION, Static_variables.DROPTABLE)[0]
+        if what_drop != 'nothing':
+            new_drop = Droppable(what_drop, self.rect.centerx,self.rect.centery)
+            droppable_group.add(new_drop)
 
     def update(self):
     #UPDATES STUFF
@@ -263,7 +270,10 @@ class Enemy(pygame.sprite.Sprite):
         if self.is_dying:
             self.image = self.start_animation.play_once()
             if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
+                self.player.add_to_killed_enemies()
                 self.kill()
+                self.drop_something(self.droppable_group)
+
         else:
             #Get image -> determine correct action -> add animation to the action 
             self.image = self.start_animation.get_current_frame()

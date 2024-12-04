@@ -227,3 +227,43 @@ class LesserButton:
         else:
             self.current_image = self.images[0]  # Normal state
         return False
+
+class Droppable(pygame.sprite.Sprite):
+    def __init__(self, item_type, x, y):
+        super().__init__()
+        self.screen = game_manager.screen
+        self.scale = Static_variables.PLAYER_SCALE
+        self.item_type = item_type
+        self.data = Static_variables.DROPPABLES[item_type]
+        self.amount = self.data["effect"]
+        self.x = x
+        self.y = y
+        self.pos = pygame.Vector2(x, y)
+        self.scaled_width = int(self.data["width"] * self.scale)
+        self.scaled_height = int(self.data["height"] * self.scale)
+        self.image = self.load_image(self.scale)
+        self.camera = Camera()
+        self.rect = self.image.get_rect(center=(x, y))
+
+    def load_image(self, scale):
+        projectile_sheet = pygame.image.load(self.data['image']).convert_alpha()
+        
+        if scale != 1:
+            projectile_width, projectile_height = projectile_sheet.get_size()
+            scaled_size = (int(projectile_width * scale), int(projectile_height * scale))
+            projectile_sheet = pygame.transform.scale(projectile_sheet, scaled_size)
+        return projectile_sheet
+
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
+
+    def update(self):
+        self.rect.center = self.pos
+
+    def interact(self,player):
+        if self.item_type == "xp":
+            player.gain_xp(self.amount)
+        elif self.item_type == "health":
+            player.heal(self.amount)
+        self.kill()

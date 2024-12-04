@@ -14,18 +14,24 @@ class Static_variables:
     TILE_HEIGHT = 600
     TOTAL_BG = 10 # The total number of background images 
     BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
+    DROPPABLES = {
+        'health': {'image':'images/health_potion.png','height':24,'width':24,'effect':10},
+        'xp'    : {'image':'images/xp.png','height':18,'width':18,'effect':1},
+    }
+    POPULATION = ['xp','health','nothing']
+    DROPTABLE = [0.6,0.1,0.3] # 1:XP 2:HEALTH 3:NOTHING
     ################################
 
     #############ENEMY#############
-    ENEMY_SPAWN_AREA = 200 # Density - distance between inner spawn circle and outer spawn circe 
-    ENEMY_SPAWN_DISTANCE = 100 # How far does the enemy spawn form the player vision
+    ENEMY_SPAWN_AREA = 50 # Density - distance between inner spawn circle and outer spawn circe 
+    ENEMY_SPAWN_DISTANCE = 50 # How far does the enemy spawn form the player vision
     ENEMY_SPEED_LINEAR = 2
     ENEMY_SPAWN_COOLDOWN = 500
     MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
     ENEMY_SPEED_DIAGONAL = 1.414
     ENEMY_DATA = {
         1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':20,'damage':10,'shoot dist':300},
-        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':20,'damage':10,'attack dist':40,'range':20}
+        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':20,'damage':25,'attack dist':40,'range':20}
     }
     ENEMY_PROJECTILE_COOLDOWN = 1000
     ENEMY_COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
@@ -40,16 +46,14 @@ class Static_variables:
     XP_SCALE = 1.25
     STARTING_XP = 4
     PLAYER_DATA = {
-        1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':100,'damage':10},
-        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':100,'range':20,'heal_factor':5},
+        1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':50,'damage':8},
+        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':100,'damage':20,'range':20,'heal_factor':1},
         3: ''
     }
     ARROW_LIFESPAN = 5000
     COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
     PROJECTILE_COOLDOWN = 300
     MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5 #500
-
-
     ##########ATTACKS##############
     PROJECTILE_DATA = {
         1:{'image':'images/projectiles/iron arrow single.png','hitbox_width':2,'hitbox_height':10},

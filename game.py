@@ -16,7 +16,7 @@ def load_game_over_assets():
     Load images and sounds for the game over game_manager.screen.
     """
 
-    global background1,background2,background3,background4, mainmenu_imgs, restart_imgs, backquit_sound, start_sound
+    global background1,background2,background3,background4, backquit_sound, start_sound
     background1 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/1.png").convert()
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/2.png").convert_alpha()
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Game_over/3.png").convert_alpha()
@@ -27,10 +27,6 @@ def load_game_over_assets():
     background2 = pygame.transform.scale(background2, (WIDTH+80, HEIGHT+80))
     background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
     background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
-
-    # Load button images and rescale them
-    mainmenu_imgs = [pygame.transform.scale(pygame.image.load(f'images/mainmenu-{i}.png'), (300, 100)) for i in range(1, 4)]
-    restart_imgs = [pygame.transform.scale(pygame.image.load(f'images/restart-{i}.png'), (250, 100)) for i in range(1, 4)]
 
     backquit_sound = pygame.mixer.Sound('sounds/backquit.ogg')
     start_sound = pygame.mixer.Sound('sounds/start.ogg')
@@ -106,7 +102,7 @@ def draw_fps_counter():
     the specified font and displays it at the top-left corner of the game screendow.
     """
     fps_text = font.render(f"FPS: {int(Static_variables.CLOCK.get_fps())}", True, Static_variables.WHITE)
-    game_manager.screen.blit(fps_text, (WIDTH-100, 10))
+    game_manager.screen.blit(fps_text, (WIDTH-100, 10)) 
 def draw_entities():
     #map stuff
     # visible_tiles = map.get_background_tiles(player.rect, camera.offset)
@@ -120,20 +116,24 @@ def draw_entities():
     if Static_variables.RECT_MODE:
         pygame.draw.rect(game_manager.screen, (0, 255, 0), player.hitbox,2)
     
-    #projectile stuff
-    for projectile in projectile_group:
+    #projectile stuff 
+    for projectile in projectile_group: 
         offset_rect = camera.apply(projectile.rect)
         game_manager.screen.blit(projectile.image, offset_rect)
         #arrow hitbox
         if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (255,0,0), offset_rect,2)
-
+ 
     for projectile in enemy_projectile_group:
         offset_rect = camera.apply(projectile.rect)
         game_manager.screen.blit(projectile.image, offset_rect)
         #arrow hitbox
         if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (0,255,0), offset_rect,2)
+
+    for drop in droppable_group:
+        offset_rect = camera.apply(drop.rect)
+        game_manager.screen.blit(drop.image, offset_rect)
 
     for enemy in enemies:
 
@@ -182,7 +182,7 @@ def player_healthbar_activate(player):
     game_manager.screen.blit(health_text, (50,15))
 
 def xp_bar(player):
-    pygame.draw.rect(game_manager.screen, (0,0,255),(10,31,player.enemies_killed_for_lvl/player.xp_bar_ratio,10))
+    pygame.draw.rect(game_manager.screen, (0,0,255),(10,31,player.xp/player.xp_bar_ratio,10))
     pygame.draw.rect(game_manager.screen, (255,255,255),(10,31,player.xp_bar_length,10),2)
     lvl_text = font.render(f"LEVEL: {player.level}", True, Static_variables.WHITE)
     game_manager.screen.blit(lvl_text, (12, 45))
@@ -203,17 +203,17 @@ def manual_enemy_spawn(spawned_enemies,player):
     if keys[pygame.K_e]: # Manualy spawn enemies 
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
-        enemy = Enemy(enemy_type, enemy_projectile_group, player)
+        enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group)
         enemies.add(enemy)
     elif keys[pygame.K_k]: # Kill all enemies 
         enemies.empty()
 
 def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
     current_time = pygame.time.get_ticks()
-    if enemy_count <10 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
+    if enemy_count <15 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
-        enemy = Enemy(enemy_type, enemy_projectile_group, player)
+        enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group)
         enemies.add(enemy)
         last_enemy_spawn = current_time
     return enemy_count,spawned_enemies,last_enemy_spawn
@@ -257,6 +257,8 @@ def upgrade_screen(player_type):
                 player.maxhealth += 5
                 player.heal(5)
                 player.health_ratio = player.maxhealth/player.health_bar_length
+                if player.type ==2:
+                    player.heal_factor+=1
                 running = False
             if strength_uppgrade.handle_event(event):
                 pygame.time.delay(100)
@@ -270,7 +272,8 @@ def upgrade_screen(player_type):
                     running = False
 
                 if player.melee_cooldown > 10 and player_type ==2:
-                    player.melee_cooldown - 50
+                    Static_variables.COOLDOWNS['shoot animation'] /0.2
+                    player.melee_cooldown //0.2
                     running = False
                 player.update_animation_speed()
             if speed_uppgrade.handle_event(event):
@@ -286,22 +289,23 @@ def upgrade_screen(player_type):
             
 
 def main_loop(chosen_player):
-    global projectile_group, enemy_projectile_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies,WIDTH,HEIGHT,SPEED_DIAGONAL, SPEED_LINEAR
+    global projectile_group, enemy_projectile_group,droppable_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies,WIDTH,HEIGHT,SPEED_DIAGONAL, SPEED_LINEAR
     WIDTH, HEIGHT = game_manager.update_dimensions()
     #setting up game
     last_enemy_spawn = 0
     projectile_group = pygame.sprite.Group()
+    droppable_group = pygame.sprite.Group()
     enemy_projectile_group = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
-    player_type=chosen_player
-    player = Player(player_type, projectile_group, enemy_projectile_group, enemies)  # Pass the appropriate player type here
+    player_type=chosen_player 
+    player = Player(player_type, projectile_group, enemy_projectile_group, enemies, droppable_group)  # Pass the appropriate player type here
     
     camera = Camera()
     map = WorldMap(Static_variables.TILE_WIDTH, Static_variables.TILE_HEIGHT)
 
     current_level = player.level
-    spawned_enemies = 0
-    enemy_count = 0
+    spawned_enemies = 0 # all spawned enemies 
+    enemy_count = 0 # enemies currently alive
     upgrade_due = False
 
     running = True
@@ -316,6 +320,7 @@ def main_loop(chosen_player):
                 player.level +=1
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
                 player.heal(10)
+                print("Spawned enemies"+str(spawned_enemies)+" | enemy_count:" + str(enemy_count))
             if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                 player.take_damage(25)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_l:
@@ -343,7 +348,8 @@ def main_loop(chosen_player):
             enemies.update()
             camera.update(player.rect)
             projectile_group.update()
-            enemy_projectile_group.update()             
+            enemy_projectile_group.update()
+            droppable_group.update()
             draw_entities()
             draw_fps_counter() 
             manual_enemy_spawn(spawned_enemies,player)
@@ -380,7 +386,6 @@ def start_game(chosen_player):
     initialize_game()
     main_loop(chosen_player)
 
-# Check if this script is being run directly (not imported as a module)
+# Basically if the game is run from this file, then this will be executed first(since there is no chosen_player in this situation, the player is hard coded)
 if __name__ == "__main__":
     start_game(1)
-    #start_game(chosen_player)

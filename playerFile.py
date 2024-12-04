@@ -7,7 +7,7 @@ from game_manager import game_manager
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_type,projectile_group, enemy_projectile_group, enemies):
+    def __init__(self, player_type,projectile_group, enemy_projectile_group, enemies, droppable_group):
         game_manager.load_settings()
         self.type = player_type
         self.scale = Static_variables.PLAYER_SCALE
@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
 
         self.enemies = enemies
         self.total_enemies_killed = 0
-        self.enemies_killed_for_lvl =0
+        self.xp =0
         self.speed_linear = Static_variables.SPEED_LINEAR
         self.speed_diagonal = Static_variables.SPEED_DIAGONAL
         self.max_xp = Static_variables.STARTING_XP
@@ -57,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.xp_bar_ratio = self.max_xp/self.xp_bar_length
         self.level = 1
 
+        self.droppable_group = droppable_group
         self.health = Static_variables.PLAYER_DATA[self.type]['health']
         self.target_health = self.health
         self.maxhealth = self.health
@@ -277,12 +278,19 @@ class Player(pygame.sprite.Sprite):
                 if enemy_hitbox.colliderect(projectile_hitbox):
                     enemy.take_damage(Static_variables.PLAYER_DATA[1]['damage'])
 
+    def collect_drop(self):
+        for drop in self.droppable_group:
+            if self.rect.colliderect(drop.rect):
+                drop.interact(self)
+
     def add_to_killed_enemies(self):
         self.total_enemies_killed+=1
-        self.enemies_killed_for_lvl+=1
-        if self.enemies_killed_for_lvl >= self.max_xp:
-            self.enemies_killed_for_lvl = 0
-            self.level+=1
+    
+    def gain_xp(self, amount):
+        self.xp+=amount
+        if self.xp >= self.max_xp:
+            self.xp = 0
+            self.level+=1 
             self.max_xp += int(math.log(self.max_xp,2))
             self.xp_bar_ratio = self.max_xp/self.xp_bar_length
         if self.type ==2:
@@ -318,3 +326,4 @@ class Player(pygame.sprite.Sprite):
                 self.officially_dead = True
         
         self.update_projectile_attacks(self.projectile_group)
+        self.collect_drop()
