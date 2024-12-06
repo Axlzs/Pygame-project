@@ -320,7 +320,6 @@ def main_loop(chosen_player):
                 player.level +=1
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
                 player.heal(10)
-                print("Spawned enemies"+str(spawned_enemies)+" | enemy_count:" + str(enemy_count))
             if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                 player.take_damage(25)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_l:

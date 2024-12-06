@@ -10,10 +10,11 @@ class Static_variables:
     MIN_WIDTH = 800
     MIN_HEIGHT = 600
     ############MAP_DATA############
-    TILE_WIDTH = 800
-    TILE_HEIGHT = 600
+    TILE_WIDTH = 640
+    TILE_HEIGHT = 640
     TOTAL_BG = 10 # The total number of background images 
-    BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
+    #BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
+    BG_CHANCE = [40, 10, 10, 10, 10, 5, 5, 3, 3, 2, 1, 1]
     DROPPABLES = {
         'health': {'image':'images/health_potion.png','height':24,'width':24,'effect':10},
         'xp'    : {'image':'images/xp.png','height':18,'width':18,'effect':1},

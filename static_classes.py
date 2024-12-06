@@ -31,7 +31,7 @@ class WorldMap:
     def load_background_tiles(self):
         background_tiles = []
         for i in range(1, Static_variables.TOTAL_BG + 1):
-            image = pygame.image.load(f'images/backgrounds/bg-{i}.png').convert()
+            image = pygame.image.load(f'images/backgrounds/map{i}.png').convert()
             image = pygame.transform.scale(image, (self.tile_width, self.tile_height))
             background_tiles.append(image)
         return background_tiles
