@@ -7,9 +7,10 @@ from game_manager import game_manager
 WIDTH, HEIGHT = game_manager.update_dimensions()
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, enemy_type, projectile_group, player, droppable_group):
+    def __init__(self, enemy_type, projectile_group, player, droppable_group,enemy_projectile_group):
         pygame.sprite.Sprite.__init__(self)
         self.type = enemy_type
+        self.enemy_projectile_group = enemy_projectile_group
         self.scale = Static_variables.PLAYER_SCALE
         self.player = player
         self.sprite_size = Static_variables.ENEMY_DATA[enemy_type]['sprite']
@@ -112,10 +113,10 @@ class Enemy(pygame.sprite.Sprite):
         return action_list
     
     def get_enemy_spawn(self):
-        square_top_left_x = self.player.rect.x - (HEIGHT-Static_variables.ENEMY_SPAWN_DISTANCE)
-        square_top_left_y =self.player.rect.y - (WIDTH-Static_variables.ENEMY_SPAWN_DISTANCE)
-        square_bottom_right_x =self.player.rect.x + (HEIGHT+Static_variables.ENEMY_SPAWN_DISTANCE)
-        square_bottom_right_y =self.player.rect.y + (WIDTH+Static_variables.ENEMY_SPAWN_DISTANCE)
+        square_top_left_x = self.player.hitbox.x - (HEIGHT-Static_variables.ENEMY_SPAWN_DISTANCE)
+        square_top_left_y =self.player.hitbox.y - (WIDTH-Static_variables.ENEMY_SPAWN_DISTANCE)
+        square_bottom_right_x =self.player.hitbox.x + (HEIGHT+Static_variables.ENEMY_SPAWN_DISTANCE)
+        square_bottom_right_y =self.player.hitbox.y + (WIDTH+Static_variables.ENEMY_SPAWN_DISTANCE)
         while True:
             # Generate random x and y coordinates outside the square
             x = random.uniform(square_top_left_x - Static_variables.ENEMY_SPAWN_AREA, square_bottom_right_x + Static_variables.ENEMY_SPAWN_AREA)
@@ -128,16 +129,16 @@ class Enemy(pygame.sprite.Sprite):
     def angle_to_player(self):
         recy = self.rect.centery
         recx = self.rect.centerx
-        targetx = self.player.rect.centerx
-        targety = self.player.rect.centery
+        targetx = self.player.hitbox.centerx
+        targety = self.player.hitbox.centery
 
         return math.degrees(math.atan2(-(targety - recy), targetx - recx))
     def enemy_actions(self):
 
         self.motion = False
 
-        dx = self.player.rect.centerx - self.rect.centerx # Distance between player.x and enemy.x
-        dy = self.player.rect.centery - self.rect.centery # Distance between player.y and enemy.y
+        dx = self.player.hitbox.centerx - self.rect.centerx # Distance between player.x and enemy.x
+        dy = self.player.hitbox.centery - self.rect.centery # Distance between player.y and enemy.y
         dist = (dx**2 + dy**2) ** 0.5 # Basically pythagoream theorem, straightest path between enemy and player
 
         if dist>3000:
@@ -201,8 +202,8 @@ class Enemy(pygame.sprite.Sprite):
 
             recy = self.rect.centery
             recx = self.rect.centerx
-            targetx = self.player.rect.centerx
-            targety = self.player.rect.centery
+            targetx = self.player.hitbox.centerx
+            targety = self.player.hitbox.centery
 
             angle = self.angle_to_player()
             # Determine direction based on angle
@@ -237,10 +238,15 @@ class Enemy(pygame.sprite.Sprite):
             # Check for collisions with enemies
             melee_hitbox = self.get_melee_hitbox()
 
-            mele_range = self.camera.apply(self.player.hitbox)
-            if mele_range.colliderect(self.player.hitbox):
+            if melee_hitbox.colliderect(self.player.hitbox):
                 self.player.take_damage(Static_variables.ENEMY_DATA[2]['damage'])
 
+    def update_projectile_attacks(self):
+        for projectile in self.enemy_projectile_group:
+            projectile_hitbox=self.camera.apply(projectile.rect)
+            player_hitbox = self.camera.apply(self.player.hitbox)
+            if player_hitbox.colliderect(projectile_hitbox):
+                self.player.take_damage(Static_variables.ENEMY_DATA[1]['damage'])  
 
     def take_damage(self, amount):
         current_time = pygame.time.get_ticks()
@@ -278,4 +284,5 @@ class Enemy(pygame.sprite.Sprite):
             #Get image -> determine correct action -> add animation to the action 
             self.image = self.start_animation.get_current_frame()
         self.enemy_actions()
+        self.update_projectile_attacks()
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position

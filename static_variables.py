@@ -6,15 +6,15 @@ class Static_variables:
     CLOCK = pygame.time.Clock()
     FPS = 60 # Framerate value for game
     #WIN = pygame.display.set_mode((WIDTH,HEIGHT)) # idk if it is needed prolly not
-    RECT_MODE = False # lets one see rects(hitboxes)
+    RECT_MODE = True # lets one see rects(hitboxes)
     MIN_WIDTH = 800
     MIN_HEIGHT = 600
     ############MAP_DATA############
     TILE_WIDTH = 640
     TILE_HEIGHT = 640
-    TOTAL_BG = 10 # The total number of background images 
-    #BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
+    TOTAL_BG = 12 # The total number of background images 
     BG_CHANCE = [40, 10, 10, 10, 10, 5, 5, 3, 3, 2, 1, 1]
+    #BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
     DROPPABLES = {
         'health': {'image':'images/health_potion.png','height':24,'width':24,'effect':10},
         'xp'    : {'image':'images/xp.png','height':18,'width':18,'effect':1},
@@ -32,8 +32,13 @@ class Static_variables:
     ENEMY_SPEED_DIAGONAL = 1.414
     ENEMY_DATA = {
         1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':20,'damage':10,'shoot dist':300},
-        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':10,'hitbox_height':20,'class':2,'health':20,'damage':25,'attack dist':40,'range':20}
+        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':20,'hitbox_height':20,'class':2,'health':20,'damage':25,'attack dist':40,'range':20}
     }
+    ENEMY_ANIMATION_DATA = {
+        
+        
+    }
+    
     ENEMY_PROJECTILE_COOLDOWN = 1000
     ENEMY_COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
 
@@ -46,29 +51,57 @@ class Static_variables:
     PLAYER_SCALE = 2 # Scale player
     XP_SCALE = 1.25
     STARTING_XP = 4
-    PLAYER_DATA = {
-        1: {'image':'images/players/player_ranged.png','sprite':64,
-            'walk_up':      {'row':5,'frames':9},
-            'walk_left':    {'row':6,'frames':9},
-            'walk_down':    {'row':7,'frames':9},
-            'walk_right':   {'row':8,'frames':9},
-
-            'attack_up':    {'row':1,'frames':8},
-            'attack_left':  {'row':2,'frames':8},
-            'attack_down':  {'row':3,'frames':8},
-            'attack_right': {'row':4,'frames':8},
-
-            'death':        {'row':9,'frames':6},
-            'hitbox_width':16,'hitbox_height':28,'class':1,'health':50,'damage':8},
-        2: {'image':'images/players/player_knihgt.png','sprite':64,
-            
-            'hitbox_width':16,'hitbox_height':28,'class':2,'health':100,'damage':20,'range':20,'heal_factor':1},
-        3: ''
-    }
+    
     ARROW_LIFESPAN = 5000
     COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
     PROJECTILE_COOLDOWN = 300
     MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5 #500
+    
+    PLAYER_DATA = {
+        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':16,'hitbox_height':28,'class':1,'health':50,'damage':8},
+        
+        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':28,'hitbox_height':40,'class':2,'health':100,'damage':20,'range':35,'heal_factor':1},
+        3: ''
+    }
+    PLAYER_ANIMATION_DATA = {
+        1:{
+            'walk up':      {'row':4,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk left':    {'row':5,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk down':    {'row':6,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk right':   {'row':7,'frames':9,'cooldown':COOLDOWNS['movement']},
+
+            'stand down':   {'row': 4, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand left':   {'row': 5, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand right':  {'row': 6, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand up':     {'row': 7, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            
+            'attack up':    {'row':0,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
+            'attack left':  {'row':1,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
+            'attack down':  {'row':2,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
+            'attack right': {'row':3,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
+
+            'death':        {'row':8,'frames':6,'cooldown':COOLDOWNS['idle']}
+        },
+        2:{
+            'walk up':      {'row':0,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':9,'cooldown':COOLDOWNS['movement']},
+
+            'stand down':   {'row': 0, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand left':   {'row': 1, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand right':  {'row': 2, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand up':     {'row': 3, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            
+            'attack up':    {'row':5,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack left':  {'row':6,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack down':  {'row':7,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack right': {'row':8,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+
+            'death':        {'row':4,'frames':9,'cooldown':COOLDOWNS['idle']}
+        }
+    }
+
     ##########ATTACKS##############
     PROJECTILE_DATA = {
         1:{'image':'images/projectiles/iron arrow single.png','hitbox_width':2,'hitbox_height':10},

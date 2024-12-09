@@ -1,7 +1,8 @@
-import random
+import pygame 
+from static_variables import *
 
-population = ['Red', 'Blue', 'Green']
-weights = [0.6, 0.3, 0.1]
+player_animation_data = Static_variables.PLAYER_ANIMATION_DATA[1]
 
-chosen = random.choices(population, weights, k=1)
-print(chosen)
+for item in player_animation_data.items():
+    print(item)
+    print('\n')

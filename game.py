@@ -114,7 +114,8 @@ def draw_entities():
     game_manager.screen.blit(player.image, camera.apply(player.rect))
     #player hitbox
     if Static_variables.RECT_MODE:
-        pygame.draw.rect(game_manager.screen, (0, 255, 0), player.hitbox,2)
+        player_hitbox = camera.apply(player.hitbox)
+        pygame.draw.rect(game_manager.screen, (0, 255, 0), player_hitbox,2)
     
     #projectile stuff 
     for projectile in projectile_group: 
@@ -153,6 +154,7 @@ def draw_entities():
         if player.type==2:
             melee_hitbox = player.get_melee_hitbox()
             pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
+
 
 def player_healthbar_activate(player):
     transition_width = 0 # This makes the bar initally invisible 
@@ -203,7 +205,7 @@ def manual_enemy_spawn(spawned_enemies,player):
     if keys[pygame.K_e]: # Manualy spawn enemies 
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
-        enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group)
+        enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
         enemies.add(enemy)
     elif keys[pygame.K_k]: # Kill all enemies 
         enemies.empty()
@@ -213,7 +215,7 @@ def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
     if enemy_count <15 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
-        enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group)
+        enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
         enemies.add(enemy)
         last_enemy_spawn = current_time
     return enemy_count,spawned_enemies,last_enemy_spawn
@@ -275,13 +277,12 @@ def upgrade_screen(player_type):
                     Static_variables.COOLDOWNS['shoot animation'] /0.2
                     player.melee_cooldown //0.2
                     running = False
-                player.update_animation_speed()
             if speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 player.speed_linear *= 1.2
                 player.speed_diagonal *= 1.2
                 Static_variables.COOLDOWNS['movement'] //0.2
-                player.update_animation_speed()
+                player.initialize_animations()
                 running = False
             player.heal(5)
         pygame.display.update()
@@ -356,12 +357,7 @@ def main_loop(chosen_player):
             player_healthbar_activate(player)
             xp_bar(player)
             for enemy in enemies:
-                enemy_healthbar_activate(enemy)
-        ##############HANDLING#DAMAGE##############
-            for projectile in enemy_projectile_group:
-                projectile_hitbox=camera.apply(projectile.rect)
-                if player.hitbox.colliderect(projectile_hitbox):
-                    player.take_damage(Static_variables.ENEMY_DATA[1]['damage'])     
+                enemy_healthbar_activate(enemy)   
 
             if player.level>current_level:
                 upgrade_due  = True
@@ -387,4 +383,4 @@ def start_game(chosen_player):
 
 # Basically if the game is run from this file, then this will be executed first(since there is no chosen_player in this situation, the player is hard coded)
 if __name__ == "__main__":
-    start_game(1)
+    start_game(2)

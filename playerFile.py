@@ -13,28 +13,13 @@ class Player(pygame.sprite.Sprite):
         self.scale = Static_variables.PLAYER_SCALE
         self.sprite_size = Static_variables.PLAYER_DATA[player_type]['sprite']
         self.player_class = Static_variables.PLAYER_DATA[player_type]['class']
+        self.player_animation_data = Static_variables.PLAYER_ANIMATION_DATA[player_type]
         self.projectile_group = projectile_group
         self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
-        self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.camera = Camera()
-        self.animations = {
-            'walk down' : Animation(self.images['walk down'],Static_variables.COOLDOWNS['movement']),
-            'walk left' : Animation(self.images['walk left'],Static_variables.COOLDOWNS['movement']),
-            'walk right' : Animation(self.images['walk right'],Static_variables.COOLDOWNS['movement']),
-            'walk up' : Animation(self.images['walk up'],Static_variables.COOLDOWNS['movement']),
+        self.images = self.create_action_list(self.sprite_sheet,self.scale)
+        self.initialize_animations()
 
-            'stand down' : Animation(self.images['stand down'],Static_variables.COOLDOWNS['idle']),
-            'stand left' : Animation(self.images['stand left'],Static_variables.COOLDOWNS['idle']),
-            'stand right' : Animation(self.images['stand right'],Static_variables.COOLDOWNS['idle']),
-            'stand up' : Animation(self.images['stand up'],Static_variables.COOLDOWNS['idle']),
-
-            'shoot down' : Animation(self.images['shoot down'],Static_variables.COOLDOWNS['shoot animation']),
-            'shoot left' : Animation(self.images['shoot left'],Static_variables.COOLDOWNS['shoot animation']),
-            'shoot right' : Animation(self.images['shoot right'],Static_variables.COOLDOWNS['shoot animation']),
-            'shoot up' : Animation(self.images['shoot up'],Static_variables.COOLDOWNS['shoot animation']),
-
-            'death' : Animation(self.images['death'],Static_variables.COOLDOWNS['movement'])
-        }
         self.start_animation = self.animations['stand down']
         self.animation_queue = deque()
         self.is_animating = False
@@ -85,63 +70,43 @@ class Player(pygame.sprite.Sprite):
         self.last_melee_time = 0
         self.heal_factor = Static_variables.PLAYER_DATA[2]['heal_factor']
 
-    def update_animation_speed(self):
+   
+    def initialize_animations(self):
         self.animations = {
-            'walk down' : Animation(self.images['walk down'],Static_variables.COOLDOWNS['movement']),
-            'walk left' : Animation(self.images['walk left'],Static_variables.COOLDOWNS['movement']),
-            'walk right' : Animation(self.images['walk right'],Static_variables.COOLDOWNS['movement']),
-            'walk up' : Animation(self.images['walk up'],Static_variables.COOLDOWNS['movement']),
+            action: Animation(self.images[action], data['cooldown'])
+            for action, data in self.player_animation_data.items()
+        }
 
-            'stand down' : Animation(self.images['stand down'],Static_variables.COOLDOWNS['idle']),
-            'stand left' : Animation(self.images['stand left'],Static_variables.COOLDOWNS['idle']),
-            'stand right' : Animation(self.images['stand right'],Static_variables.COOLDOWNS['idle']),
-            'stand up' : Animation(self.images['stand up'],Static_variables.COOLDOWNS['idle']),
-
-            'shoot down' : Animation(self.images['shoot down'],Static_variables.COOLDOWNS['shoot animation']),
-            'shoot left' : Animation(self.images['shoot left'],Static_variables.COOLDOWNS['shoot animation']),
-            'shoot right' : Animation(self.images['shoot right'],Static_variables.COOLDOWNS['shoot animation']),
-            'shoot up' : Animation(self.images['shoot up'],Static_variables.COOLDOWNS['shoot animation']),
-
-            'death' : Animation(self.images['death'],Static_variables.COOLDOWNS['movement'])
-        }   
 
     def load_sprite_sheet(self, player_type, scale):
         sprite_sheet = pygame.image.load(Static_variables.PLAYER_DATA[player_type]['image']).convert_alpha()
-
-        if scale !=1:
-            sprite_width, sprite_height = sprite_sheet.get_size()
-            # int is used to negate the appearance of floats
-            scaled_size = (int(sprite_width*scale), int(sprite_height*scale))
-            sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
+        
+        sprite_width, sprite_height = sprite_sheet.get_size()
+        # int is used to negate the appearance of floats
+        scaled_size = (int(sprite_width*scale), int(sprite_height*scale))
+        print(scaled_size)
+        sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
     def create_action_list(self, sprite_sheet, scale):
         action_list = {}
-        action_mapping = {
-            'walk down': 0,
-            'walk left': 1,
-            'walk right': 2,
-            'walk up': 3,
-            'stand down': 4,
-            'stand left': 5,
-            'stand right': 6,
-            'stand up': 7,
-            'shoot down': 8,
-            'shoot left': 9,
-            'shoot right': 10,
-            'shoot up': 11,
-            'death': 12
-        }
         frame_width = self.sprite_size * scale
         frame_height = self.sprite_size * scale
-        for action, row in action_mapping.items():  # Unpack the dictionary correctly
+    
+        for action, data in self.player_animation_data.items():
+            row = data['row']
+            frame_count = data['frames']
+            #print('action:'+action+'  frame count:'+str(frame_count),'  row: '+str(row)+'  frame width: '+ str(frame_width))
             action_frames = []
-            for i in range(6):  # Each action will have 6 frames
-                x = i * frame_width  # Which frame is being copied
-                y = row * frame_height  # Row based on action index
-                frame = sprite_sheet.subsurface((x, y, frame_width, frame_height))  # Use the variables correctly
+    
+            for i in range(frame_count):
+                x = i * frame_width
+                y = row * frame_height
+                frame = sprite_sheet.subsurface((x, y, frame_width, frame_height))
                 action_frames.append(frame)
+    
             action_list[action] = action_frames
+    
         return action_list
     
     def handle_movement(self):
@@ -212,7 +177,7 @@ class Player(pygame.sprite.Sprite):
             elif -135 <= angle < -45:
                 self.direction = 'down'
 
-            self.animation_queue.append(f'shoot {self.direction}')
+            self.animation_queue.append(f'attack {self.direction}')
             self.is_animating = True
             self.last_shot_time = current_time
             #x, y, direction, damage, projectile_type
@@ -222,20 +187,20 @@ class Player(pygame.sprite.Sprite):
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':
-            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (7+self.scale), 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.top - self.melee_range, 2*self.melee_range, self.melee_range)
         elif self.direction == 'down':
-            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.bottom - (self.melee_range + self.scale), 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.bottom, 2*self.melee_range, self.melee_range)
         elif self.direction == 'left':
-            return pygame.Rect(self.rect.left + (7*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.left - 2*self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         elif self.direction == 'right':
-            return pygame.Rect(self.rect.right - (self.melee_range + (7*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.right, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         
     def mele_attack(self):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_melee_time >= self.melee_cooldown:
             self.last_melee_time = current_time
 
-            self.animation_queue.append(f'shoot {self.direction}')
+            self.animation_queue.append(f'attack {self.direction}')
             self.is_animating = True
 
             # Check for collisions with enemies
@@ -280,7 +245,7 @@ class Player(pygame.sprite.Sprite):
 
     def collect_drop(self):
         for drop in self.droppable_group:
-            if self.rect.colliderect(drop.rect):
+            if self.hitbox.colliderect(drop.rect):
                 drop.interact(self)
 
     def add_to_killed_enemies(self):
@@ -327,3 +292,4 @@ class Player(pygame.sprite.Sprite):
         
         self.update_projectile_attacks(self.projectile_group)
         self.collect_drop()
+        self.hitbox.center = self.rect.center

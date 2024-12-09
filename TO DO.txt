@@ -12,3 +12,8 @@
 [-]special powers
   [-]circular melee attack 
   [-]arrow rain or some shit 
+
+
+optimization
+
+enemy arrow attacks and prolly also melee - all of the enemies constantly calcualate camera.apply(player.hitbox)
