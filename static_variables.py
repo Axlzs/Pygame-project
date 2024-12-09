@@ -27,20 +27,59 @@ class Static_variables:
     ENEMY_SPAWN_AREA = 50 # Density - distance between inner spawn circle and outer spawn circe 
     ENEMY_SPAWN_DISTANCE = 50 # How far does the enemy spawn form the player vision
     ENEMY_SPEED_LINEAR = 2
-    ENEMY_SPAWN_COOLDOWN = 500
-    MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
     ENEMY_SPEED_DIAGONAL = 1.414
+    ENEMY_SPAWN_COOLDOWN = 500
+    ENEMY_PROJECTILE_COOLDOWN = 1000
+    ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
+    MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
     ENEMY_DATA = {
-        1: {'image':'images/players/player1.png','sprite':48,'hitbox_width':16,'hitbox_height':28,'class':1,'health':20,'damage':10,'shoot dist':300},
-        2: {'image':'images/players/player2.png','sprite':64,'hitbox_width':20,'hitbox_height':20,'class':2,'health':20,'damage':25,'attack dist':40,'range':20}
+        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':1,'health':20,'damage':10,'shoot dist':300},
+        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':50,'damage':25,'attack dist':30,'range':15},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':2,'health':20,'damage':25,'attack dist':20,'range':10}
     }
     ENEMY_ANIMATION_DATA = {
-        
+        1:{
+            'walk up':      {'row':0,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+
+            'attack up':    {'row':4,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack left':  {'row':5,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack down':  {'row':6,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack right': {'row':7,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+
+            'death':        {'row':8,'frames':6,'cooldown':ENEMY_COOLDOWNS['idle']}
+        },
+        2:{
+            'walk up':      {'row':0,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            
+            'attack up':    {'row':5,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack left':  {'row':6,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack down':  {'row':7,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack right': {'row':8,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+
+            'death':        {'row':4,'frames':9,'cooldown':ENEMY_COOLDOWNS['idle']}
+        },
+        3:{
+            'walk up':      {'row':0,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            
+            'attack up':    {'row':4,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack left':  {'row':5,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack down':  {'row':6,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack right': {'row':7,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+
+            'death':        {'row':8,'frames':9,'cooldown':ENEMY_COOLDOWNS['idle']}
+        }
+
         
     }
-    
-    ENEMY_PROJECTILE_COOLDOWN = 1000
-    ENEMY_COOLDOWNS = {'movement':100,'shoot animation':100,'damage':500}
 
 
     ################################
@@ -58,9 +97,9 @@ class Static_variables:
     MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5 #500
     
     PLAYER_DATA = {
-        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':16,'hitbox_height':28,'class':1,'health':50,'damage':8},
+        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':1,'health':50,'damage':8},
         
-        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':28,'hitbox_height':40,'class':2,'health':100,'damage':20,'range':35,'heal_factor':1},
+        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':2,'health':100,'damage':20,'range':18,'heal_factor':1},
         3: ''
     }
     PLAYER_ANIMATION_DATA = {

@@ -142,8 +142,8 @@ def draw_entities():
         game_manager.screen.blit(enemy.image, offset_rect)
         #enemy hitboxes
         if Static_variables.RECT_MODE:
-            melee_hitbox = enemy.get_melee_hitbox()
-            if enemy.type ==2:
+            if enemy.type !=1:
+                melee_hitbox = enemy.get_melee_hitbox()
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
             else:
@@ -192,13 +192,8 @@ def xp_bar(player):
 
 def enemy_healthbar_activate(enemy):
     offset_rect = camera.apply(enemy.hitbox)
-    if enemy.type ==1:
-        pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,10))
-        pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,10),1)
-
-    if enemy.type ==2:
-        pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,10))
-        pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,10),1)
+    pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,10))
+    pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,10),1)
 
 def manual_enemy_spawn(spawned_enemies,player):
     keys = pygame.key.get_pressed()
@@ -365,7 +360,6 @@ def main_loop(chosen_player):
                 Static_variables.MAX_ENEMY_SPAWN +=2             
             if player.officially_dead:
                 game_over_screen(player_type)
-
  
         pygame.display.flip()
         Static_variables.CLOCK.tick(Static_variables.FPS)

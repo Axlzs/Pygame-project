@@ -13,6 +13,9 @@
   [-]circular melee attack 
   [-]arrow rain or some shit 
 
+[+]fix enemy melee attacks
+[+]fix enemy 3 thief idk why it no workey 
+[+]fix sprite sizes 
 
 optimization
 

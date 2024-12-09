@@ -12,33 +12,17 @@ class Enemy(pygame.sprite.Sprite):
         self.type = enemy_type
         self.enemy_projectile_group = enemy_projectile_group
         self.scale = Static_variables.PLAYER_SCALE
+        self.enemy_scale = Static_variables.ENEMY_DATA[self.type]['scale']
         self.player = player
         self.sprite_size = Static_variables.ENEMY_DATA[enemy_type]['sprite']
-        self.player_class = Static_variables.ENEMY_DATA[enemy_type]['class']
+        self.enemy_animation_data = Static_variables.ENEMY_ANIMATION_DATA[enemy_type]
         self.projectile_group = projectile_group
         self.droppable_group = droppable_group
         self.sprite_sheet = self.load_sprite_sheet(enemy_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
+        self.initialize_animations()
         self.camera = Camera()
-        self.animations = {
-            'walk down' : Animation(self.images['walk down'],Static_variables.ENEMY_COOLDOWNS['movement']),
-            'walk left' : Animation(self.images['walk left'],Static_variables.ENEMY_COOLDOWNS['movement']),
-            'walk right' : Animation(self.images['walk right'],Static_variables.ENEMY_COOLDOWNS['movement']),
-            'walk up' : Animation(self.images['walk up'],Static_variables.ENEMY_COOLDOWNS['movement']),
-
-            'stand down' : Animation(self.images['stand down'],Static_variables.ENEMY_COOLDOWNS['movement']),
-            'stand left' : Animation(self.images['stand left'],Static_variables.ENEMY_COOLDOWNS['movement']),
-            'stand right' : Animation(self.images['stand right'],Static_variables.ENEMY_COOLDOWNS['movement']),
-            'stand up' : Animation(self.images['stand up'],Static_variables.ENEMY_COOLDOWNS['movement']),
-
-            'shoot down' : Animation(self.images['shoot down'],Static_variables.ENEMY_COOLDOWNS['shoot animation']),
-            'shoot left' : Animation(self.images['shoot left'],Static_variables.ENEMY_COOLDOWNS['shoot animation']),
-            'shoot right' : Animation(self.images['shoot right'],Static_variables.ENEMY_COOLDOWNS['shoot animation']),
-            'shoot up' : Animation(self.images['shoot up'],Static_variables.ENEMY_COOLDOWNS['shoot animation']),
-
-            'death' : Animation(self.images['death'],Static_variables.ENEMY_COOLDOWNS['movement'])
-        }
-        self.start_animation = self.animations['stand down']
+        self.start_animation = self.animations['walk down']
         self.image = self.start_animation.get_current_frame()
 
         self.rect = self.image.get_rect()
@@ -49,7 +33,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.health = Static_variables.ENEMY_DATA[self.type]['health']
         self.maxhealth = Static_variables.ENEMY_DATA[self.type]['health']
-        self.health_bar_length = 20* Static_variables.PLAYER_SCALE# sprite means the length of one player frame 
+        self.health_bar_length = self.hitbox.width# sprite means the length of one player frame 
         self.health_ratio = self.maxhealth/self.health_bar_length
         self.is_dying = False
         self.death_start_time = 0
@@ -58,58 +42,54 @@ class Enemy(pygame.sprite.Sprite):
         self.last_damage_time = 0
         self.motion = False
         self.direction = 'down'
+        if self.type == 1:
+            self.shooting = False
+            self.last_shot_time = 0
+            self.shoot_cooldown = Static_variables.ENEMY_PROJECTILE_COOLDOWN
+            self.arrow_offset = 0
+            self.arrow_offset = 10*self.scale
+            self.shoot_dist = Static_variables.ENEMY_DATA[self.type]['shoot dist']
+        else:
+            self.melee_damage = Static_variables.ENEMY_DATA[self.type]['damage']
+            self.melee_range = Static_variables.ENEMY_DATA[self.type]['range'] * self.scale
+            self.melee_cooldown = Static_variables.MELEE_COOLDOWN
+            self.last_melee_time = 0
+            self.melee_attack_dist = Static_variables.ENEMY_DATA[self.type]['attack dist'] * self.scale # When enemy stops moving and starts attacking 
 
-        self.shooting = False
-        self.last_shot_time = 0
-        self.shoot_cooldown = Static_variables.ENEMY_PROJECTILE_COOLDOWN
-        self.arrow_offset = 0
-        self.arrow_offset = 10*self.scale
-        self.shoot_dist = Static_variables.ENEMY_DATA[1]['shoot dist']
-
-        self.melee_damage = Static_variables.ENEMY_DATA[2]['damage']
-        self.melee_range = Static_variables.ENEMY_DATA[2]['range'] * self.scale
-        self.melee_cooldown = Static_variables.MELEE_COOLDOWN
-        self.last_melee_time = 0
-        self.melee_attack_dist = Static_variables.ENEMY_DATA[2]['attack dist'] # When enemy stops moving and starts attacking 
-
+    def initialize_animations(self):
+        self.animations = {
+            action: Animation(self.images[action], data['cooldown'])
+            for action, data in self.enemy_animation_data.items()
+        }
 
     def load_sprite_sheet(self, enemy_type, scale):
         sprite_sheet = pygame.image.load(Static_variables.ENEMY_DATA[enemy_type]['image']).convert_alpha()
 
-        if scale !=1:
-            sprite_width, sprite_height = sprite_sheet.get_size()
-            # int is used to negate the appearance of floats
-            scaled_size = (int(sprite_width*scale), int(sprite_height*scale))
-            sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
+        sprite_width, sprite_height = sprite_sheet.get_size()
+        # int is used to negate the appearance of floats
+        scaled_size = (int(sprite_width//2*scale*self.enemy_scale), int(sprite_height//2*scale*self.enemy_scale))
+        sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
     def create_action_list(self, sprite_sheet, scale):
         action_list = {}
-        action_mapping = {
-            'walk down': 0,
-            'walk left': 1,
-            'walk right': 2,
-            'walk up': 3,
-            'stand down': 4,
-            'stand left': 5,
-            'stand right': 6,
-            'stand up': 7,
-            'shoot down': 8,
-            'shoot left': 9,
-            'shoot right': 10,
-            'shoot up': 11,
-            'death': 12
-        }
-        frame_width = self.sprite_size * scale
-        frame_height = self.sprite_size * scale
-        for action, row in action_mapping.items():  # Unpack the dictionary correctly
+        frame_width = self.sprite_size//2 * scale * self.enemy_scale
+        frame_height = self.sprite_size//2 * scale * self.enemy_scale
+    
+        for action, data in self.enemy_animation_data.items():
+            row = data['row']
+            frame_count = data['frames']
+            #print('action:'+action+'  frame count:'+str(frame_count),'  row: '+str(row)+'  frame width: '+ str(frame_width))
             action_frames = []
-            for i in range(6):  # Each action will have 6 frames
-                x = i * frame_width  # Which frame is being copied
-                y = row * frame_height  # Row based on action index
-                frame = sprite_sheet.subsurface((x, y, frame_width, frame_height))  # Use the variables correctly
+    
+            for i in range(frame_count):
+                x = i * frame_width
+                y = row * frame_height
+                frame = sprite_sheet.subsurface((x, y, frame_width, frame_height))
                 action_frames.append(frame)
+    
             action_list[action] = action_frames
+    
         return action_list
     
     def get_enemy_spawn(self):
@@ -171,7 +151,7 @@ class Enemy(pygame.sprite.Sprite):
             if self.type ==1 and dist <= self.shoot_dist:
                 self.motion = False
                 self.shooting = True
-            elif self.type ==2 and dist <= self.melee_attack_dist:
+            elif self.type !=1 and dist <= self.melee_attack_dist:
                 self.motion = False
                 self.shooting = True
             else:
@@ -183,10 +163,10 @@ class Enemy(pygame.sprite.Sprite):
 
             # Calling animations 
             if self.shooting:
-                self.start_animation = self.animations[f'shoot {self.direction}']
+                self.start_animation = self.animations[f'attack {self.direction}']
                 if self.type ==1:
                     self.shoot(self.projectile_group)
-                elif self.type ==2:
+                elif self.type !=1:
                     self.mele_attack()
             elif self.motion:
                 self.start_animation = self.animations[f'walk {self.direction}']
@@ -223,14 +203,14 @@ class Enemy(pygame.sprite.Sprite):
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':
-            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.top + (7+self.scale), 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.top - self.melee_range, 2*self.melee_range, self.melee_range)
         elif self.direction == 'down':
-            return pygame.Rect(self.rect.centerx - self.melee_range, self.rect.bottom - (self.melee_range + self.scale), 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.bottom, 2*self.melee_range, self.melee_range)
         elif self.direction == 'left':
-            return pygame.Rect(self.rect.left + (7*self.scale), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.left - 2*self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         elif self.direction == 'right':
-            return pygame.Rect(self.rect.right - (self.melee_range + (7*self.scale)), self.rect.centery - self.melee_range, self.melee_range, 2*self.melee_range)
-
+            return pygame.Rect(self.hitbox.right, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+    
     def mele_attack(self):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_melee_time >= self.melee_cooldown:
