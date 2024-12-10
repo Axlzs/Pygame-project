@@ -2,7 +2,7 @@ import pygame
 from static_variables import Static_variables
 from static_classes import *
 from playerFile import Player
-from enemyFile import Enemy
+from enemyFile import Enemy, LesserEnemy
 from game_manager import game_manager
 
 game_manager.load_settings()
@@ -137,7 +137,6 @@ def draw_entities():
         game_manager.screen.blit(drop.image, offset_rect)
 
     for enemy in enemies:
-
         offset_rect = camera.apply(enemy.rect)
         game_manager.screen.blit(enemy.image, offset_rect)
         #enemy hitboxes
@@ -148,7 +147,8 @@ def draw_entities():
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
             else:
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
-    
+
+
     #mele hitbox
     if Static_variables.RECT_MODE:
         if player.type==2:
@@ -192,8 +192,8 @@ def xp_bar(player):
 
 def enemy_healthbar_activate(enemy):
     offset_rect = camera.apply(enemy.hitbox)
-    pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,10))
-    pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,10),1)
+    pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,5))
+    pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,5),1)
 
 def manual_enemy_spawn(spawned_enemies,player):
     keys = pygame.key.get_pressed()
@@ -208,9 +208,11 @@ def manual_enemy_spawn(spawned_enemies,player):
 def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
     current_time = pygame.time.get_ticks()
     if enemy_count <15 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
-        enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
+        enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
+        #enemy_type = 1
+        #enemy = LesserEnemy(enemy_type,player,droppable_group)
         enemies.add(enemy)
         last_enemy_spawn = current_time
     return enemy_count,spawned_enemies,last_enemy_spawn

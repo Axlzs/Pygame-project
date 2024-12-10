@@ -145,7 +145,8 @@ class Player(pygame.sprite.Sprite):
                     if self.type ==1:
                         self.shoot(self.projectile_group)
                     elif self.type ==2:
-                        self.mele_attack()
+                        self.animation_queue.append(f'attack {self.direction}')
+                        self.is_animating = True
                     else:
                         print("sum tin wong")
                 else:
@@ -186,33 +187,37 @@ class Player(pygame.sprite.Sprite):
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':
-            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.top - self.melee_range, 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.top - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         elif self.direction == 'down':
-            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.bottom, 2*self.melee_range, self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.bottom - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         elif self.direction == 'left':
-            return pygame.Rect(self.hitbox.left - 2*self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.left - self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         elif self.direction == 'right':
-            return pygame.Rect(self.hitbox.right, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.right - self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         
     def mele_attack(self):
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_melee_time >= self.melee_cooldown:
-            self.last_melee_time = current_time
+        # current_time = pygame.time.get_ticks()
+        # if current_time - self.last_melee_time >= self.melee_cooldown:
+            # self.last_melee_time = current_time
 
-            self.animation_queue.append(f'attack {self.direction}')
-            self.is_animating = True
-
-            # Check for collisions with enemies
-            melee_hitbox = self.get_melee_hitbox()
-            if self.last_melee_time == 0:
-                pass
-            else:
-                for enemy in self.enemies:
-                    if melee_hitbox.colliderect(enemy.hitbox):
-                        enemy.take_damage(Static_variables.PLAYER_DATA[2]['damage'])
-                for projectile in self.enemy_projectile_group:
-                    if melee_hitbox.colliderect(projectile.rect):
-                        projectile.kill()
+        # Check for collisions with enemies
+        melee_hitbox = self.get_melee_hitbox()
+        # if self.last_melee_time == 0:
+        #     pass
+        # else:
+        #     for enemy in self.enemies:
+        #         if melee_hitbox.colliderect(enemy.hitbox):
+        #             enemy.take_damage(Static_variables.PLAYER_DATA[2]['damage'])
+        #     for projectile in self.enemy_projectile_group:
+        #         if melee_hitbox.colliderect(projectile.rect):
+        #             projectile.kill()
+        #trying out this system, basically using animation queue as cooldown, makes the sword hitbox stay on longer
+        for enemy in self.enemies:
+            if melee_hitbox.colliderect(enemy.hitbox):
+                enemy.take_damage(Static_variables.PLAYER_DATA[2]['damage'])
+        for projectile in self.enemy_projectile_group:
+            if melee_hitbox.colliderect(projectile.rect):
+                projectile.kill()
 
 
     def take_damage(self, amount):
@@ -263,6 +268,8 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         # Handle queued animations
         if self.animation_queue:
+            if self.type == 2:
+                self.mele_attack()
             animation_name = self.animation_queue[0]  # Peek at the front of the queue
             self.start_animation = self.animations[animation_name]
             self.image = self.start_animation.play_once()

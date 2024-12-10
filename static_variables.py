@@ -6,7 +6,7 @@ class Static_variables:
     CLOCK = pygame.time.Clock()
     FPS = 60 # Framerate value for game
     #WIN = pygame.display.set_mode((WIDTH,HEIGHT)) # idk if it is needed prolly not
-    RECT_MODE = True # lets one see rects(hitboxes)
+    RECT_MODE = False # lets one see rects(hitboxes)
     MIN_WIDTH = 800
     MIN_HEIGHT = 600
     ############MAP_DATA############
@@ -17,10 +17,12 @@ class Static_variables:
     #BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
     DROPPABLES = {
         'health': {'image':'images/health_potion.png','height':24,'width':24,'effect':10},
+        'lesser_health': {'image':'images/health_potion.png','height':24,'width':24,'effect':5},
         'xp'    : {'image':'images/xp.png','height':18,'width':18,'effect':1},
     }
-    POPULATION = ['xp','health','nothing']
-    DROPTABLE = [0.6,0.1,0.3] # 1:XP 2:HEALTH 3:NOTHING
+    POPULATION = ['xp','health','lesser_health','nothing']
+    DROPTABLE = [0.6,0.1,0,0.3] # 1:XP 2:HEALTH 3:NOTHING
+    LESSER_DROPTABLE = [0.4,0,0.2,0.4]
     ################################
 
     #############ENEMY#############
@@ -31,11 +33,19 @@ class Static_variables:
     ENEMY_SPAWN_COOLDOWN = 500
     ENEMY_PROJECTILE_COOLDOWN = 1000
     ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
+    LESSER_ENEMY_COOLDOWNS = 100
     MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
+    LESSER_ENEMIES = {
+        1: {'image':'images/enemies/bat.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1,'class':1,'health':5,'damage':1,'speed':2}
+    }
+    LESSER_ENEMIES_ANIMATION = {
+        1: {'move' :    {'row':0,'frames':3,'cooldown':LESSER_ENEMY_COOLDOWNS},
+            'death' :   {'row':1,'frames':1,'cooldown':300}}
+    }
     ENEMY_DATA = {
-        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':1,'health':20,'damage':10,'shoot dist':300},
-        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':50,'damage':25,'attack dist':30,'range':15},
-        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':2,'health':20,'damage':25,'attack dist':20,'range':10}
+        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':1,'health':20,'damage':10,'speed':2,'shoot dist':300},
+        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':50,'damage':25,'speed':1.5,'attack dist':30,'range':15},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':2,'health':20,'damage':15,'speed':2.5,'attack dist':20,'range':10}
     }
     ENEMY_ANIMATION_DATA = {
         1:{
@@ -99,7 +109,7 @@ class Static_variables:
     PLAYER_DATA = {
         1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':1,'health':50,'damage':8},
         
-        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':2,'health':100,'damage':20,'range':18,'heal_factor':1},
+        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':2,'health':100,'damage':20,'range':18,'heal_factor':5},
         3: ''
     }
     PLAYER_ANIMATION_DATA = {
