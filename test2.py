@@ -1,47 +1,38 @@
-if ((self.hitbox.x > self.player.hitbox.x) or (self.hitbox.x < self.player.hitbox.x)) and ((self.hitbox.x > self.player.hitbox.y) or (self.hitbox.x < self.player.hitbox.y)):
-    speed = speed_diagonal # Reduce speed for diagonal movement
-    
-else:
-    speed = speed_linear
-if self.player.hitbox.x > self.hitbox.x:
-    self.hitbox.x += speed
-if self.player.hitbox.x < self.hitbox.x:
-    self.hitbox.x -= speed
-if self.player.hitbox.y > self.hitbox.x:
-    self.hitbox.x += speed 
-if self.player.hitbox.y < self.hitbox.x:
-    self.hitbox.x -= speed\
-    
+def enable_push(self, lessers, enemies):
 
+    for i, enemy in enumerate(lessers):
+        for j in range(i + 1, len(lessers)):
+            other = lessers[j]
 
-dx = self.player.hitbox.centerx - self.rect.centerx # Distance between player.x and enemy.x
-dy = self.player.hitbox.centery - self.rect.centery # Distance between player.y and enemy.y
-dist = (dx**2 + dy**2) ** 0.5 # Basically pythagoream theorem, straightest path between enemy and player
+            # Calculate distance between enemy and other
+            dx = other.hitbox.centerx - enemy.hitbox.centerx
+            dy = other.hitbox.centery - enemy.hitbox.centery
+            dist = (dx**2 + dy**2) ** 0.5
 
+            if dist < Static_variables.REPULSION_RADIUS and dist > 0:
+                # Repulsion force
+                force = Static_variables.REPULSION_FORCE / dist
+                repulsion_dx = dx * force
+                repulsion_dy = dy * force
 
-# Adjust SPEED based on linear or diagonal movement
-if dx != 0 and dy != 0:
-    SPEED = Static_variables.ENEMY_SPEED_DIAGONAL  # Set speed to diagonal speed if moving diagonally
-else:
-    SPEED = Static_variables.ENEMY_SPEED_LINEAR  # Use linear speed for straight movements
+                # Apply repulsion equally but opposite to both enemies
+                enemy.rect.x -= repulsion_dx
+                enemy.rect.y -= repulsion_dy
+                other.rect.x += repulsion_dx
+                other.rect.y += repulsion_dy
 
-dx, dy = dx / dist, dy / dist
-self.rect.x += dx * SPEED
-self.rect.y += dy * SPEED
+    # Push stronger enemies if close
+    for enemy in lessers:
+        for strong_enemy in enemies:
+            dx = strong_enemy.rect.centerx - enemy.rect.centerx
+            dy = strong_enemy.rect.centery - enemy.rect.centery
+            dist = (dx**2 + dy**2) ** 0.5
 
+            if dist < Static_variables.REPULSION_RADIUS and dist > 0:
+                # Push the stronger enemy
+                force = Static_variables.REPULSION_FORCE / dist
+                push_dx = dx * force
+                push_dy = dy * force
 
-def navigate_to_player(self, player):
-    # Calculate distance to the player
-    dx = player.hitbox.centerx - self.rect.centerx
-    dy = player.hitbox.centery - self.rect.centery
-    dist = (dx**2 + dy**2) ** 0.5
-
-    # Avoid division by zero
-    if dist > 0:
-        dx, dy = dx / dist, dy / dist  # Normalize direction
-    else:
-        dx, dy = 0, 0
-
-    # Move the enemy towards the player
-    self.rect.x += dx * self.speed
-    self.rect.y += dy * self.speed
+                strong_enemy.rect.x += push_dx
+                strong_enemy.rect.y += push_dy

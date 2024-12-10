@@ -139,7 +139,7 @@ def draw_entities():
     for enemy in enemies:
         offset_rect = camera.apply(enemy.rect)
         game_manager.screen.blit(enemy.image, offset_rect)
-        #enemy hitboxes
+        #enemy hitboxes 
         if Static_variables.RECT_MODE:
             if enemy.type !=1:
                 melee_hitbox = enemy.get_melee_hitbox()
@@ -148,6 +148,11 @@ def draw_entities():
             else:
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
 
+    for lesser in lessers:
+        offset_rect = camera.apply(lesser.hitbox)
+        game_manager.screen.blit(lesser.image, offset_rect)
+        if Static_variables.RECT_MODE:
+            pygame.draw.rect(game_manager.screen, (255, 0, 0), offset_rect, 2)
 
     #mele hitbox
     if Static_variables.RECT_MODE:
@@ -189,7 +194,6 @@ def xp_bar(player):
     lvl_text = font.render(f"LEVEL: {player.level}", True, Static_variables.WHITE)
     game_manager.screen.blit(lvl_text, (12, 45))
 
-
 def enemy_healthbar_activate(enemy):
     offset_rect = camera.apply(enemy.hitbox)
     pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,5))
@@ -204,6 +208,7 @@ def manual_enemy_spawn(spawned_enemies,player):
         enemies.add(enemy)
     elif keys[pygame.K_k]: # Kill all enemies 
         enemies.empty()
+    return spawned_enemies
 
 def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
     current_time = pygame.time.get_ticks()
@@ -211,11 +216,37 @@ def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
         spawned_enemies +=1
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
-        #enemy_type = 1
-        #enemy = LesserEnemy(enemy_type,player,droppable_group)
         enemies.add(enemy)
         last_enemy_spawn = current_time
     return enemy_count,spawned_enemies,last_enemy_spawn
+
+def spawn_horde(spawned_lessers,lesser_count,player):
+    if lesser_count <20:
+        #sqare around the screen - marks the closest position a lesser can spawn
+        square_top_left_x = player.hitbox.x - (HEIGHT - Static_variables.LESSER_SPAWN_DISTANCE)
+        square_top_left_y = player.hitbox.y - (WIDTH - Static_variables.LESSER_SPAWN_DISTANCE)
+        square_bottom_right_x = player.hitbox.x + (HEIGHT + Static_variables.LESSER_SPAWN_DISTANCE)
+        square_bottom_right_y = player.hitbox.y + (WIDTH + Static_variables.LESSER_SPAWN_DISTANCE)
+
+        while True:
+            # Generate random x and y coordinates on the outside of the square
+            center_x = random.uniform(square_top_left_x - Static_variables.ENEMY_SPAWN_AREA, square_bottom_right_x + Static_variables.ENEMY_SPAWN_AREA)
+            center_y = random.uniform(square_top_left_y - Static_variables.ENEMY_SPAWN_AREA, square_bottom_right_y + Static_variables.ENEMY_SPAWN_AREA)
+
+            # Check if the generated point is outside the square
+            if center_x < square_top_left_x or center_x > square_bottom_right_x or center_y < square_top_left_y or center_y > square_bottom_right_y:
+                #return (center_x, center_y)
+                break
+    
+        new_lessers = random.randint(Static_variables.MIN_HORDE_SPAWN,Static_variables.MIN_HORDE_SPAWN)
+        spawned_lessers += new_lessers
+        enemy_type = random.choice(list(Static_variables.LESSER_ENEMIES.keys()))
+        for _ in range(new_lessers):
+            x = random.uniform(center_x - Static_variables.ENEMY_SPAWN_AREA//2, center_x + Static_variables.ENEMY_SPAWN_AREA//2)
+            y = random.uniform(center_y - Static_variables.ENEMY_SPAWN_AREA//2, center_y + Static_variables.ENEMY_SPAWN_AREA//2)
+            enemy = LesserEnemy(enemy_type,player,droppable_group,x,y)
+            lessers.add(enemy)
+    return spawned_lessers,lesser_count
 
 def upgrade_screen(player_type):
     BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Debuff buttons.png").convert_alpha()
@@ -287,7 +318,9 @@ def upgrade_screen(player_type):
             
 
 def main_loop(chosen_player):
-    global projectile_group, enemy_projectile_group,droppable_group,enemies,player,camera,map,last_enemy_spawn,enemy_count,spawned_enemies,WIDTH,HEIGHT,SPEED_DIAGONAL, SPEED_LINEAR
+    global projectile_group, enemy_projectile_group, droppable_group
+    global enemies,lessers,player,camera,map
+    global last_enemy_spawn,enemy_count,spawned_enemies,lesser_count,spawned_lessers
     WIDTH, HEIGHT = game_manager.update_dimensions()
     #setting up game
     last_enemy_spawn = 0
@@ -295,8 +328,9 @@ def main_loop(chosen_player):
     droppable_group = pygame.sprite.Group()
     enemy_projectile_group = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
+    lessers = pygame.sprite.Group()  # lesser enemies
     player_type=chosen_player 
-    player = Player(player_type, projectile_group, enemy_projectile_group, enemies, droppable_group)  # Pass the appropriate player type here
+    player = Player(player_type, projectile_group, enemy_projectile_group, enemies, lessers, droppable_group)  # Pass the appropriate player type here
     
     camera = Camera()
     map = WorldMap(Static_variables.TILE_WIDTH, Static_variables.TILE_HEIGHT)
@@ -304,6 +338,9 @@ def main_loop(chosen_player):
     current_level = player.level
     spawned_enemies = 0 # all spawned enemies 
     enemy_count = 0 # enemies currently alive
+
+    spawned_lessers = 0
+    lesser_count = 0
     upgrade_due = False
 
     running = True
@@ -323,8 +360,12 @@ def main_loop(chosen_player):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_l:
                 player.start_death_sequence()
                 player.health = 0
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+                #spawned_lessers,lesser_count = spawn_horde(spawned_lessers,lesser_count,player)
+                print(enemy_count)
     
         enemy_count = spawned_enemies - player.total_enemies_killed
+        #lesser_count = spawned_lessers - player.total_lessers_killed
     ##############FUNCTIONS##############
         if paused:
             for enemy in enemies:
@@ -343,13 +384,14 @@ def main_loop(chosen_player):
         else:
             player.update()
             enemies.update()
+            lessers.update()
             camera.update(player.rect)
             projectile_group.update()
             enemy_projectile_group.update()
             droppable_group.update()
             draw_entities()
             draw_fps_counter() 
-            manual_enemy_spawn(spawned_enemies,player)
+            spawned_enemies = manual_enemy_spawn(spawned_enemies,player)
             enemy_count, spawned_enemies, last_enemy_spawn = enemy_spawn(enemy_count, spawned_enemies, player, last_enemy_spawn)
             player_healthbar_activate(player)
             xp_bar(player)

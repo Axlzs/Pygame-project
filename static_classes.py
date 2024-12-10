@@ -116,13 +116,13 @@ class Projectile(pygame.sprite.Sprite):
         
         if scale != 1:
             projectile_width, projectile_height = projectile_sheet.get_size()
-            scaled_size = (int(projectile_width * scale), int(projectile_height * scale))
+            scaled_size = (int(projectile_width), int(projectile_height))
             projectile_sheet = pygame.transform.scale(projectile_sheet, scaled_size)
         return projectile_sheet
 
     def create_projectile_image(self, projectile_sheet, scale):
         # Extract a single frame to use as the base image
-        frame_width, frame_height = 48 * scale, 5 * scale
+        frame_width, frame_height = 48, 5 
         return projectile_sheet.subsurface((0, 0, frame_width, frame_height))
 
     def update(self):

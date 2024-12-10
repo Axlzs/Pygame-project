@@ -266,7 +266,7 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
 class LesserEnemy(pygame.sprite.Sprite):
-    def __init__(self, enemy_type, player, droppable_group):
+    def __init__(self, enemy_type, player, droppable_group,x,y):
         pygame.sprite.Sprite.__init__(self)
         self.type = enemy_type
         self.player = player
@@ -283,7 +283,7 @@ class LesserEnemy(pygame.sprite.Sprite):
         self.image = self.start_animation.get_current_frame()
 
         self.rect = self.image.get_rect()
-        self.rect.center = self.get_enemy_spawn() # Enemy spawn coordinates
+        self.rect.center = (x,y) # Enemy spawn coordinates
 
         self.hitbox = pygame.Rect(0, 0, Static_variables.LESSER_ENEMIES[enemy_type]['hitbox_width']*Static_variables.PLAYER_SCALE, Static_variables.LESSER_ENEMIES[enemy_type]['hitbox_height']*Static_variables.PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
@@ -358,6 +358,9 @@ class LesserEnemy(pygame.sprite.Sprite):
             dx = self.player.hitbox.centerx - self.rect.centerx
             dy = self.player.hitbox.centery - self.rect.centery
             dist = (dx**2 + dy**2) ** 0.5
+
+            if dist>3000:
+                self.rect.center = self.get_enemy_spawn()
 
             # Avoid division by zero
             if dist > 0:

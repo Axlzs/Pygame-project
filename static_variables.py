@@ -28,15 +28,20 @@ class Static_variables:
     #############ENEMY#############
     ENEMY_SPAWN_AREA = 50 # Density - distance between inner spawn circle and outer spawn circe 
     ENEMY_SPAWN_DISTANCE = 50 # How far does the enemy spawn form the player vision
+    LESSER_SPAWN_DISTANCE = 60 # How far does the lesser spawn form the player vision
     ENEMY_SPEED_LINEAR = 2
     ENEMY_SPEED_DIAGONAL = 1.414
+
     ENEMY_SPAWN_COOLDOWN = 500
     ENEMY_PROJECTILE_COOLDOWN = 1000
     ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
     LESSER_ENEMY_COOLDOWNS = 100
+
     MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
+    MAX_HORDE_SPAWN = 10 # Max enemies that a horde can have 
+    MIN_HORDE_SPAWN = 5
     LESSER_ENEMIES = {
-        1: {'image':'images/enemies/bat.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1,'class':1,'health':5,'damage':1,'speed':2}
+        1: {'image':'images/enemies/bat_temp.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1,'class':1,'health':5,'damage':1,'speed':2.5}
     }
     LESSER_ENEMIES_ANIMATION = {
         1: {'move' :    {'row':0,'frames':3,'cooldown':LESSER_ENEMY_COOLDOWNS},
@@ -119,10 +124,10 @@ class Static_variables:
             'walk down':    {'row':6,'frames':9,'cooldown':COOLDOWNS['movement']},
             'walk right':   {'row':7,'frames':9,'cooldown':COOLDOWNS['movement']},
 
-            'stand down':   {'row': 4, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand up':     {'row': 4, 'frames': 1,'cooldown':COOLDOWNS['idle']},
             'stand left':   {'row': 5, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand right':  {'row': 6, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand up':     {'row': 7, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand down':   {'row': 6, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand right':  {'row': 7, 'frames': 1,'cooldown':COOLDOWNS['idle']},
             
             'attack up':    {'row':0,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
             'attack left':  {'row':1,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
@@ -137,10 +142,10 @@ class Static_variables:
             'walk down':    {'row':2,'frames':9,'cooldown':COOLDOWNS['movement']},
             'walk right':   {'row':3,'frames':9,'cooldown':COOLDOWNS['movement']},
 
-            'stand down':   {'row': 0, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand up':     {'row': 0, 'frames': 1,'cooldown':COOLDOWNS['idle']},
             'stand left':   {'row': 1, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand right':  {'row': 2, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand up':     {'row': 3, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand down':   {'row': 2, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand right':  {'row': 3, 'frames': 1,'cooldown':COOLDOWNS['idle']},
             
             'attack up':    {'row':5,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
             'attack left':  {'row':6,'frames':6,'cooldown':COOLDOWNS['shoot animation']},

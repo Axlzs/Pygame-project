@@ -1,22 +1,13 @@
 
 [-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
 
-[-]make mele usable 
-  [-]attack while walking (we have animations for that)
-    [-]remake enemy class again 
-[-]think about autoaim 
-[-]think about game scaling 
-[-]think about game difficulty
-[-]think about gameplay loop
-[-]think about gamemodes
-[-]special powers
-  [-]circular melee attack 
-  [-]arrow rain or some shit 
 
-[+]fix enemy melee attacks
-[+]fix enemy 3 thief idk why it no workey 
-[+]fix sprite sizes 
+----optimization notes----
 
-optimization
+optimise the stupid arrows - insane performace hit
 
-enemy arrow attacks and prolly also melee - all of the enemies constantly calcualate camera.apply(player.hitbox)
+preload enemies
+preload arrows
+ - rotate function is expensive 
+ 
+i have to find an efficient way to make enemies not collide with each other
