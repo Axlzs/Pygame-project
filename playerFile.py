@@ -11,6 +11,7 @@ class Player(pygame.sprite.Sprite):
         game_manager.load_settings()
         self.type = player_type
         self.scale = Static_variables.PLAYER_SCALE
+        self.player_scale = Static_variables.PLAYER_DATA[player_type]['scale'] 
         self.sprite_size = Static_variables.PLAYER_DATA[player_type]['sprite']
         self.player_animation_data = Static_variables.PLAYER_ANIMATION_DATA[player_type]
         self.projectile_group = projectile_group
@@ -84,15 +85,15 @@ class Player(pygame.sprite.Sprite):
         
         sprite_width, sprite_height = sprite_sheet.get_size()
         # int is used to negate the appearance of floats
-        scaled_size = (int(sprite_width//2*scale), int(sprite_height//2*scale))
+        scaled_size = (int(sprite_width//2*scale*self.player_scale), int(sprite_height//2*scale*self.player_scale))
         print(scaled_size)
         sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
     def create_action_list(self, sprite_sheet, scale):
         action_list = {}
-        frame_width = self.sprite_size//2 * scale
-        frame_height = self.sprite_size//2 * scale
+        frame_width = self.sprite_size//2 * scale * self.player_scale
+        frame_height = self.sprite_size//2 * scale * self.player_scale
     
         for action, data in self.player_animation_data.items():
             row = data['row']

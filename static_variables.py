@@ -44,16 +44,16 @@ class Static_variables:
     MAX_HORDE_SPAWN = 50 # Max enemies that a horde can have 
     MIN_HORDE_SPAWN = 100
     LESSER_ENEMIES = {
-        1: {'image':'images/enemies/bat_temp.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1,'class':1,'health':5,'damage':1,'speed':2.5}
+        1: {'image':'images/enemies/bat_temp.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1.3,'class':1,'health':5,'damage':1,'speed':2.5}
     }
     LESSER_ENEMIES_ANIMATION = {
         1: {'move' :    {'row':0,'frames':3,'cooldown':LESSER_ENEMY_COOLDOWNS},
             'death' :   {'row':1,'frames':1,'cooldown':300}}
     }
     ENEMY_DATA = {
-        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':1,'health':20,'damage':10,'speed':2,'shoot dist':300},
-        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':50,'damage':25,'speed':1.5,'attack dist':30,'range':15},
-        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':14,'scale':1,'hitbox_height':20,'class':2,'health':20,'damage':15,'speed':2.5,'attack dist':20,'range':10}
+        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':1,'health':20,'damage':10,'speed':2,'shoot dist':300},
+        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':2,'hitbox_height':50,'class':2,'health':50,'damage':25,'speed':1.5,'attack dist':30,'range':15},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':20,'damage':15,'speed':2.5,'attack dist':20,'range':10}
     }
     ENEMY_ANIMATION_DATA = {
         1:{
@@ -115,9 +115,9 @@ class Static_variables:
     MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5 #500
     
     PLAYER_DATA = {
-        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':1,'health':50,'damage':8},
+        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':1,'health':50,'damage':8},
         
-        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':14,'hitbox_height':20,'class':2,'health':100,'damage':20,'range':18,'heal_factor':5},
+        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':2,'health':100,'damage':20,'range':30,'heal_factor':5},
         3: ''
     }
     PLAYER_ANIMATION_DATA = {
