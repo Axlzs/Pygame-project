@@ -7,7 +7,7 @@ from game_manager import game_manager
 
 # Define the PLayer class
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_type,projectile_group, enemy_projectile_group, enemies, lessers, droppable_group):
+    def __init__(self, player_type,projectile_group, enemy_projectile_group, all_enemies, droppable_group):
         game_manager.load_settings()
         self.type = player_type
         self.scale = Static_variables.PLAYER_SCALE
@@ -31,9 +31,8 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, Static_variables.PLAYER_DATA[player_type]['hitbox_width']*Static_variables.PLAYER_SCALE, Static_variables.PLAYER_DATA[player_type]['hitbox_height']*Static_variables.PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
-        self.enemies = enemies
+        self.enemies = all_enemies
         self.total_enemies_killed = 0
-        self.lessers = lessers
         self.total_lessers_killed = 0
         self.xp =0
         self.speed_linear = Static_variables.SPEED_LINEAR
@@ -205,9 +204,7 @@ class Player(pygame.sprite.Sprite):
         for enemy in self.enemies:
             if melee_hitbox.colliderect(enemy.hitbox):
                 enemy.take_damage(Static_variables.PLAYER_DATA[self.type]['damage'])
-        for lesser in self.lessers:
-            if melee_hitbox.colliderect(lesser.hitbox):
-                lesser.take_damage(Static_variables.PLAYER_DATA[self.type]['damage'])
+
         for projectile in self.enemy_projectile_group:
             if melee_hitbox.colliderect(projectile.rect):
                 projectile.kill()

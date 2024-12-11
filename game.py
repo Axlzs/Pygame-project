@@ -426,7 +426,7 @@ def main_loop(chosen_player):
     lessers = pygame.sprite.Group()  # lesser enemies
     all_enemies = pygame.sprite.Group()
     player_type=chosen_player 
-    player = Player(player_type, projectile_group, enemy_projectile_group, enemies, lessers, droppable_group)  # Pass the appropriate player type here
+    player = Player(player_type, projectile_group, enemy_projectile_group, all_enemies, droppable_group)  # Pass the appropriate player type here
     
     camera = Camera()
     map = WorldMap(Static_variables.TILE_WIDTH, Static_variables.TILE_HEIGHT)

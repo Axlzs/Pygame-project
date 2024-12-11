@@ -7,9 +7,6 @@
 [-]reuse enemy objects
 [-]find better sprites and make them bigger(will partly resolve optimization problem)
 
-[+]collision detection
-[+]can restart the game from pause and also go to the main main menu
-[+]start game-options bug + little refresh
 
 
 
