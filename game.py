@@ -136,29 +136,18 @@ def draw_entities():
         offset_rect = camera.apply(drop.rect)
         game_manager.screen.blit(drop.image, offset_rect)
 
-    for enemy in enemies:
+    for enemy in all_enemies:
         offset_rect = camera.apply(enemy.rect)
         game_manager.screen.blit(enemy.image, offset_rect)
-        #enemy hitboxes 
+
+        #mele hitbox
         if Static_variables.RECT_MODE:
-            if enemy.type !=1:
-                melee_hitbox = enemy.get_melee_hitbox()
+            if player.type!=1:
+                melee_hitbox = player.get_melee_hitbox()
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
             else:
                 pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(enemy.hitbox), 2)
-
-    for lesser in lessers:
-        offset_rect = camera.apply(lesser.hitbox)
-        game_manager.screen.blit(lesser.image, offset_rect)
-        if Static_variables.RECT_MODE:
-            pygame.draw.rect(game_manager.screen, (255, 0, 0), offset_rect, 2)
-
-    #mele hitbox
-    if Static_variables.RECT_MODE:
-        if player.type==2:
-            melee_hitbox = player.get_melee_hitbox()
-            pygame.draw.rect(game_manager.screen, (255, 0, 0), camera.apply(melee_hitbox), 2)
 
 
 def player_healthbar_activate(player):
@@ -199,28 +188,30 @@ def enemy_healthbar_activate(enemy):
     pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,5))
     pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,5),1)
 
-def manual_enemy_spawn(spawned_enemies,player):
+def manual_enemy_spawn(all_enemies, spawned_enemies,player):
     keys = pygame.key.get_pressed()
     if keys[pygame.K_e]: # Manualy spawn enemies 
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         spawned_enemies +=1
         enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
         enemies.add(enemy)
+        all_enemies.add(enemy)
     elif keys[pygame.K_k]: # Kill all enemies 
         enemies.empty()
     return spawned_enemies
 
-def enemy_spawn(enemy_count,spawned_enemies,player,last_enemy_spawn):
+def enemy_spawn(all_enemies, enemy_count,spawned_enemies,player,last_enemy_spawn):
     current_time = pygame.time.get_ticks()
     if enemy_count <15 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
         spawned_enemies +=1
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
         enemies.add(enemy)
+        all_enemies.add(enemy)
         last_enemy_spawn = current_time
     return enemy_count,spawned_enemies,last_enemy_spawn
 
-def spawn_horde(spawned_lessers,lesser_count,player):
+def spawn_horde(all_enemies, spawned_lessers,lesser_count,player):
     if lesser_count <20:
         #sqare around the screen - marks the closest position a lesser can spawn
         square_top_left_x = player.hitbox.x - (HEIGHT - Static_variables.LESSER_SPAWN_DISTANCE)
@@ -246,6 +237,7 @@ def spawn_horde(spawned_lessers,lesser_count,player):
             y = random.uniform(center_y - Static_variables.ENEMY_SPAWN_AREA//2, center_y + Static_variables.ENEMY_SPAWN_AREA//2)
             enemy = LesserEnemy(enemy_type,player,droppable_group,x,y)
             lessers.add(enemy)
+            all_enemies.add(enemy)
     return spawned_lessers,lesser_count
 
 def upgrade_screen(player_type):
@@ -315,11 +307,79 @@ def upgrade_screen(player_type):
             player.heal(5)
         pygame.display.update()
         Static_variables.CLOCK.tick(Static_variables.FPS)
-            
+
+#################################ENEMY#COLLISION#REPULSION#############################################     
+def assign_to_grid(all_enemies):
+    grid = {}
+    for enemy in all_enemies:
+        # make a grid for each enemy 
+        cell_x = enemy.rect.centerx // Static_variables.GRID_SIZE
+        cell_y = enemy.rect.centery // Static_variables.GRID_SIZE
+        cell = (cell_x, cell_y)
+
+        if cell not in grid:
+            grid[cell] = []
+        grid[cell].append(enemy)
+
+    return grid
+
+def handle_repulsion_with_grid(all_enemies):
+    grid = assign_to_grid(all_enemies)
+
+    # Iterate over each grid cell and its neighbors
+    for cell, enemies in grid.items():
+        neighbors = [
+            (cell[0] + dx, cell[1] + dy)
+            for dx in range(-1, 2)  # Neighbor cells in x
+            for dy in range(-1, 2)  # Neighbor cells in y
+        ]
+
+        if Static_variables.RECT_MODE:
+            if enemies:  # If the cell has enemies
+                # Calculate cell top-left corner
+                cell_xx = cell[0] * Static_variables.GRID_SIZE
+                cell_yy = cell[1] * Static_variables.GRID_SIZE
+                cell_x,cell_y = camera.apply_tuple((cell_xx,cell_yy))
+
+                # Draw a semi-transparent rectangle
+                highlight_color = (255, 0, 0, 100)  # Red with transparency
+                s = pygame.Surface((Static_variables.GRID_SIZE, Static_variables.GRID_SIZE), pygame.SRCALPHA)  # Create a transparent surface
+                s.fill(highlight_color)
+                game_manager.screen.blit(s, (cell_x, cell_y))
+
+        # Combine enemies from current cell and neighbors
+        nearby_enemies = []
+        for neighbor in neighbors:
+            if neighbor in grid:
+                nearby_enemies.extend(grid[neighbor])
+
+        # Repulsion logic for enemies in the current cell and nearby cells
+        for i, enemy in enumerate(enemies):
+            for j in range(i + 1, len(nearby_enemies)):
+                other = nearby_enemies[j]
+                if enemy is other:
+                    continue
+
+                # Calculate repulsion force (same as before)
+                dx = other.rect.centerx - enemy.rect.centerx
+                dy = other.rect.centery - enemy.rect.centery
+                dist = (dx**2 + dy**2) ** 0.5
+
+                if dist < Static_variables.REPULSION_RADIUS and dist > 0:
+                    force = Static_variables.REPULSION_FORCE / dist
+                    repulsion_dx = dx * force
+                    repulsion_dy = dy * force
+
+                    enemy.rect.x -= repulsion_dx
+                    enemy.rect.y -= repulsion_dy
+                    other.rect.x += repulsion_dx
+                    other.rect.y += repulsion_dy
+##############################################################################     
 
 def main_loop(chosen_player):
     global projectile_group, enemy_projectile_group, droppable_group
-    global enemies,lessers,player,camera,map
+    global enemies,lessers,all_enemies
+    global player,camera,map
     global last_enemy_spawn,enemy_count,spawned_enemies,lesser_count,spawned_lessers
     WIDTH, HEIGHT = game_manager.update_dimensions()
     #setting up game
@@ -329,6 +389,7 @@ def main_loop(chosen_player):
     enemy_projectile_group = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
     lessers = pygame.sprite.Group()  # lesser enemies
+    all_enemies = pygame.sprite.Group()
     player_type=chosen_player 
     player = Player(player_type, projectile_group, enemy_projectile_group, enemies, lessers, droppable_group)  # Pass the appropriate player type here
     
@@ -391,13 +452,15 @@ def main_loop(chosen_player):
             droppable_group.update()
             draw_entities()
             draw_fps_counter() 
-            spawned_enemies = manual_enemy_spawn(spawned_enemies,player)
-            enemy_count, spawned_enemies, last_enemy_spawn = enemy_spawn(enemy_count, spawned_enemies, player, last_enemy_spawn)
+            spawned_enemies = manual_enemy_spawn(all_enemies, spawned_enemies,player)
+            enemy_count, spawned_enemies, last_enemy_spawn = enemy_spawn(all_enemies, enemy_count, spawned_enemies, player, last_enemy_spawn)
             player_healthbar_activate(player)
             xp_bar(player)
             for enemy in enemies:
                 enemy_healthbar_activate(enemy)   
 
+            assign_to_grid(all_enemies)
+            handle_repulsion_with_grid(all_enemies)
             if player.level>current_level:
                 upgrade_due  = True
                 Static_variables.ENEMY_SPAWN_COOLDOWN = min(Static_variables.ENEMY_SPAWN_COOLDOWN - 50, 100)

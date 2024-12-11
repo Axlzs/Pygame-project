@@ -2,9 +2,18 @@
 [-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
 
 
+[-]Loading screen???!!! - preload game assets and some enemies
+[-]optimise arrows
+[-]reuse enemy objects
+[+]collision detection
+
+
+
 ----optimization notes----
 
-optimise the stupid arrows - insane performace hit
+optimise the stupid arrows - not as big performace hit
+reuse already created objects
+
 
 preload enemies
 preload arrows

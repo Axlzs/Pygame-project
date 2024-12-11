@@ -26,6 +26,9 @@ class Static_variables:
     ################################
 
     #############ENEMY#############
+    GRID_SIZE = 100 # this is for collision detection
+    REPULSION_RADIUS = 20
+    REPULSION_FORCE = 1
     ENEMY_SPAWN_AREA = 50 # Density - distance between inner spawn circle and outer spawn circe 
     ENEMY_SPAWN_DISTANCE = 50 # How far does the enemy spawn form the player vision
     LESSER_SPAWN_DISTANCE = 60 # How far does the lesser spawn form the player vision

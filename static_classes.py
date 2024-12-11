@@ -20,6 +20,9 @@ class Camera:
     def apply(self, rect):
         # Return the adjusted position of any rect based on the camera offset
         return rect.move(-self.offset.x, -self.offset.y)
+
+    def apply_tuple(self, tuple):
+        return (tuple[0] - self.offset.x, tuple[1] - self.offset.y)
     
 class WorldMap:
     def __init__(self, tile_width, tile_height):

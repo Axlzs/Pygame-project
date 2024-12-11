@@ -198,22 +198,9 @@ class Player(pygame.sprite.Sprite):
             return pygame.Rect(self.hitbox.right - self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
         
     def mele_attack(self):
-        # current_time = pygame.time.get_ticks()
-        # if current_time - self.last_melee_time >= self.melee_cooldown:
-            # self.last_melee_time = current_time
-
         # Check for collisions with enemies
         melee_hitbox = self.get_melee_hitbox()
-        # if self.last_melee_time == 0:
-        #     pass
-        # else:
-        #     for enemy in self.enemies:
-        #         if melee_hitbox.colliderect(enemy.hitbox):
-        #             enemy.take_damage(Static_variables.PLAYER_DATA[2]['damage'])
-        #     for projectile in self.enemy_projectile_group:
-        #         if melee_hitbox.colliderect(projectile.rect):
-        #             projectile.kill()
-        #trying out this system, basically using animation queue as cooldown, makes the sword hitbox stay on longer
+
         for enemy in self.enemies:
             if melee_hitbox.colliderect(enemy.hitbox):
                 enemy.take_damage(Static_variables.PLAYER_DATA[self.type]['damage'])
@@ -230,7 +217,7 @@ class Player(pygame.sprite.Sprite):
         if self.is_dying == False:
             if current_time - self.last_damage_time >= self.damage_cooldown:
                 self.last_damage_time = current_time
-                self.target_health -= amount
+                #self.target_health -= amount
                 if self.target_health <= 0:
                     self.start_death_sequence()
                     self.target_health = 0
