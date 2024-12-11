@@ -217,12 +217,21 @@ class Player(pygame.sprite.Sprite):
         if self.is_dying == False:
             if current_time - self.last_damage_time >= self.damage_cooldown:
                 self.last_damage_time = current_time
-                #self.target_health -= amount
+                self.target_health -= amount
                 if self.target_health <= 0:
                     self.start_death_sequence()
                     self.target_health = 0
             pass
         else: pass
+
+    def take_continous_damage(self,amount):
+        if self.is_dying == False:
+            self.target_health -= amount
+            if self.target_health <= 0:
+                self.start_death_sequence()
+                self.target_health = 0
+            pass
+        else: pass 
     
     def heal(self, amount):
         if self.target_health < self.maxhealth:
@@ -247,6 +256,9 @@ class Player(pygame.sprite.Sprite):
 
     def add_to_killed_enemies(self):
         self.total_enemies_killed+=1
+
+    def add_to_killed_lesser_enemies(self):
+        self.total_lessers_killed+=1
     
     def gain_xp(self, amount):
         self.xp+=amount

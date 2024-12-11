@@ -28,10 +28,10 @@ class Static_variables:
     #############ENEMY#############
     GRID_SIZE = 100 # this is for collision detection
     REPULSION_RADIUS = 20
-    REPULSION_FORCE = 1
-    ENEMY_SPAWN_AREA = 50 # Density - distance between inner spawn circle and outer spawn circe 
+    REPULSION_FORCE = 2
+    ENEMY_SPAWN_AREA = 10 # Density - distance between inner spawn circle and outer spawn circe 
     ENEMY_SPAWN_DISTANCE = 50 # How far does the enemy spawn form the player vision
-    LESSER_SPAWN_DISTANCE = 60 # How far does the lesser spawn form the player vision
+    LESSER_SPAWN_DISTANCE = 50 # How far does the lesser spawn form the player vision
     ENEMY_SPEED_LINEAR = 2
     ENEMY_SPEED_DIAGONAL = 1.414
 
@@ -41,8 +41,8 @@ class Static_variables:
     LESSER_ENEMY_COOLDOWNS = 100
 
     MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
-    MAX_HORDE_SPAWN = 10 # Max enemies that a horde can have 
-    MIN_HORDE_SPAWN = 5
+    MAX_HORDE_SPAWN = 50 # Max enemies that a horde can have 
+    MIN_HORDE_SPAWN = 100
     LESSER_ENEMIES = {
         1: {'image':'images/enemies/bat_temp.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1,'class':1,'health':5,'damage':1,'speed':2.5}
     }

@@ -45,7 +45,41 @@ def initialize_game():
     
     load_game_over_assets()
 
-def game_over_screen(player_type):
+def pause_screen():
+
+    main_menu = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "mainmenu", (WIDTH // 2 + 32*Static_variables.PLAYER_SCALE, HEIGHT // 2 + 280))
+    restart = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "restart", (WIDTH // 2 - 128*Static_variables.PLAYER_SCALE, HEIGHT // 2 + 280))
+
+    font = pygame.font.Font("font/Minecraft.ttf", 15*Static_variables.PLAYER_SCALE)
+    text = font.render("Paused - Press 'ESCAPE' to Resume", True, Static_variables.WHITE)
+    game_manager.screen.blit(text, (WIDTH//2-128*Static_variables.PLAYER_SCALE, HEIGHT//2))
+
+    running = True
+    while running:
+
+        main_menu.draw()
+        restart.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running  = False
+            # Handle button events
+            if main_menu.handle_event(event):
+                pygame.time.delay(100)
+                game_manager.apply_settings()
+                import start
+                start.main_menu()
+            if restart.handle_event(event):
+                pygame.time.delay(100)
+                start_game(player.type)
+
+        pygame.display.update()
+        Static_variables.CLOCK.tick(Static_variables.FPS)
+
+def game_over_screen():
     """
     Displays the game over game_manager.screen with interactive buttons.
     """
@@ -73,10 +107,11 @@ def game_over_screen(player_type):
         font = pygame.font.Font("font/Minecraft.ttf", 30*Static_variables.PLAYER_SCALE)
         game_over_font = pygame.font.Font("font/Minecraft.ttf", 50*Static_variables.PLAYER_SCALE)
 
-        score_text = font.render(f"ENEMIES KILLED: {int(player.total_enemies_killed)}", True, Static_variables.WHITE)
+        total_enemies_killed = player.total_enemies_killed+player.total_lessers_killed
+        score_text = font.render(f"TOTAL ENEMIES KILLED: {int(total_enemies_killed)}", True, Static_variables.WHITE)
         game_over_text = game_over_font.render("GAME OVER", True, Static_variables.WHITE)
 
-        game_manager.screen.blit(score_text, ((WIDTH - 285*Static_variables.PLAYER_SCALE) //2, HEIGHT // 2))
+        game_manager.screen.blit(score_text, ((WIDTH - 400*Static_variables.PLAYER_SCALE) //2, HEIGHT // 2))
         game_manager.screen.blit(game_over_text, ((WIDTH - 285*Static_variables.PLAYER_SCALE) //2, (HEIGHT // 2) - 64*Static_variables.PLAYER_SCALE))
 
         for event in pygame.event.get():
@@ -91,7 +126,7 @@ def game_over_screen(player_type):
                 start.main_menu()
             if restart.handle_event(event):
                 pygame.time.delay(100)
-                start_game(player_type)
+                start_game(player.type)
 
         pygame.display.update()
         Static_variables.CLOCK.tick(Static_variables.FPS)
@@ -202,6 +237,7 @@ def manual_enemy_spawn(all_enemies, spawned_enemies,player):
 
 def enemy_spawn(all_enemies, enemy_count,spawned_enemies,player,last_enemy_spawn):
     current_time = pygame.time.get_ticks()
+
     if enemy_count <15 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
         spawned_enemies +=1
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
@@ -211,14 +247,13 @@ def enemy_spawn(all_enemies, enemy_count,spawned_enemies,player,last_enemy_spawn
         last_enemy_spawn = current_time
     return enemy_count,spawned_enemies,last_enemy_spawn
 
-def spawn_horde(all_enemies, spawned_lessers,lesser_count,player):
-    if lesser_count <20:
+def spawn_horde(all_enemies ,lessers, spawned_lessers, lesser_count, player):
+    if lesser_count<100:
         #sqare around the screen - marks the closest position a lesser can spawn
         square_top_left_x = player.hitbox.x - (HEIGHT - Static_variables.LESSER_SPAWN_DISTANCE)
         square_top_left_y = player.hitbox.y - (WIDTH - Static_variables.LESSER_SPAWN_DISTANCE)
         square_bottom_right_x = player.hitbox.x + (HEIGHT + Static_variables.LESSER_SPAWN_DISTANCE)
         square_bottom_right_y = player.hitbox.y + (WIDTH + Static_variables.LESSER_SPAWN_DISTANCE)
-
         while True:
             # Generate random x and y coordinates on the outside of the square
             center_x = random.uniform(square_top_left_x - Static_variables.ENEMY_SPAWN_AREA, square_bottom_right_x + Static_variables.ENEMY_SPAWN_AREA)
@@ -238,7 +273,7 @@ def spawn_horde(all_enemies, spawned_lessers,lesser_count,player):
             enemy = LesserEnemy(enemy_type,player,droppable_group,x,y)
             lessers.add(enemy)
             all_enemies.add(enemy)
-    return spawned_lessers,lesser_count
+    return spawned_lessers, lesser_count,spawned_lessers
 
 def upgrade_screen(player_type):
     BUTTON_SPRITE_SHEET = pygame.image.load("images/UI_elements/Debuff buttons.png").convert_alpha()
@@ -411,7 +446,7 @@ def main_loop(chosen_player):
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                paused = not paused
+                paused = True
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 player.level +=1
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
@@ -422,27 +457,26 @@ def main_loop(chosen_player):
                 player.start_death_sequence()
                 player.health = 0
             if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
-                #spawned_lessers,lesser_count = spawn_horde(spawned_lessers,lesser_count,player)
-                print(enemy_count)
+                print(spawned_lessers)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
+                spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
     
         enemy_count = spawned_enemies - player.total_enemies_killed
-        #lesser_count = spawned_lessers - player.total_lessers_killed
+        lesser_count = spawned_lessers - player.total_lessers_killed
     ##############FUNCTIONS##############
         if paused:
-            for enemy in enemies:
-                enemy.motion = False
-                enemy.shooting = False
-            player.motion = False
-            
-            font = pygame.font.Font("font/Minecraft.ttf", 15*Static_variables.PLAYER_SCALE)
-            text = font.render("Paused - Press 'ESCAPE' to Resume", True, Static_variables.WHITE)
-            game_manager.screen.blit(text, (WIDTH//2-100*Static_variables.PLAYER_SCALE, HEIGHT//2))
+
+            pause_screen()
+            paused = False
+
         elif upgrade_due:
 
             upgrade_screen(player_type)
             current_level = player.level
             upgrade_due = False
+            
         else:
+
             player.update()
             enemies.update()
             lessers.update()
@@ -463,10 +497,11 @@ def main_loop(chosen_player):
             handle_repulsion_with_grid(all_enemies)
             if player.level>current_level:
                 upgrade_due  = True
-                Static_variables.ENEMY_SPAWN_COOLDOWN = min(Static_variables.ENEMY_SPAWN_COOLDOWN - 50, 100)
-                Static_variables.MAX_ENEMY_SPAWN +=2             
+                spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
+                Static_variables.ENEMY_SPAWN_COOLDOWN = min(Static_variables.ENEMY_SPAWN_COOLDOWN -50, 100)
+                Static_variables.MAX_ENEMY_SPAWN = min(Static_variables.MAX_ENEMY_SPAWN +2 , 50)       
             if player.officially_dead:
-                game_over_screen(player_type)
+                game_over_screen()
  
         pygame.display.flip()
         Static_variables.CLOCK.tick(Static_variables.FPS)

@@ -388,7 +388,7 @@ class LesserEnemy(pygame.sprite.Sprite):
 
     def attack(self):
         if self.hitbox.colliderect(self.player.hitbox):
-            self.player.take_damage(self.damage)
+            self.player.take_continous_damage(self.damage)
 
     def start_death_sequence(self):
         self.is_dying = True
@@ -407,7 +407,7 @@ class LesserEnemy(pygame.sprite.Sprite):
         if self.is_dying:
             self.image = self.start_animation.play_once()
             if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
-                self.player.add_to_killed_enemies()
+                self.player.add_to_killed_lesser_enemies()
                 self.kill()
                 self.drop_something(self.droppable_group)
 

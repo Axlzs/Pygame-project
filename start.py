@@ -132,28 +132,35 @@ def choose_player():
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/2.png").convert_alpha()
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/3.png").convert_alpha()
     background4 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/4.png").convert_alpha()
-    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE)))
+    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2-190))
     back_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
 
-    player1_sheet = pygame.image.load("images/players/player1.png").convert_alpha()
-    player2_sheet = pygame.image.load("images/players/player2.png").convert_alpha()
+    player1_sheet = pygame.image.load("images/players/player_ranged.png").convert_alpha()
+    player2_sheet = pygame.image.load("images/players/player_knight.png").convert_alpha()
 
-    player1_base_frame = player1_sheet.subsurface((0, 0, 48, 48))
-    player2_base_frame = player2_sheet.subsurface((0, 0, 64, 64))
+    player1_base_frame = player1_sheet.subsurface((15, 384, 192, 192))
+    player2_base_frame = player2_sheet.subsurface((5, 384, 192, 192))
 
-    player1_frame = pygame.transform.scale(player1_base_frame, (240, 240))
-    player2_frame = pygame.transform.scale(player2_base_frame, (300, 300))
+    player1_frame = pygame.transform.scale(player1_base_frame, (450, 450))
+    player2_frame = pygame.transform.scale(player2_base_frame, (450, 450))
 
-    player1_rect = pygame.Rect(WIDTH/2-240,120,120,200) # 240
-    player2_rect = pygame.Rect(WIDTH/2+180,120,120,200) # 240
+    player1_rect = pygame.Rect(WIDTH/2-150,120,120,200) # 240
+    player2_rect = pygame.Rect(WIDTH/2-10,120,120,200) # 240
 
     player1_selected = False
     player2_selected = False
     player_choice = 0
 
-    game_manager.screen.blit(player1_frame, (WIDTH/2-100, 100))
-    game_manager.screen.blit(player2_frame, (WIDTH/2+100, 100))
+    game_manager.screen.blit(player1_frame, (WIDTH/2-280, 0))
+    game_manager.screen.blit(player2_frame, (WIDTH/2-160, 0))
 
+    shadow_color = (100,100,100,100)
+    selected_shadow_color = (0,0,0,100)
+    shadow1 = pygame.Surface((120, 200), pygame.SRCALPHA)
+    shadow2 = pygame.Surface((120, 200), pygame.SRCALPHA)
+
+    shadow1.fill(shadow_color)
+    shadow2.fill(shadow_color)
     # Scale the background image to match the screen size
     background1 = pygame.transform.scale(background1, (WIDTH+80, HEIGHT+80))
     background2 = pygame.transform.scale(background2, (WIDTH+80, HEIGHT+80))
@@ -222,20 +229,25 @@ def choose_player():
         game_manager.screen.blit(background3, (-offset_3[0], -offset_3[1]))
         game_manager.screen.blit(background4, (-offset_4[0], -offset_4[1]))
 
-        game_manager.screen.blit(player1_frame, (WIDTH/2-300, 100))
-        game_manager.screen.blit(player2_frame, (WIDTH/2+100, 100))
+        game_manager.screen.blit(shadow1,player1_rect)
+        game_manager.screen.blit(shadow2,player2_rect)
+        game_manager.screen.blit(player1_frame, (WIDTH/2-280, 0))
+        game_manager.screen.blit(player2_frame, (WIDTH/2-160, 0))
 
         if player1_selected:
             pygame.draw.rect(game_manager.screen, Static_variables.GREEN, player1_rect, 5)
+            shadow1.fill(selected_shadow_color)
             player_choice = 1
         else:
             pygame.draw.rect(game_manager.screen, Static_variables.RED, player1_rect, 5)
-
+            shadow1.fill(shadow_color)
         if player2_selected:
             pygame.draw.rect(game_manager.screen, Static_variables.GREEN, player2_rect, 5)
+            shadow2.fill(selected_shadow_color)
             player_choice = 2
         else:
             pygame.draw.rect(game_manager.screen, Static_variables.RED, player2_rect, 5)
+            shadow2.fill(shadow_color)
 
         # Draw everything
         start_button.draw()

@@ -5,7 +5,12 @@
 [-]Loading screen???!!! - preload game assets and some enemies
 [-]optimise arrows
 [-]reuse enemy objects
+[-]find better sprites and make them bigger(will partly resolve optimization problem)
+
 [+]collision detection
+[+]can restart the game from pause and also go to the main main menu
+[+]start game-options bug + little refresh
+
 
 
 
@@ -18,5 +23,3 @@ reuse already created objects
 preload enemies
 preload arrows
  - rotate function is expensive 
- 
-i have to find an efficient way to make enemies not collide with each other
