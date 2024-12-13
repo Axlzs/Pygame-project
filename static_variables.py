@@ -102,6 +102,12 @@ class Static_variables:
     ################################
 
     #############PLAYER#############
+    PLAYER_DATA = {
+        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':1,'health':50,'damage':8,'default_speed_linear':4,'default_speed_diagonal':2.828},
+        
+        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':2,'health':100,'damage':20,'default_speed_linear':4,'default_speed_diagonal':2.828,'range':30,'heal_factor':5},
+        3: ''
+    }
     SPEED_LINEAR = 4
     SPEED_DIAGONAL = 2.828 # Coefficient 0.707 in regards to linear SPEEDSPEED = 4
     PLAYER_SCALE = 2 # Scale player
@@ -113,12 +119,6 @@ class Static_variables:
     PROJECTILE_COOLDOWN = 300
     MELEE_COOLDOWN = COOLDOWNS['shoot animation'] *5 #500
     
-    PLAYER_DATA = {
-        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':1,'health':50,'damage':8},
-        
-        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':2,'health':100,'damage':20,'range':30,'heal_factor':5},
-        3: ''
-    }
     PLAYER_ANIMATION_DATA = {
         1:{
             'walk up':      {'row':4,'frames':9,'cooldown':COOLDOWNS['movement']},

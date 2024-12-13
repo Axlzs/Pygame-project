@@ -126,6 +126,7 @@ def game_over_screen():
                 start.main_menu()
             if restart.handle_event(event):
                 pygame.time.delay(100)
+                player.restart()
                 start_game(player.type)
 
         pygame.display.update()
@@ -306,18 +307,24 @@ def upgrade_screen(player_type):
             if event.type == pygame.QUIT:
                 game_manager.save_settings()
                 exit()
+
+            #Health and regen upgrade
             if health_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 player.maxhealth += 5
                 player.heal(5)
                 player.health_ratio = player.maxhealth/player.health_bar_length
                 if player.type ==2:
-                    player.heal_factor+=1
+                    player.heal_factor+=3
                 running = False
+
+            #Strength upgrade
             if strength_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                Static_variables.PLAYER_DATA[player_type]['damage'] += 5
+                player.dealing_damage += 5
                 running = False
+
+            #Attack speed upgrade
             if attack_speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 if player.shoot_cooldown > 30 and player_type ==1:
@@ -329,6 +336,8 @@ def upgrade_screen(player_type):
                     Static_variables.COOLDOWNS['shoot animation'] /0.2
                     player.melee_cooldown //0.2
                     running = False
+
+            #Running speed upgrade
             if speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 player.speed_linear *= 1.2
@@ -413,6 +422,7 @@ def main_loop(chosen_player):
     global enemies,lessers,all_enemies
     global player,camera,map
     global last_enemy_spawn,spawned_enemies,lesser_count,spawned_lessers
+    global player_type
     #WIDTH, HEIGHT = game_manager.update_dimensions()
     #setting up game
     last_enemy_spawn = 0

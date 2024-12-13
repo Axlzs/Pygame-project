@@ -5,17 +5,13 @@
 [-]optimise arrows
 [-]find better sprites and make them bigger(will partly resolve optimization problem)
 
-[+] optimised enemies:
-      enemies are preloaded
-      enemies are respawned when killed so no new enemies have to be created
-      new enemies spawn during upgrade screen
-      player damage cooldown is now dependent on the type of enemy attacking
-      added explanations in enemy class making the code more understandable 
+no longer create infinite amount of buttons
+    [+]use draw()
+    [+]use set_disabled()
 
-[+] player:
-      damage cooldown determined by enemies, diminishing the huge player immunity window
-      attack with mouse click now 
+[+] Fullscreen bug
 
+[/] Started working on resetting player after death
 
 ----optimization notes----
 

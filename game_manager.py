@@ -6,9 +6,18 @@ CONFIG_PATH = "config.json"
 
 class GameManager:
     def __init__(self):
+        pygame.init()
+        self.display = self.get_display_res()
         self.settings = self.load_settings()
         self.screen = self.apply_settings()
         self.update_dimensions()
+
+    def get_display_res(self):
+        pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        display_info = pygame.display.Info()
+        display_width = display_info.current_w
+        display_height = display_info.current_h
+        return display_width,display_height
 
     def load_settings(self):
         """Load default or saved settings"""
@@ -32,8 +41,15 @@ class GameManager:
             return pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         else:
             width, height = self.settings["resolution"]
-            return pygame.display.set_mode((width, height), pygame.RESIZABLE)
+            d_width, d_height = self.display
 
+            if d_width >= width and d_height >= height:
+                return pygame.display.set_mode((width, height), pygame.RESIZABLE)
+            else: 
+                self.settings["resolution"] = 1000,700
+                width, height = self.settings["resolution"]
+                return pygame.display.set_mode((width, height), pygame.RESIZABLE)
+            
     def update_dimensions(self):
         """Update cached screen dimensions"""
         WIDTH, HEIGHT = self.screen.get_size()

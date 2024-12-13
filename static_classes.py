@@ -146,6 +146,7 @@ class Button:
         self.sprite_sheet = sprite_sheet
         self.data = Static_variables.BUTTON_DATA[self.type]
         self.pos = pos
+        self.disabled = False
         self.rect = pygame.Rect(self.pos, (self.data["width"]*Static_variables.PLAYER_SCALE, self.data["height"]*Static_variables.PLAYER_SCALE))
 
         # Extract button images for each state
@@ -168,21 +169,33 @@ class Button:
         self.current_image = self.images[0]
     def draw(self):
         """Draw the button on the screen."""
+        self.rect = pygame.Rect(self.pos, (self.data["width"]*Static_variables.PLAYER_SCALE, self.data["height"]*Static_variables.PLAYER_SCALE))
         self.screen.blit(self.current_image, self.pos)
 
     def handle_event(self, event):
         #handling the change between button states
-        mouse_pos = pygame.mouse.get_pos()
+        if not self.disabled:
+            mouse_pos = pygame.mouse.get_pos()
 
-        if self.rect.collidepoint(mouse_pos):
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.current_image = self.images[2]  # Clicked state
-                return True
-            elif event.type == pygame.MOUSEMOTION:
-                self.current_image = self.images[1]  # Hover state
-        else:
-            self.current_image = self.images[0]  # Normal state
+            if self.rect.collidepoint(mouse_pos):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.current_image = self.images[2]  # Clicked state
+                    return True
+                elif event.type == pygame.MOUSEMOTION:
+                    self.current_image = self.images[1]  # Hover state
+            else:
+                self.current_image = self.images[0]  # Normal state
+            return False
         return False
+    
+    def set_disabled(self, value):
+        """
+        Sometimes buttons overlap so they need to be disabled to maintain functionality
+        The disabled buttons cannot be pressed    
+        """
+        self.disabled = value
+        if self.disabled:
+            self.current_image = self.images[0]  # Reset to normal state when disabled
     
 #LesserButtons with 2 states located inside LESSER_BUTTON_DATA
 class LesserButton:

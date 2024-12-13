@@ -1,13 +1,43 @@
-def highlight_active_cells(grid):
-    """Highlight cells that contain enemies."""
-    for cell, enemies in grid.items():
-        if enemies:  # If the cell has enemies
-            # Calculate cell top-left corner
-            cell_x = cell[0] * Static_variables.GRID_SIZE
-            cell_y = cell[1] * Static_variables.GRID_SIZE
+import pygame
+import json
+import os
 
-            # Draw a semi-transparent rectangle
-            highlight_color = (255, 0, 0, 100)  # Red with transparency
-            s = pygame.Surface((Static_variables.GRID_SIZE, Static_variables.GRID_SIZE), pygame.SRCALPHA)  # Create a transparent surface
-            s.fill(highlight_color)
-            GameManager.screen.blit(s, (cell_x, cell_y))
+CONFIG_PATH = "config.json"
+
+class GameManager:
+    def __init__(self):
+        self.settings = self.load_settings()
+        self.screen = self.apply_settings()
+        self.update_dimensions()
+
+    def load_settings(self):
+        """Load default or saved settings"""
+        if os.path.exists(CONFIG_PATH):
+            with open(CONFIG_PATH, 'r') as file:
+                return json.load(file)
+        else:
+            # Default settings if config doesn't exist
+            return {
+                "screen_mode": "fullscreen",
+                "resolution": [800, 600]
+            }
+
+    def save_settings(self):
+        """Save current settings to the configuration file"""
+        with open(CONFIG_PATH, 'w') as file: # w - write; r - read; a - append; x - create
+            json.dump(self.settings, file)
+
+    def apply_settings(self):
+        if self.settings["screen_mode"] == "fullscreen":
+            return pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        else:
+            width, height = self.settings["resolution"]
+            return pygame.display.set_mode((width, height), pygame.RESIZABLE)
+
+    def update_dimensions(self):
+        """Update cached screen dimensions"""
+        WIDTH, HEIGHT = self.screen.get_size()
+        return WIDTH,HEIGHT
+
+
+game_manager = GameManager() # creating a single instance of GameManager, so it can be used by all files

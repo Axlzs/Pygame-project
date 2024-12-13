@@ -35,8 +35,8 @@ class Player(pygame.sprite.Sprite):
         self.total_enemies_killed = 0
         self.total_lessers_killed = 0
         self.xp = 0
-        self.speed_linear = Static_variables.SPEED_LINEAR
-        self.speed_diagonal = Static_variables.SPEED_DIAGONAL
+        self.speed_linear = Static_variables.PLAYER_DATA[self.type]['default_speed_linear']
+        self.speed_diagonal = Static_variables.PLAYER_DATA[self.type]['default_speed_diagonal']
         self.max_xp = Static_variables.STARTING_XP
         self.xp_scale = Static_variables.XP_SCALE
         self.xp_bar_length = 100*Static_variables.PLAYER_SCALE
@@ -54,6 +54,8 @@ class Player(pygame.sprite.Sprite):
         self.officially_dead = False
         self.death_start_time = 0
         self.death_duration = 700
+
+        self.dealing_damage = Static_variables.PLAYER_DATA[self.type]['damage']
         self.damage_cooldown = Static_variables.COOLDOWNS['damage']
         self.last_damage_time = 0
         self.motion = False
@@ -77,7 +79,6 @@ class Player(pygame.sprite.Sprite):
             action: Animation(self.images[action], data['cooldown'])
             for action, data in self.player_animation_data.items()
         }
-
 
     def load_sprite_sheet(self, player_type, scale):
         sprite_sheet = pygame.image.load(Static_variables.PLAYER_DATA[player_type]['image']).convert_alpha()
@@ -201,7 +202,7 @@ class Player(pygame.sprite.Sprite):
 
         for enemy in self.enemies:
             if melee_hitbox.colliderect(enemy.hitbox):
-                enemy.take_damage(Static_variables.PLAYER_DATA[self.type]['damage'])
+                enemy.take_damage(self.dealing_damage)
 
         for projectile in self.enemy_projectile_group:
             if melee_hitbox.colliderect(projectile.rect):
@@ -243,7 +244,7 @@ class Player(pygame.sprite.Sprite):
             for enemy in self.enemies:
                 enemy_hitbox = self.camera.apply(enemy.hitbox)
                 if enemy_hitbox.colliderect(projectile_hitbox):
-                    enemy.take_damage(Static_variables.PLAYER_DATA[1]['damage'])
+                    enemy.take_damage(self.dealing_damage)
 
     def collect_drop(self):
         for drop in self.droppable_group:
@@ -265,6 +266,26 @@ class Player(pygame.sprite.Sprite):
             self.xp_bar_ratio = self.max_xp/self.xp_bar_length
         if self.type ==2:
             self.heal(self.heal_factor)
+
+    def restart(self):
+        """
+        To reset player we basically only need to reset the parameters that were upgraded:
+        -Health
+        -Player dealt damage 
+        -Attack speed 
+        -Running speed
+        """
+        # Restart health
+        self.health = Static_variables.PLAYER_DATA[self.type]['health']
+        self.target_health = self.health
+        self.maxhealth = self.health
+        self.health_bar_length = self.maxhealth* Static_variables.PLAYER_SCALE * Static_variables.PLAYER_SCALE# sprite means the length of one player frame 
+        self.health_ratio = self.maxhealth/self.health_bar_length
+
+        # Reset player dealt damage
+        self.dealing_damage = Static_variables.PLAYER_DATA[self.type]['damage']
+
+        # Reset attack speed
 
     def update(self):
         # Handle queued animations
