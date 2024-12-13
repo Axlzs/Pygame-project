@@ -35,9 +35,8 @@ class Static_variables:
     ENEMY_SPEED_LINEAR = 2
     ENEMY_SPEED_DIAGONAL = 1.414
 
-    ENEMY_SPAWN_COOLDOWN = 500
     ENEMY_PROJECTILE_COOLDOWN = 1000
-    ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
+    ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500} # animation speed 
     LESSER_ENEMY_COOLDOWNS = 100
 
     MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
@@ -51,9 +50,9 @@ class Static_variables:
             'death' :   {'row':1,'frames':1,'cooldown':300}}
     }
     ENEMY_DATA = {
-        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':1,'health':20,'damage':10,'speed':2,'shoot dist':300},
-        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':2,'hitbox_height':50,'class':2,'health':50,'damage':25,'speed':1.5,'attack dist':30,'range':15},
-        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':20,'damage':15,'speed':2.5,'attack dist':20,'range':10}
+        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':1,'health':20,'damage':10,'attack_cooldown':300,'speed':2,'shoot dist':300},
+        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':2,'hitbox_height':50,'class':2,'health':50,'damage':25,'attack_cooldown':500,'speed':1.5,'attack dist':30,'range':15},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':20,'damage':15,'attack_cooldown':100,'speed':2.5,'attack dist':20,'range':10}
     }
     ENEMY_ANIMATION_DATA = {
         1:{

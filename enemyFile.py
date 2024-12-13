@@ -9,21 +9,21 @@ WIDTH, HEIGHT = game_manager.update_dimensions()
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, enemy_type, projectile_group, player, droppable_group,enemy_projectile_group):
         pygame.sprite.Sprite.__init__(self)
-        self.type = enemy_type
-        self.player = player
-        self.camera = Camera()
-        self.scale = Static_variables.PLAYER_SCALE
-        self.enemy_projectile_group = enemy_projectile_group
-        self.enemy_scale = Static_variables.ENEMY_DATA[self.type]['scale']
-        self.sprite_size = Static_variables.ENEMY_DATA[enemy_type]['sprite']
-        self.enemy_animation_data = Static_variables.ENEMY_ANIMATION_DATA[enemy_type]
-        self.projectile_group = projectile_group
-        self.droppable_group = droppable_group
+        self.type = enemy_type  # Who am i
+        self.player = player    # target player
+        self.camera = Camera()  # camera for offsets and stuff
+        self.scale = Static_variables.PLAYER_SCALE              # PLAYER_SCALE basically means the game_scale
+        self.enemy_projectile_group = enemy_projectile_group    # Where enemy arrows reside
+        self.enemy_scale = Static_variables.ENEMY_DATA[self.type]['scale']      # how big am i 
+        self.sprite_size = Static_variables.ENEMY_DATA[enemy_type]['sprite']    # how big is a single animation frame 
+        self.enemy_animation_data = Static_variables.ENEMY_ANIMATION_DATA[enemy_type]   # What animations enemy has paired with cooldowns
+        self.projectile_group = projectile_group    # Where player arrows reside
+        self.droppable_group = droppable_group      # Where stuff that drops reside 
         self.sprite_sheet = self.load_sprite_sheet(enemy_type, self.scale)
         self.images = self.create_action_list(self.sprite_sheet,self.scale)
         self.initialize_animations()
-        self.start_animation = self.animations['walk down']
-        self.image = self.start_animation.get_current_frame()
+        self.start_animation = self.animations['walk down']     # Gives the enemy first set of animations
+        self.image = self.start_animation.get_current_frame()   # IDK if this is needed 
 
         self.rect = self.image.get_rect()
         self.rect.center = self.get_enemy_spawn() # Enemy spawn coordinates
@@ -31,27 +31,28 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, Static_variables.ENEMY_DATA[enemy_type]['hitbox_width']*Static_variables.PLAYER_SCALE, Static_variables.ENEMY_DATA[enemy_type]['hitbox_height']*Static_variables.PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
-        self.health = Static_variables.ENEMY_DATA[self.type]['health']
-        self.maxhealth = Static_variables.ENEMY_DATA[self.type]['health']
-        self.health_bar_length = self.hitbox.width# sprite means the length of one player frame 
-        self.health_ratio = self.maxhealth/self.health_bar_length
-        self.is_dying = False
-        self.death_start_time = 0
-        self.death_duration = 700
-        self.damage_cooldown = Static_variables.ENEMY_COOLDOWNS['damage']
-        self.last_damage_time = 0
-        self.motion = False
+        self.health = Static_variables.ENEMY_DATA[self.type]['health']      # Current health
+        self.maxhealth = Static_variables.ENEMY_DATA[self.type]['health']   # Maximum heaalth that an enemy can have
+        self.health_bar_length = self.hitbox.width                          # How long is the healthar
+        self.health_ratio = self.maxhealth/self.health_bar_length           # Ratio to fit all that health in the health_bar_length
+        self.is_dying = False       # State of death
+        self.death_start_time = 0   # The start of the death animation gets assigned here
+        self.death_duration = 700   # How long to player death animation
+        self.attack_damage = Static_variables.ENEMY_DATA[self.type]['damage']            # damage that will be done to the player
+        self.attack_cooldown = Static_variables.ENEMY_DATA[self.type]['attack_cooldown'] # how long is the players window of immunity
+        self.damage_cooldown = Static_variables.ENEMY_COOLDOWNS['damage']                # how long is the window of immunity for enemy
+        self.last_damage_time = 0   # The last time enemy took damage, this is for damage_cooldown 
+        self.motion = False         # State where enemy is nether dead or attacking 
         self.direction = 'down'
         self.speed = Static_variables.ENEMY_DATA[self.type]['speed']
-        if self.type == 1:
+        if self.type == 1:  # Type 1 is for archer enemy
             self.shooting = False
             self.last_shot_time = 0
             self.shoot_cooldown = Static_variables.ENEMY_PROJECTILE_COOLDOWN
             self.arrow_offset = 0
             self.arrow_offset = 10*self.scale
             self.shoot_dist = Static_variables.ENEMY_DATA[self.type]['shoot dist']
-        else:
-            self.melee_damage = Static_variables.ENEMY_DATA[self.type]['damage']
+        else:     # For melee enemies
             self.melee_range = Static_variables.ENEMY_DATA[self.type]['range'] * self.scale
             self.melee_cooldown = Static_variables.MELEE_COOLDOWN
             self.last_melee_time = 0
@@ -80,7 +81,6 @@ class Enemy(pygame.sprite.Sprite):
         for action, data in self.enemy_animation_data.items():
             row = data['row']
             frame_count = data['frames']
-            #print('action:'+action+'  frame count:'+str(frame_count),'  row: '+str(row)+'  frame width: '+ str(frame_width))
             action_frames = []
     
             for i in range(frame_count):
@@ -217,14 +217,15 @@ class Enemy(pygame.sprite.Sprite):
             melee_hitbox = self.get_melee_hitbox()
 
             if melee_hitbox.colliderect(self.player.hitbox):
-                self.player.take_damage(Static_variables.ENEMY_DATA[2]['damage'])
+                self.player.take_damage(self.attack_damage,self.attack_cooldown)
+            
 
     def update_projectile_attacks(self):
         for projectile in self.enemy_projectile_group:
             projectile_hitbox=self.camera.apply(projectile.rect)
             player_hitbox = self.camera.apply(self.player.hitbox)
             if player_hitbox.colliderect(projectile_hitbox):
-                self.player.take_damage(Static_variables.ENEMY_DATA[1]['damage'])  
+                self.player.take_damage(self.attack_damage,self.attack_cooldown)  
 
     def take_damage(self, amount):
         current_time = pygame.time.get_ticks()
@@ -247,16 +248,24 @@ class Enemy(pygame.sprite.Sprite):
             new_drop = Droppable(what_drop, self.rect.centerx,self.rect.centery)
             droppable_group.add(new_drop)
 
+    def respawn(self):
+        self.is_dying = False
+        self.health = self.maxhealth
+        self.rect.center = self.get_enemy_spawn()
+
     def update(self):
     #UPDATES STUFF
     #CHECKS IF PLAYER IS DEAD
     #ALIGNS HITBOXES
         if self.is_dying:
+            #self.start_animation = self.animations['death']
             self.image = self.start_animation.play_once()
-            if pygame.time.get_ticks() - self.death_start_time >= self.death_duration:
-                self.player.add_to_killed_enemies()
-                self.kill()
+            death_time = pygame.time.get_ticks()
+            if death_time - self.death_start_time >= self.death_duration:
+                self.start_animation.reset()
                 self.drop_something(self.droppable_group)
+                self.player.add_to_killed_enemies()
+                self.respawn()
 
         else:
             #Get image -> determine correct action -> add animation to the action 
@@ -294,7 +303,7 @@ class LesserEnemy(pygame.sprite.Sprite):
         self.health_ratio = self.maxhealth/self.health_bar_length
         self.damage_cooldown = 500
         self.last_damage_time = 0
-        self.damage = Static_variables.LESSER_ENEMIES[self.type]['damage']
+        self.attack_damage = Static_variables.LESSER_ENEMIES[self.type]['damage']
         self.speed = Static_variables.LESSER_ENEMIES[self.type]['speed']
         self.is_dying = False
         self.death_start_time = 0
@@ -388,7 +397,7 @@ class LesserEnemy(pygame.sprite.Sprite):
 
     def attack(self):
         if self.hitbox.colliderect(self.player.hitbox):
-            self.player.take_continous_damage(self.damage)
+            self.player.take_continous_damage(self.attack_damage)
 
     def start_death_sequence(self):
         self.is_dying = True

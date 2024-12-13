@@ -2,21 +2,24 @@
 [-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
 
 
-[-]Loading screen???!!! - preload game assets and some enemies
 [-]optimise arrows
-[-]reuse enemy objects
 [-]find better sprites and make them bigger(will partly resolve optimization problem)
 
+[+] optimised enemies:
+      enemies are preloaded
+      enemies are respawned when killed so no new enemies have to be created
+      new enemies spawn during upgrade screen
+      player damage cooldown is now dependent on the type of enemy attacking
+      added explanations in enemy class making the code more understandable 
 
-
+[+] player:
+      damage cooldown determined by enemies, diminishing the huge player immunity window
+      attack with mouse click now 
 
 
 ----optimization notes----
 
 optimise the stupid arrows - not as big performace hit
-reuse already created objects
 
-
-preload enemies
 preload arrows
  - rotate function is expensive 

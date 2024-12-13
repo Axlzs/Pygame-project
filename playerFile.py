@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.enemies = all_enemies
         self.total_enemies_killed = 0
         self.total_lessers_killed = 0
-        self.xp =0
+        self.xp = 0
         self.speed_linear = Static_variables.SPEED_LINEAR
         self.speed_diagonal = Static_variables.SPEED_DIAGONAL
         self.max_xp = Static_variables.STARTING_XP
@@ -85,7 +85,6 @@ class Player(pygame.sprite.Sprite):
         sprite_width, sprite_height = sprite_sheet.get_size()
         # int is used to negate the appearance of floats
         scaled_size = (int(sprite_width//2*scale*self.player_scale), int(sprite_height//2*scale*self.player_scale))
-        print(scaled_size)
         sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
@@ -140,21 +139,20 @@ class Player(pygame.sprite.Sprite):
                     self.motion = True
                     self.direction = 'right'
 
-                #This handles shooting - detects input->Determines the player type and weather the player is moving
-                if keys[pygame.K_SPACE]:
-                    self.motion == False
-                    self.shooting = True
-                    if self.type ==1:
-                        self.shoot(self.projectile_group)
-                    elif self.type ==2:
-                        self.animation_queue.append(f'attack {self.direction}')
-                        self.is_animating = True
-                    else:
-                        print("sum tin wong")
-                else:
-                    self.shooting = False 
             else:
                 pass
+    def handle_attack(self):
+        if self.is_animating == False and self.is_dying == False:  # Block movement if an attack is playing
+                #This handles shooting - detects input->Determines the player type and weather the player is moving
+                self.motion == False
+                self.shooting = True
+                if self.type ==1:
+                    self.shoot(self.projectile_group)
+                elif self.type ==2:
+                    self.animation_queue.append(f'attack {self.direction}')
+                    self.is_animating = True
+                else:
+                    print("This type of player does not exist")
 
     def shoot(self,projectile_group):
         current_time = pygame.time.get_ticks()
@@ -210,10 +208,10 @@ class Player(pygame.sprite.Sprite):
                 projectile.kill()
 
 
-    def take_damage(self, amount):
+    def take_damage(self, amount, damage_cooldown):
         current_time = pygame.time.get_ticks()
         if self.is_dying == False:
-            if current_time - self.last_damage_time >= self.damage_cooldown:
+            if current_time - self.last_damage_time >= damage_cooldown:
                 self.last_damage_time = current_time
                 self.target_health -= amount
                 if self.target_health <= 0:

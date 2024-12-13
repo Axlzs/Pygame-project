@@ -223,7 +223,7 @@ def enemy_healthbar_activate(enemy):
     pygame.draw.rect(game_manager.screen, (255,0,0),(offset_rect.x,offset_rect.midbottom[1],enemy.health/enemy.health_ratio,5))
     pygame.draw.rect(game_manager.screen, (255,255,255),(offset_rect.x,offset_rect.midbottom[1],enemy.health_bar_length,5),1)
 
-def manual_enemy_spawn(all_enemies, spawned_enemies,player):
+def manual_enemy_spawn(spawned_enemies,player):
     keys = pygame.key.get_pressed()
     if keys[pygame.K_e]: # Manualy spawn enemies 
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
@@ -235,17 +235,14 @@ def manual_enemy_spawn(all_enemies, spawned_enemies,player):
         enemies.empty()
     return spawned_enemies
 
-def enemy_spawn(all_enemies, enemy_count,spawned_enemies,player,last_enemy_spawn):
-    current_time = pygame.time.get_ticks()
-
-    if enemy_count <15 and current_time - last_enemy_spawn >= Static_variables.ENEMY_SPAWN_COOLDOWN:
+def enemy_spawn(spawned_enemies,player):
+    while spawned_enemies < Static_variables.MAX_ENEMY_SPAWN:
         spawned_enemies +=1
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
         enemies.add(enemy)
         all_enemies.add(enemy)
-        last_enemy_spawn = current_time
-    return enemy_count,spawned_enemies,last_enemy_spawn
+    return spawned_enemies
 
 def spawn_horde(all_enemies ,lessers, spawned_lessers, lesser_count, player):
     if lesser_count<100:
@@ -415,8 +412,8 @@ def main_loop(chosen_player):
     global projectile_group, enemy_projectile_group, droppable_group
     global enemies,lessers,all_enemies
     global player,camera,map
-    global last_enemy_spawn,enemy_count,spawned_enemies,lesser_count,spawned_lessers
-    WIDTH, HEIGHT = game_manager.update_dimensions()
+    global last_enemy_spawn,spawned_enemies,lesser_count,spawned_lessers
+    #WIDTH, HEIGHT = game_manager.update_dimensions()
     #setting up game
     last_enemy_spawn = 0
     projectile_group = pygame.sprite.Group()
@@ -433,7 +430,7 @@ def main_loop(chosen_player):
 
     current_level = player.level
     spawned_enemies = 0 # all spawned enemies 
-    enemy_count = 0 # enemies currently alive
+    spawned_enemies = enemy_spawn(spawned_enemies, player)
 
     spawned_lessers = 0
     lesser_count = 0
@@ -460,8 +457,9 @@ def main_loop(chosen_player):
                 print(spawned_lessers)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
                 spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                player.handle_attack()
     
-        enemy_count = spawned_enemies - player.total_enemies_killed
         lesser_count = spawned_lessers - player.total_lessers_killed
     ##############FUNCTIONS##############
         if paused:
@@ -474,6 +472,9 @@ def main_loop(chosen_player):
             upgrade_screen(player_type)
             current_level = player.level
             upgrade_due = False
+            spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
+            Static_variables.MAX_ENEMY_SPAWN = min(Static_variables.MAX_ENEMY_SPAWN +2 , 50)       
+            spawned_enemies = enemy_spawn(spawned_enemies, player)
             
         else:
 
@@ -486,8 +487,7 @@ def main_loop(chosen_player):
             droppable_group.update()
             draw_entities()
             draw_fps_counter() 
-            spawned_enemies = manual_enemy_spawn(all_enemies, spawned_enemies,player)
-            enemy_count, spawned_enemies, last_enemy_spawn = enemy_spawn(all_enemies, enemy_count, spawned_enemies, player, last_enemy_spawn)
+            spawned_enemies = manual_enemy_spawn(spawned_enemies,player)
             player_healthbar_activate(player)
             xp_bar(player)
             for enemy in enemies:
@@ -497,9 +497,6 @@ def main_loop(chosen_player):
             handle_repulsion_with_grid(all_enemies)
             if player.level>current_level:
                 upgrade_due  = True
-                spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
-                Static_variables.ENEMY_SPAWN_COOLDOWN = min(Static_variables.ENEMY_SPAWN_COOLDOWN -50, 100)
-                Static_variables.MAX_ENEMY_SPAWN = min(Static_variables.MAX_ENEMY_SPAWN +2 , 50)       
             if player.officially_dead:
                 game_over_screen()
  
