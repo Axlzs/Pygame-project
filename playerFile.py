@@ -62,16 +62,17 @@ class Player(pygame.sprite.Sprite):
         self.direction = 'down'
 
         self.enemy_projectile_group = enemy_projectile_group
-        self.shooting = False
-        self.last_shot_time = 0
-        self.shoot_cooldown = Static_variables.PROJECTILE_COOLDOWN
-        self.arrow_offset = 0
-        self.arrow_offset = 10*self.scale
-
-        self.melee_range = Static_variables.PLAYER_DATA[2]['range'] * self.scale
-        self.melee_cooldown = Static_variables.MELEE_COOLDOWN
-        self.last_melee_time = 0
-        self.heal_factor = Static_variables.PLAYER_DATA[2]['heal_factor']
+        if self.type ==1:
+            self.shooting = False
+            self.last_shot_time = 0
+            self.shoot_cooldown = Static_variables.PROJECTILE_COOLDOWN
+            self.arrow_offset = 0
+            self.arrow_offset = 10*self.scale
+        else:
+            self.melee_range = Static_variables.PLAYER_DATA[self.type]['range'] * self.scale
+            self.melee_cooldown = Static_variables.MELEE_COOLDOWN
+            self.last_melee_time = 0
+            self.heal_factor = Static_variables.PLAYER_DATA[self.type]['heal_factor']
 
    
     def initialize_animations(self):
@@ -285,7 +286,20 @@ class Player(pygame.sprite.Sprite):
         # Reset player dealt damage
         self.dealing_damage = Static_variables.PLAYER_DATA[self.type]['damage']
 
-        # Reset attack speed
+        # Reset attack and shoot speed
+        Static_variables.COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500}
+
+        if self.type ==1:
+            self.shooting = False
+            self.last_shot_time = 0
+            self.shoot_cooldown = Static_variables.PROJECTILE_COOLDOWN
+            self.arrow_offset = 0
+            self.arrow_offset = 10*self.scale
+        else:
+            self.melee_range = Static_variables.PLAYER_DATA[self.type]['range'] * self.scale
+            self.melee_cooldown = Static_variables.MELEE_COOLDOWN
+            self.last_melee_time = 0
+            self.heal_factor = Static_variables.PLAYER_DATA[self.type]['heal_factor']
 
     def update(self):
         # Handle queued animations

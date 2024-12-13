@@ -327,12 +327,12 @@ def upgrade_screen(player_type):
             #Attack speed upgrade
             if attack_speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
-                if player.shoot_cooldown > 30 and player_type ==1:
+                if player_type ==1 and player.shoot_cooldown > 30:
                     Static_variables.COOLDOWNS['shoot animation'] /0.2
                     player.shoot_cooldown //0.2
                     running = False
 
-                if player.melee_cooldown > 10 and player_type ==2:
+                if player_type ==2 and player.melee_cooldown > 10:
                     Static_variables.COOLDOWNS['shoot animation'] /0.2
                     player.melee_cooldown //0.2
                     running = False
