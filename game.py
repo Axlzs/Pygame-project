@@ -442,20 +442,22 @@ def main_loop(chosen_player):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:   # Esc - pause game 
                 paused = True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:       # ↑ - level up player 
                 player.level +=1
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:    # → - heal player 10 hp
                 player.heal(10)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:     # ← - player takes 25 hp damage  
                 player.take_damage(25)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_l:        # L - die
                 player.start_death_sequence()
                 player.health = 0
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:        # R - see all of the hitboxes 
+                Static_variables.RECT_MODE = not Static_variables.RECT_MODE 
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_1:        # 1 - see how many lesser enemeis are spwned (use - stress test)
                 print(spawned_lessers)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_2:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_2:        # 2 - spawn horde of lesser enemies (use - stress test)
                 spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 player.handle_attack()
