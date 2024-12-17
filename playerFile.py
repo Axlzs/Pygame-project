@@ -69,7 +69,8 @@ class Player(pygame.sprite.Sprite):
             self.arrow_offset = 0
             self.arrow_offset = 10*self.scale
         else:
-            self.melee_range = Static_variables.PLAYER_DATA[self.type]['range'] * self.scale
+            self.melee_range_width = Static_variables.PLAYER_DATA[self.type]['hit_range_width'] * self.scale
+            self.melee_range_height = Static_variables.PLAYER_DATA[self.type]['hit_range_height'] * self.scale
             self.melee_cooldown = Static_variables.MELEE_COOLDOWN
             self.last_melee_time = 0
             self.heal_factor = Static_variables.PLAYER_DATA[self.type]['heal_factor']
@@ -189,13 +190,13 @@ class Player(pygame.sprite.Sprite):
     def get_melee_hitbox(self):
         # Create a rect for the melee hitbox based on the player's direction and position
         if self.direction == 'up':
-            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.top - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - 1.5*self.melee_range_width, self.hitbox.top - self.melee_range_height, 3*self.melee_range_width, 2*self.melee_range_height)
         elif self.direction == 'down':
-            return pygame.Rect(self.hitbox.centerx - self.melee_range, self.hitbox.bottom - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.centerx - 1.5*self.melee_range_width, self.hitbox.bottom - self.melee_range_height, 3*self.melee_range_width, 2*self.melee_range_height)
         elif self.direction == 'left':
-            return pygame.Rect(self.hitbox.left - self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.left - 2*self.melee_range_width, self.hitbox.centery - self.melee_range_height, 3*self.melee_range_width, 2*self.melee_range_height)
         elif self.direction == 'right':
-            return pygame.Rect(self.hitbox.right - self.melee_range, self.hitbox.centery - self.melee_range, 2*self.melee_range, 2*self.melee_range)
+            return pygame.Rect(self.hitbox.right - self.melee_range_width, self.hitbox.centery - self.melee_range_height, 3*self.melee_range_width, 2*self.melee_range_height)
         
     def mele_attack(self):
         # Check for collisions with enemies

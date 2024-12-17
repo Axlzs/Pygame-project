@@ -105,7 +105,7 @@ class Static_variables:
     PLAYER_DATA = {
         1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':1,'health':50,'damage':8,'default_speed_linear':4,'default_speed_diagonal':2.828},
         
-        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':2,'health':100,'damage':20,'default_speed_linear':4,'default_speed_diagonal':2.828,'range':30,'heal_factor':5},
+        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':2,'health':100,'damage':20,'default_speed_linear':4,'default_speed_diagonal':2.828,'hit_range_width':20,'hit_range_height':20,'heal_factor':5},
         3: ''
     }
     SPEED_LINEAR = 4

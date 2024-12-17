@@ -5,11 +5,7 @@
 [-]optimise arrows
 [-]find better sprites and make them bigger(will partly resolve optimization problem)
 
-no longer create infinite amount of buttons
-    [+]use draw()
-    [+]use set_disabled()
-
-[+] Fullscreen bug
+[+]some fixes to melee hitboxes 
 
 [/] Started working on resetting player after death
 
