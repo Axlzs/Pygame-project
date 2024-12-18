@@ -69,19 +69,20 @@ class Enemy(pygame.sprite.Sprite):
 
         sprite_width, sprite_height = sprite_sheet.get_size()
         # int is used to negate the appearance of floats
-        scaled_size = (int(sprite_width//2*scale*self.enemy_scale), int(sprite_height//2*scale*self.enemy_scale))
+        scaled_size = (int(sprite_width*scale*self.enemy_scale), int(sprite_height*scale*self.enemy_scale))
         sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
     def create_action_list(self, sprite_sheet, scale):
         action_list = {}
-        frame_width = self.sprite_size//2 * scale * self.enemy_scale
-        frame_height = self.sprite_size//2 * scale * self.enemy_scale
-    
+        frame_width = self.sprite_size * scale * self.enemy_scale
+        frame_height = self.sprite_size * scale * self.enemy_scale
+        #print(self.type)
         for action, data in self.enemy_animation_data.items():
             row = data['row']
             frame_count = data['frames']
             action_frames = []
+            #print('action:'+action+'  frame count:'+str(frame_count),'  row: '+str(row)+'  frame width: '+ str(frame_width))
     
             for i in range(frame_count):
                 x = i * frame_width
@@ -217,7 +218,7 @@ class Enemy(pygame.sprite.Sprite):
             melee_hitbox = self.get_melee_hitbox()
 
             if melee_hitbox.colliderect(self.player.hitbox):
-                self.player.take_damage(self.attack_damage,self.attack_cooldown)
+                self.player.take_damage(self.attack_damage)
             
 
     def update_projectile_attacks(self):
@@ -225,7 +226,7 @@ class Enemy(pygame.sprite.Sprite):
             projectile_hitbox=self.camera.apply(projectile.rect)
             player_hitbox = self.camera.apply(self.player.hitbox)
             if player_hitbox.colliderect(projectile_hitbox):
-                self.player.take_damage(self.attack_damage,self.attack_cooldown)  
+                self.player.take_damage(self.attack_damage)  
 
     def take_damage(self, amount):
         current_time = pygame.time.get_ticks()
@@ -323,7 +324,6 @@ class LesserEnemy(pygame.sprite.Sprite):
         action_list = {}
         frame_width = self.sprite_size//2 * scale * self.enemy_scale
         frame_height = self.sprite_size//2 * scale * self.enemy_scale
-    
         for action, data in self.enemy_animation_data.items():
             row = data['row']
             frame_count = data['frames']

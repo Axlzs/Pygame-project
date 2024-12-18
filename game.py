@@ -127,6 +127,7 @@ def game_over_screen():
             if restart.handle_event(event):
                 pygame.time.delay(100)
                 player.restart()
+                Static_variables.CURRENT_MAX_ENEMIES = Static_variables.DEFAULT_ENEMY_SPAWN
                 start_game(player.type)
 
         pygame.display.update()
@@ -171,6 +172,8 @@ def draw_entities():
     for drop in droppable_group:
         offset_rect = camera.apply(drop.rect)
         game_manager.screen.blit(drop.image, offset_rect)
+        if Static_variables.RECT_MODE:
+            pygame.draw.rect(game_manager.screen, (255, 0, 0), offset_rect, 2)
 
     for enemy in all_enemies:
         offset_rect = camera.apply(enemy.rect)
@@ -237,7 +240,7 @@ def manual_enemy_spawn(spawned_enemies,player):
     return spawned_enemies
 
 def enemy_spawn(spawned_enemies,player):
-    while spawned_enemies < Static_variables.MAX_ENEMY_SPAWN:
+    while spawned_enemies < Static_variables.CURRENT_MAX_ENEMIES:
         spawned_enemies +=1
         enemy_type = random.choice(list(Static_variables.ENEMY_DATA.keys()))
         enemy = Enemy(enemy_type, enemy_projectile_group, player, droppable_group,enemy_projectile_group)
@@ -328,22 +331,22 @@ def upgrade_screen(player_type):
             if attack_speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 if player_type ==1 and player.shoot_cooldown > 30:
-                    Static_variables.COOLDOWNS['shoot animation'] /0.2
-                    player.shoot_cooldown //0.2
-                    running = False
+                    player.shoot_cooldown = 10
 
                 if player_type ==2 and player.melee_cooldown > 10:
-                    Static_variables.COOLDOWNS['shoot animation'] /0.2
-                    player.melee_cooldown //0.2
-                    running = False
-
+                    player.melee_cooldown = 10
+                
+                player.upgrade_attack_speed(1.2)
+                running = False
             #Running speed upgrade
             if speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 player.speed_linear *= 1.2
                 player.speed_diagonal *= 1.2
-                Static_variables.COOLDOWNS['movement'] //0.2
-                player.initialize_animations()
+                player.upgrade_movement_speed(1.2)
+
+
+
                 running = False
             player.heal(5)
         pygame.display.update()
@@ -466,7 +469,7 @@ def main_loop(chosen_player):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:        # R - see all of the hitboxes 
                 Static_variables.RECT_MODE = not Static_variables.RECT_MODE 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_1:        # 1 - see how many lesser enemeis are spwned (use - stress test)
-                print(spawned_lessers)
+                print('regular enemies:', spawned_enemies,'spawned lesser enemies:',spawned_lessers, 'max enemies:', Static_variables.CURRENT_MAX_ENEMIES)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_2:        # 2 - spawn horde of lesser enemies (use - stress test)
                 spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -485,7 +488,7 @@ def main_loop(chosen_player):
             current_level = player.level
             upgrade_due = False
             spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
-            Static_variables.MAX_ENEMY_SPAWN = min(Static_variables.MAX_ENEMY_SPAWN +2 , 50)       
+            Static_variables.CURRENT_MAX_ENEMIES = min(Static_variables.CURRENT_MAX_ENEMIES +2 , Static_variables.MAX_ENEMY_SPAWN)       
             spawned_enemies = enemy_spawn(spawned_enemies, player)
             
         else:
@@ -505,7 +508,6 @@ def main_loop(chosen_player):
             for enemy in enemies:
                 enemy_healthbar_activate(enemy)   
 
-            assign_to_grid(all_enemies)
             handle_repulsion_with_grid(all_enemies)
             if player.level>current_level:
                 upgrade_due  = True
@@ -528,4 +530,4 @@ def start_game(chosen_player):
 
 # Basically if the game is run from this file, then this will be executed first(since there is no chosen_player in this situation, the player is hard coded)
 if __name__ == "__main__":
-    start_game(2)
+    start_game(1)

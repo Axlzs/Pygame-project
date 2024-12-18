@@ -1,43 +1,33 @@
-import pygame
-import json
-import os
+COOLDOWNS = {'movement':1,'idle':1,'shoot animation': 1}
 
-CONFIG_PATH = "config.json"
+test = {
+    'walk up':      {'row':0,'frames':8,'cooldown':COOLDOWNS['movement']},
+    'walk left':    {'row':1,'frames':8,'cooldown':COOLDOWNS['movement']},
+    'walk down':    {'row':2,'frames':8,'cooldown':COOLDOWNS['movement']},
+    'walk right':   {'row':3,'frames':8,'cooldown':COOLDOWNS['movement']},
+    'stand up':     {'row': 4, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+    'stand left':   {'row': 5, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+    'stand down':   {'row': 6, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+    'stand right':  {'row': 7, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+    
+    'attack up':    {'row':8,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    'attack left':  {'row':9,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    'attack down':  {'row':10,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    'attack right': {'row':11,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack up2':    {'row':12,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack left2':  {'row':13,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack down2':  {'row':14,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack right2': {'row':15,'frames':6,'cooldown':COOLDOWNS['shoot animation']}
+    # 'attack up3':    {'row':16,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack left3':  {'row':171,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack down3':  {'row':18,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+    # 'attack right3': {'row':19,'frames':6,'cooldown':COOLDOWNS['shoot animation']}
+    'death':        {'row':20,'frames':5,'cooldown':COOLDOWNS['idle']}
+        
+}
+skaits = 0
 
-class GameManager:
-    def __init__(self):
-        self.settings = self.load_settings()
-        self.screen = self.apply_settings()
-        self.update_dimensions()
-
-    def load_settings(self):
-        """Load default or saved settings"""
-        if os.path.exists(CONFIG_PATH):
-            with open(CONFIG_PATH, 'r') as file:
-                return json.load(file)
-        else:
-            # Default settings if config doesn't exist
-            return {
-                "screen_mode": "fullscreen",
-                "resolution": [800, 600]
-            }
-
-    def save_settings(self):
-        """Save current settings to the configuration file"""
-        with open(CONFIG_PATH, 'w') as file: # w - write; r - read; a - append; x - create
-            json.dump(self.settings, file)
-
-    def apply_settings(self):
-        if self.settings["screen_mode"] == "fullscreen":
-            return pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        else:
-            width, height = self.settings["resolution"]
-            return pygame.display.set_mode((width, height), pygame.RESIZABLE)
-
-    def update_dimensions(self):
-        """Update cached screen dimensions"""
-        WIDTH, HEIGHT = self.screen.get_size()
-        return WIDTH,HEIGHT
-
-
-game_manager = GameManager() # creating a single instance of GameManager, so it can be used by all files
+for action in test.items():
+    skaits+=1
+    print(skaits)
+    print(action)

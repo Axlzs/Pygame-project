@@ -16,8 +16,8 @@ class Static_variables:
     BG_CHANCE = [40, 10, 10, 10, 10, 5, 5, 3, 3, 2, 1, 1]
     #BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
     DROPPABLES = {
-        'health': {'image':'images/health_potion.png','height':24,'width':24,'effect':10},
-        'lesser_health': {'image':'images/health_potion.png','height':24,'width':24,'effect':5},
+        'health': {'image':'images/BigHealthPotion.png','height':24,'width':24,'effect':10},
+        'lesser_health': {'image':'images/SmallHealthPotion.png','height':24,'width':24,'effect':5},
         'xp'    : {'image':'images/xp.png','height':18,'width':18,'effect':1},
     }
     POPULATION = ['xp','health','lesser_health','nothing']
@@ -39,7 +39,10 @@ class Static_variables:
     ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500} # animation speed 
     LESSER_ENEMY_COOLDOWNS = 100
 
-    MAX_ENEMY_SPAWN = 10 # Max spawned enemies at a time
+
+    DEFAULT_ENEMY_SPAWN = 10 # Max spawned enemies at the start of the game
+    MAX_ENEMY_SPAWN = 100 # Max spawned enemies at a time
+    CURRENT_MAX_ENEMIES = DEFAULT_ENEMY_SPAWN # Max apwned enemies at the current game
     MAX_HORDE_SPAWN = 50 # Max enemies that a horde can have 
     MIN_HORDE_SPAWN = 100
     LESSER_ENEMIES = {
@@ -50,23 +53,25 @@ class Static_variables:
             'death' :   {'row':1,'frames':1,'cooldown':300}}
     }
     ENEMY_DATA = {
-        1: {'image':'images/enemies/skeleton_archer.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':1,'health':20,'damage':10,'attack_cooldown':300,'speed':2,'shoot dist':300},
-        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':2,'hitbox_height':50,'class':2,'health':50,'damage':25,'attack_cooldown':500,'speed':1.5,'attack dist':30,'range':15},
-        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':1.5,'hitbox_height':35,'class':2,'health':20,'damage':15,'attack_cooldown':100,'speed':2.5,'attack dist':20,'range':10}
+        1: {'image':'images/enemies/skeleton_archer.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':1,'health':20,'damage':5,'attack_cooldown':1000,'speed':2,'shoot dist':300},
+        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':1,'hitbox_height':50,'class':2,'health':50,'damage':25,'attack_cooldown':500,'speed':1.5,'attack dist':30,'range':15},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':0.5,'hitbox_height':35,'class':2,'health':20,'damage':10,'attack_cooldown':100,'speed':2.5,'attack dist':20,'range':10},
+        4: {'image':'images/enemies/skeleton_grunt.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':30,'damage':15,'attack_cooldown':100,'speed':2,'attack dist':22,'range':12},
+        5: {'image':'images/enemies/goblin_berserker.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':20,'damage':20,'attack_cooldown':100,'speed':3,'attack dist':20,'range':10},
     }
     ENEMY_ANIMATION_DATA = {
         1:{
-            'walk up':      {'row':0,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
-            'walk left':    {'row':1,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
-            'walk down':    {'row':2,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
-            'walk right':   {'row':3,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk up':      {'row':0,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
 
-            'attack up':    {'row':4,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
-            'attack left':  {'row':5,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
-            'attack down':  {'row':6,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
-            'attack right': {'row':7,'frames':9,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack up':    {'row':8,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack left':  {'row':9,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack down':  {'row':10,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack right': {'row':11,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
 
-            'death':        {'row':8,'frames':6,'cooldown':ENEMY_COOLDOWNS['idle']}
+            'death':        {'row':12,'frames':6,'cooldown':ENEMY_COOLDOWNS['idle']}
         },
         2:{
             'walk up':      {'row':0,'frames':9,'cooldown':ENEMY_COOLDOWNS['movement']},
@@ -93,6 +98,32 @@ class Static_variables:
             'attack right': {'row':7,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
 
             'death':        {'row':8,'frames':9,'cooldown':ENEMY_COOLDOWNS['idle']}
+        },
+        4:{
+            'walk up':      {'row':0,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+
+            'attack up':    {'row':8,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack left':  {'row':9,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack down':  {'row':10,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack right': {'row':11,'frames':6,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+
+            'death':        {'row':12,'frames':6,'cooldown':ENEMY_COOLDOWNS['idle']}
+        },
+        5:{
+            'walk up':      {'row':0,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':6,'cooldown':ENEMY_COOLDOWNS['movement']},
+
+            'attack up':    {'row':8,'frames':8,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack left':  {'row':9,'frames':8,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack down':  {'row':10,'frames':8,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+            'attack right': {'row':11,'frames':8,'cooldown':ENEMY_COOLDOWNS['shoot animation']},
+
+            'death':        {'row':12,'frames':8,'cooldown':ENEMY_COOLDOWNS['idle']}
         }
 
         
@@ -103,9 +134,9 @@ class Static_variables:
 
     #############PLAYER#############
     PLAYER_DATA = {
-        1: {'image':'images/players/player_ranged.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':1,'health':50,'damage':8,'default_speed_linear':4,'default_speed_diagonal':2.828},
+        1: {'image':'images/players/sorceress.png','sprite':48,'hitbox_width':20,'hitbox_height':35,'scale':1,'class':1,'health':50,'damage':8,'default_speed_linear':4,'default_speed_diagonal':2.828},
         
-        2: {'image':'images/players/player_knight.png','sprite':192,'hitbox_width':20,'hitbox_height':35,'scale':1.5,'class':2,'health':100,'damage':20,'default_speed_linear':4,'default_speed_diagonal':2.828,'hit_range_width':20,'hit_range_height':20,'heal_factor':5},
+        2: {'image':'images/players/warrior.png','sprite':48,'hitbox_width':15,'hitbox_height':30,'scale':1,'class':2,'health':100,'damage':20,'default_speed_linear':4,'default_speed_diagonal':2.828,'hit_range_width':15,'hit_range_height':15,'heal_factor':5},
         3: ''
     }
     SPEED_LINEAR = 4
@@ -121,47 +152,52 @@ class Static_variables:
     
     PLAYER_ANIMATION_DATA = {
         1:{
-            'walk up':      {'row':4,'frames':9,'cooldown':COOLDOWNS['movement']},
-            'walk left':    {'row':5,'frames':9,'cooldown':COOLDOWNS['movement']},
-            'walk down':    {'row':6,'frames':9,'cooldown':COOLDOWNS['movement']},
-            'walk right':   {'row':7,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk up':      {'row':0,'frames':6,'cooldown':COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':6,'cooldown':COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':6,'cooldown':COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':6,'cooldown':COOLDOWNS['movement']},
 
-            'stand up':     {'row': 4, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand left':   {'row': 5, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand down':   {'row': 6, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand right':  {'row': 7, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand up':     {'row': 4, 'frames': 6,'cooldown':COOLDOWNS['idle']},
+            'stand left':   {'row': 5, 'frames': 6,'cooldown':COOLDOWNS['idle']},
+            'stand down':   {'row': 6, 'frames': 6,'cooldown':COOLDOWNS['idle']},
+            'stand right':  {'row': 7, 'frames': 6,'cooldown':COOLDOWNS['idle']},
             
-            'attack up':    {'row':0,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
-            'attack left':  {'row':1,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
-            'attack down':  {'row':2,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
-            'attack right': {'row':3,'frames':8,'cooldown':COOLDOWNS['shoot animation']},
+            'attack up':    {'row':8,'frames':5,'cooldown':COOLDOWNS['shoot animation']},
+            'attack left':  {'row':9,'frames':5,'cooldown':COOLDOWNS['shoot animation']},
+            'attack down':  {'row':10,'frames':5,'cooldown':COOLDOWNS['shoot animation']},
+            'attack right': {'row':11,'frames':5,'cooldown':COOLDOWNS['shoot animation']},
 
-            'death':        {'row':8,'frames':6,'cooldown':COOLDOWNS['idle']}
+            'death':        {'row':16,'frames':6,'cooldown':COOLDOWNS['idle']}
         },
         2:{
-            'walk up':      {'row':0,'frames':9,'cooldown':COOLDOWNS['movement']},
-            'walk left':    {'row':1,'frames':9,'cooldown':COOLDOWNS['movement']},
-            'walk down':    {'row':2,'frames':9,'cooldown':COOLDOWNS['movement']},
-            'walk right':   {'row':3,'frames':9,'cooldown':COOLDOWNS['movement']},
+            'walk up':      {'row':0,'frames':8,'cooldown':COOLDOWNS['movement']},
+            'walk left':    {'row':1,'frames':8,'cooldown':COOLDOWNS['movement']},
+            'walk down':    {'row':2,'frames':8,'cooldown':COOLDOWNS['movement']},
+            'walk right':   {'row':3,'frames':8,'cooldown':COOLDOWNS['movement']},
 
-            'stand up':     {'row': 0, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand left':   {'row': 1, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand down':   {'row': 2, 'frames': 1,'cooldown':COOLDOWNS['idle']},
-            'stand right':  {'row': 3, 'frames': 1,'cooldown':COOLDOWNS['idle']},
+            'stand up':     {'row': 4, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+            'stand left':   {'row': 5, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+            'stand down':   {'row': 6, 'frames': 5,'cooldown':COOLDOWNS['idle']},
+            'stand right':  {'row': 7, 'frames': 5,'cooldown':COOLDOWNS['idle']},
             
-            'attack up':    {'row':5,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
-            'attack left':  {'row':6,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
-            'attack down':  {'row':7,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
-            'attack right': {'row':8,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack up':    {'row':8,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack left':  {'row':9,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack down':  {'row':10,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            'attack right': {'row':11,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
 
-            'death':        {'row':4,'frames':9,'cooldown':COOLDOWNS['idle']}
+            # 'attack up2':    {'row':12,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            # 'attack left2':  {'row':13,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            # 'attack down2':  {'row':14,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+            # 'attack right2': {'row':15,'frames':6,'cooldown':COOLDOWNS['shoot animation']},
+
+            'death':        {'row':16,'frames':5,'cooldown':COOLDOWNS['idle']}
         }
     }
 
     ##########ATTACKS##############
     PROJECTILE_DATA = {
-        1:{'image':'images/projectiles/iron arrow single.png','hitbox_width':2,'hitbox_height':10},
-        2:''
+        1:{'image':'images/projectiles/iron arrow single.png','width':48,'height': 5,'hitbox_width':2,'hitbox_height':10},
+        2:{'image':'images/projectiles/fire ball.png','width':16,'height': 6,'hitbox_width':2,'hitbox_height':10}
     }
     PROJECTILE_SPEED = 5
     ###############################

@@ -16,8 +16,8 @@ class Player(pygame.sprite.Sprite):
         self.player_animation_data = Static_variables.PLAYER_ANIMATION_DATA[player_type]
         self.projectile_group = projectile_group
         self.camera = Camera()
-        self.sprite_sheet = self.load_sprite_sheet(player_type, self.scale)
-        self.images = self.create_action_list(self.sprite_sheet,self.scale)
+        self.sprite_sheet = self.load_sprite_sheet()
+        self.images = self.create_action_list()
         self.initialize_animations()
 
         self.start_animation = self.animations['stand down']
@@ -78,23 +78,22 @@ class Player(pygame.sprite.Sprite):
    
     def initialize_animations(self):
         self.animations = {
-            action: Animation(self.images[action], data['cooldown'])
-            for action, data in self.player_animation_data.items()
+            action: Animation(self.images[action], data['cooldown']) for action, data in self.player_animation_data.items() # this is called dictionay comprehension {key: value for item in iterable}
         }
 
-    def load_sprite_sheet(self, player_type, scale):
-        sprite_sheet = pygame.image.load(Static_variables.PLAYER_DATA[player_type]['image']).convert_alpha()
+    def load_sprite_sheet(self):
+        sprite_sheet = pygame.image.load(Static_variables.PLAYER_DATA[self.type]['image']).convert_alpha()
         
         sprite_width, sprite_height = sprite_sheet.get_size()
         # int is used to negate the appearance of floats
-        scaled_size = (int(sprite_width//2*scale*self.player_scale), int(sprite_height//2*scale*self.player_scale))
+        scaled_size = (int(sprite_width*self.scale* self.player_scale), int(sprite_height*self.scale* self.player_scale))
         sprite_sheet = pygame.transform.scale(sprite_sheet, scaled_size)
         return sprite_sheet
 
-    def create_action_list(self, sprite_sheet, scale):
+    def create_action_list(self):
         action_list = {}
-        frame_width = self.sprite_size//2 * scale * self.player_scale
-        frame_height = self.sprite_size//2 * scale * self.player_scale
+        frame_width = self.sprite_size * self.scale * self.player_scale
+        frame_height = self.sprite_size * self.scale * self.player_scale
     
         for action, data in self.player_animation_data.items():
             row = data['row']
@@ -105,13 +104,23 @@ class Player(pygame.sprite.Sprite):
             for i in range(frame_count):
                 x = i * frame_width
                 y = row * frame_height
-                frame = sprite_sheet.subsurface((x, y, frame_width, frame_height))
+                frame = self.sprite_sheet.subsurface((x, y, frame_width, frame_height))
                 action_frames.append(frame)
     
             action_list[action] = action_frames
     
         return action_list
     
+    def upgrade_attack_speed(self, multiplier):
+        for action in ['attack up', 'attack down', 'attack left', 'attack right']:
+            if action in self.animations:
+                self.animations[action].cooldown /= multiplier
+
+    def upgrade_movement_speed(self, multiplier):
+        for action in ['walk up', 'walk down', 'walk left', 'walk right']:
+            if action in self.animations:
+                self.animations[action].cooldown /= multiplier
+
     def handle_movement(self):
         keys = pygame.key.get_pressed()
         self.motion = False
@@ -184,7 +193,7 @@ class Player(pygame.sprite.Sprite):
             self.is_animating = True
             self.last_shot_time = current_time
             #x, y, direction, damage, projectile_type
-            projectile = Projectile(recx, recy, looking_at, damage=10, projectile_type=1)
+            projectile = Projectile(recx, recy, looking_at, damage=10, projectile_type=2)
             projectile_group.add(projectile)
  
     def get_melee_hitbox(self):
@@ -211,10 +220,10 @@ class Player(pygame.sprite.Sprite):
                 projectile.kill()
 
 
-    def take_damage(self, amount, damage_cooldown):
+    def take_damage(self, amount):
         current_time = pygame.time.get_ticks()
         if self.is_dying == False:
-            if current_time - self.last_damage_time >= damage_cooldown:
+            if current_time - self.last_damage_time >= 500:
                 self.last_damage_time = current_time
                 self.target_health -= amount
                 if self.target_health <= 0:

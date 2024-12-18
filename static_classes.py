@@ -125,7 +125,8 @@ class Projectile(pygame.sprite.Sprite):
 
     def create_projectile_image(self, projectile_sheet, scale):
         # Extract a single frame to use as the base image
-        frame_width, frame_height = 48, 5 
+        frame_width = Static_variables.PROJECTILE_DATA[self.projectile_type]['width']
+        frame_height = Static_variables.PROJECTILE_DATA[self.projectile_type]['height']
         return projectile_sheet.subsurface((0, 0, frame_width, frame_height))
 
     def update(self):
