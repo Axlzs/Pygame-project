@@ -468,9 +468,9 @@ def main_loop(chosen_player):
                 player.health = 0
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:        # R - see all of the hitboxes 
                 Static_variables.RECT_MODE = not Static_variables.RECT_MODE 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_1:        # 1 - see how many lesser enemeis are spwned (use - stress test)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_1:        # 1 - see some enemy data
                 print('regular enemies:', spawned_enemies,'spawned lesser enemies:',spawned_lessers, 'max enemies:', Static_variables.CURRENT_MAX_ENEMIES)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_2:        # 2 - spawn horde of lesser enemies (use - stress test)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_2:        # 2 - spawn horde of lesser enemies ( stress test)
                 spawned_lessers,lesser_count,spawned_lessers = spawn_horde(all_enemies,lessers,spawned_lessers,lesser_count,player)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 player.handle_attack()

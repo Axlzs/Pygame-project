@@ -136,20 +136,20 @@ def choose_player():
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/2.png").convert_alpha()
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/3.png").convert_alpha()
     background4 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/4.png").convert_alpha()
-    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2-(80*Static_variables.PLAYER_SCALE)))
+    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), 480))
     back_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "back", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
 
-    player1_sheet = pygame.image.load("images/players/player_ranged.png").convert_alpha()
-    player2_sheet = pygame.image.load("images/players/player_knight.png").convert_alpha()
+    player1_sheet = pygame.image.load("images/players/sorceress.png").convert_alpha()
+    player2_sheet = pygame.image.load("images/players/warrior.png").convert_alpha()
 
-    player1_base_frame = player1_sheet.subsurface((15, 384, 192, 192))
-    player2_base_frame = player2_sheet.subsurface((5, 384, 192, 192))
+    player1_base_frame = player1_sheet.subsurface((0, 96, 48, 48))
+    player2_base_frame = player2_sheet.subsurface((0, 96, 48, 48))
 
-    player1_frame = pygame.transform.scale(player1_base_frame, (450, 450))
-    player2_frame = pygame.transform.scale(player2_base_frame, (450, 450))
+    player1_frame = pygame.transform.scale(player1_base_frame, (240, 240))
+    player2_frame = pygame.transform.scale(player2_base_frame, (240, 240))
 
-    player1_rect = pygame.Rect(WIDTH/2-150,120,120,200) # 240
-    player2_rect = pygame.Rect(WIDTH/2-10,120,120,200) # 240
+    player1_rect = pygame.Rect(WIDTH/2-150,240,120,200) # 240
+    player2_rect = pygame.Rect(WIDTH/2-10,240,120,200) # 240
 
     player1_selected = False
     player2_selected = False
@@ -211,7 +211,7 @@ def choose_player():
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
                 # # start_button.pos = (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE))
-                start_button.pos = WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2(80*Static_variables.PLAYER_SCALE)
+                start_button.pos = WIDTH//2-(40*Static_variables.PLAYER_SCALE), 480
                 back_button.pos = (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE))
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check for mouse click inside the rectangle
@@ -239,8 +239,8 @@ def choose_player():
 
         game_manager.screen.blit(shadow1,player1_rect)
         game_manager.screen.blit(shadow2,player2_rect)
-        game_manager.screen.blit(player1_frame, (WIDTH/2-280, 0))
-        game_manager.screen.blit(player2_frame, (WIDTH/2-160, 0))
+        game_manager.screen.blit(player1_frame, (WIDTH/2 -210, 230))
+        game_manager.screen.blit(player2_frame, (WIDTH/2 -70, 240))
 
         if player1_selected:
             pygame.draw.rect(game_manager.screen, Static_variables.GREEN, player1_rect, 5)

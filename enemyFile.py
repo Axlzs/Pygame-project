@@ -302,7 +302,7 @@ class LesserEnemy(pygame.sprite.Sprite):
         self.maxhealth = Static_variables.LESSER_ENEMIES[self.type]['health']
         self.health_bar_length = self.hitbox.width# sprite means the length of one player frame 
         self.health_ratio = self.maxhealth/self.health_bar_length
-        self.damage_cooldown = 500
+        self.damage_cooldown = 100
         self.last_damage_time = 0
         self.attack_damage = Static_variables.LESSER_ENEMIES[self.type]['damage']
         self.speed = Static_variables.LESSER_ENEMIES[self.type]['speed']

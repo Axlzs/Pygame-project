@@ -36,14 +36,14 @@ class Static_variables:
     ENEMY_SPEED_DIAGONAL = 1.414
 
     ENEMY_PROJECTILE_COOLDOWN = 1000
-    ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':500} # animation speed 
+    ENEMY_COOLDOWNS = {'idle':100,'movement':100,'shoot animation':100,'damage':250} # animation speed 
     LESSER_ENEMY_COOLDOWNS = 100
 
 
     DEFAULT_ENEMY_SPAWN = 10 # Max spawned enemies at the start of the game
     MAX_ENEMY_SPAWN = 100 # Max spawned enemies at a time
     CURRENT_MAX_ENEMIES = DEFAULT_ENEMY_SPAWN # Max apwned enemies at the current game
-    MAX_HORDE_SPAWN = 50 # Max enemies that a horde can have 
+    MAX_HORDE_SPAWN = 250 # Max enemies that a horde can have 
     MIN_HORDE_SPAWN = 100
     LESSER_ENEMIES = {
         1: {'image':'images/enemies/bat_temp.png','sprite':32,'hitbox_width':10,'hitbox_height':10,'scale':1.3,'class':1,'health':5,'damage':1,'speed':2.5}
@@ -55,9 +55,9 @@ class Static_variables:
     ENEMY_DATA = {
         1: {'image':'images/enemies/skeleton_archer.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':1,'health':20,'damage':5,'attack_cooldown':1000,'speed':2,'shoot dist':300},
         2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':1,'hitbox_height':50,'class':2,'health':50,'damage':25,'attack_cooldown':500,'speed':1.5,'attack dist':30,'range':15},
-        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':0.5,'hitbox_height':35,'class':2,'health':20,'damage':10,'attack_cooldown':100,'speed':2.5,'attack dist':20,'range':10},
-        4: {'image':'images/enemies/skeleton_grunt.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':30,'damage':15,'attack_cooldown':100,'speed':2,'attack dist':22,'range':12},
-        5: {'image':'images/enemies/goblin_berserker.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':20,'damage':20,'attack_cooldown':100,'speed':3,'attack dist':20,'range':10},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':0.5,'hitbox_height':35,'class':2,'health':20,'damage':10,'attack_cooldown':100,'speed':2.5,'attack dist':15,'range':10},
+        4: {'image':'images/enemies/skeleton_grunt.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':30,'damage':15,'attack_cooldown':100,'speed':2,'attack dist':20,'range':12},
+        5: {'image':'images/enemies/goblin_berserker.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':20,'damage':20,'attack_cooldown':100,'speed':3,'attack dist':17,'range':10},
     }
     ENEMY_ANIMATION_DATA = {
         1:{
