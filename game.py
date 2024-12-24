@@ -351,6 +351,15 @@ def upgrade_screen(player_type):
             player.heal(5)
         pygame.display.update()
         Static_variables.CLOCK.tick(Static_variables.FPS)
+        
+def upgrade_enemies():
+    upgrade_multiplier = int(player.level /5)
+    if upgrade_multiplier !=0:
+        for enemy in enemies:
+            enemy.maxhealth = enemy.default_health + (upgrade_multiplier * 7)
+            enemy.health_ratio = enemy.maxhealth/enemy.health_bar_length
+            enemy.heal(upgrade_multiplier * 5)
+    else: print("this statement should never run")
 
 #################################ENEMY#COLLISION#REPULSION#############################################     
 def assign_to_grid(all_enemies):
@@ -511,6 +520,8 @@ def main_loop(chosen_player):
             handle_repulsion_with_grid(all_enemies)
             if player.level>current_level:
                 upgrade_due  = True
+                if player.level%5==0:
+                    upgrade_enemies()
             if player.officially_dead:
                 game_over_screen()
  

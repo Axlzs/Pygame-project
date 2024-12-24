@@ -10,6 +10,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, enemy_type, projectile_group, player, droppable_group,enemy_projectile_group):
         pygame.sprite.Sprite.__init__(self)
         self.type = enemy_type  # Who am i
+        self.id = Static_variables.ENEMY_DATA[self.type]['id']
         self.player = player    # target player
         self.camera = Camera()  # camera for offsets and stuff
         self.scale = Static_variables.PLAYER_SCALE              # PLAYER_SCALE basically means the game_scale
@@ -31,6 +32,7 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, Static_variables.ENEMY_DATA[enemy_type]['hitbox_width']*Static_variables.PLAYER_SCALE, Static_variables.ENEMY_DATA[enemy_type]['hitbox_height']*Static_variables.PLAYER_SCALE)
         self.hitbox.center = self.rect.center  # Align hitbox and sprite position
 
+        self.default_health = Static_variables.ENEMY_DATA[self.type]['health']
         self.health = Static_variables.ENEMY_DATA[self.type]['health']      # Current health
         self.maxhealth = Static_variables.ENEMY_DATA[self.type]['health']   # Maximum heaalth that an enemy can have
         self.health_bar_length = self.hitbox.width                          # How long is the healthar
@@ -239,6 +241,13 @@ class Enemy(pygame.sprite.Sprite):
                     self.start_death_sequence()
         else: pass
 
+    def heal(self, amount):
+        if amount>0:
+            if (self.health + amount) > self.maxhealth:
+                self.health = self.maxhealth
+            else:
+                self.health += amount
+
     def start_death_sequence(self):
         self.is_dying = True
         self.death_start_time = pygame.time.get_ticks()
@@ -394,7 +403,7 @@ class LesserEnemy(pygame.sprite.Sprite):
                     #self.player.gain_xp() # this is here, because this must run only once on enemy death
                     self.start_death_sequence()
         else: pass
-
+        
     def attack(self):
         if self.hitbox.colliderect(self.player.hitbox):
             self.player.take_continous_damage(self.attack_damage)

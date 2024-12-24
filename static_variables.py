@@ -53,11 +53,11 @@ class Static_variables:
             'death' :   {'row':1,'frames':1,'cooldown':300}}
     }
     ENEMY_DATA = {
-        1: {'image':'images/enemies/skeleton_archer.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':1,'health':20,'damage':5,'attack_cooldown':1000,'speed':2,'shoot dist':300},
-        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':1,'hitbox_height':50,'class':2,'health':50,'damage':25,'attack_cooldown':500,'speed':1.5,'attack dist':30,'range':15},
-        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':0.5,'hitbox_height':35,'class':2,'health':20,'damage':10,'attack_cooldown':100,'speed':2.5,'attack dist':15,'range':10},
-        4: {'image':'images/enemies/skeleton_grunt.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':30,'damage':15,'attack_cooldown':100,'speed':2,'attack dist':20,'range':12},
-        5: {'image':'images/enemies/goblin_berserker.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'health':20,'damage':20,'attack_cooldown':100,'speed':3,'attack dist':17,'range':10},
+        1: {'image':'images/enemies/skeleton_archer.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':1,'id':1,'health':20,'damage':5,'attack_cooldown':1000,'speed':2,'shoot dist':300},
+        2: {'image':'images/enemies/lizard_knight.png','sprite':192,'hitbox_width':25,'scale':1,'hitbox_height':50,'class':2,'id':2,'health':50,'damage':25,'attack_cooldown':500,'speed':1.5,'attack dist':30,'range':15},
+        3: {'image':'images/enemies/thief.png','sprite':192,'hitbox_width':20,'scale':0.5,'hitbox_height':35,'class':2,'id':3,'health':20,'damage':10,'attack_cooldown':100,'speed':2.5,'attack dist':15,'range':10},
+        4: {'image':'images/enemies/skeleton_grunt.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'id':4,'health':30,'damage':15,'attack_cooldown':100,'speed':2,'attack dist':20,'range':12},
+        5: {'image':'images/enemies/goblin_berserker.png','sprite':48,'hitbox_width':20,'scale':1,'hitbox_height':35,'class':2,'id':5,'health':20,'damage':20,'attack_cooldown':100,'speed':3,'attack dist':17,'range':10},
     }
     ENEMY_ANIMATION_DATA = {
         1:{
