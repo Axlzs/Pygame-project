@@ -134,8 +134,7 @@ class Static_variables:
 
     #############PLAYER#############
     PLAYER_DATA = {
-        1: {'image':'images/players/sorceress.png','sprite':48,'hitbox_width':20,'hitbox_height':35,'scale':1,'class':1,'health':50,'damage':8,'default_speed_linear':4,'default_speed_diagonal':2.828},
-        
+        1: {'image':'images/players/sorceress.png','sprite':48,'hitbox_width':20,'hitbox_height':35,'scale':1,'class':1,'health':50,'damage':8,'default_speed_linear':4,'default_speed_diagonal':2.828},        
         2: {'image':'images/players/warrior.png','sprite':48,'hitbox_width':15,'hitbox_height':30,'scale':1,'class':2,'health':100,'damage':20,'default_speed_linear':4,'default_speed_diagonal':2.828,'hit_range_width':15,'hit_range_height':15,'heal_factor':5},
         3: ''
     }
@@ -205,9 +204,9 @@ class Static_variables:
     ##########BUTTONS##############
 
     BUTTON_DATA = {
-        'start' : {'x':0,'y':0,'width':64,'height':32},
+        'start': {'x':0,'y':0,'width':64,'height':32},
         'play' : {'x':0,'y':32,'width':64,'height':32},
-        'pause' : {'x':0,'y':64,'width':64,'height':32},
+        'pause': {'x':0,'y':64,'width':64,'height':32},
         'menu' : {'x':0,'y':96,'width':64,'height':32},
         'save' : {'x':0,'y':128,'width':64,'height':32},
         'load' : {'x':0,'y':160,'width':64,'height':32},
@@ -217,7 +216,7 @@ class Static_variables:
         'next' : {'x':0,'y':288,'width':64,'height':32},
         'back' : {'x':0,'y':320,'width':64,'height':32},
         'sell' : {'x':0,'y':354,'width':64,'height':32},
-        'buy' : {'x':0,'y':384,'width':64,'height':32},
+        'buy'  : {'x':0,'y':384,'width':64,'height':32},
 
         'no' : {'x':192,'y':0,'width':64,'height':32},
         'yes' : {'x':192,'y':32,'width':64,'height':32},

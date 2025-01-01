@@ -44,7 +44,7 @@ class WorldMap:
         tiles = list(range(Static_variables.TOTAL_BG))  # Tile indices from 0 to Static_variables.TOTAL_BG - 1
         return random.choices(tiles, weights=Static_variables.BG_CHANCE, k=1)[0]
 
-    def get_background_tiles(self, target_rect, camera_offset, screen_width, screen_height):
+    def get_background_tiles(self, target_rect, screen_width, screen_height):
         # Calculate visible tiles based on the player's position, camera offset, and screen size
         tiles = []
 
@@ -253,7 +253,7 @@ class Droppable(pygame.sprite.Sprite):
         self.item_type = item_type
         self.data = Static_variables.DROPPABLES[item_type]
         self.amount = self.data["effect"]
-        self.x = x
+        self.x = x 
         self.y = y
         self.pos = pygame.Vector2(x, y)
         self.scaled_width = int(self.data["width"] * self.scale)

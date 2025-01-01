@@ -145,7 +145,7 @@ def draw_entities():
     # visible_tiles = map.get_background_tiles(player.rect, camera.offset)
     # map.render(game_manager.screen, visible_tiles, camera.offset)
 
-    tiles = map.get_background_tiles(player.rect, camera.offset, WIDTH, HEIGHT)
+    tiles = map.get_background_tiles(player.rect, WIDTH, HEIGHT)
     map.render(game_manager.screen, tiles, camera.offset)
     
     game_manager.screen.blit(player.image, camera.apply(player.rect))

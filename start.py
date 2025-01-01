@@ -288,7 +288,7 @@ def main_menu():
     background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
     background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
     running = True
-    while running:
+    while running:  
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
