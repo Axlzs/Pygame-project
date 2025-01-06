@@ -14,7 +14,7 @@ class Static_variables:
     TILE_HEIGHT = 640
     TOTAL_BG = 12 # The total number of background images 
     BG_CHANCE = [40, 10, 10, 10, 10, 5, 5, 3, 3, 2, 1, 1]
-    #BG_CHANCE = [40] + [10] * 4 + [7] * 2 + [3] * 3 # Change probabilities for each image if needed!
+
     DROPPABLES = {
         'health': {'image':'images/BigHealthPotion.png','height':24,'width':24,'effect':10},
         'lesser_health': {'image':'images/SmallHealthPotion.png','height':24,'width':24,'effect':5},
@@ -29,8 +29,8 @@ class Static_variables:
     GRID_SIZE = 100 # this is for collision detection
     REPULSION_RADIUS = 20
     REPULSION_FORCE = 2
-    ENEMY_SPAWN_AREA = 10 # Density - distance between inner spawn circle and outer spawn circe 
-    ENEMY_SPAWN_DISTANCE = 50 # How far does the enemy spawn form the player vision
+    ENEMY_SPAWN_AREA = 50 # Density - distance between inner spawn circle and outer spawn circe 
+    ENEMY_SPAWN_DISTANCE = 10 # How far does the enemy spawn form the player vision
     LESSER_SPAWN_DISTANCE = 50 # How far does the lesser spawn form the player vision
     ENEMY_SPEED_LINEAR = 2
     ENEMY_SPEED_DIAGONAL = 1.414

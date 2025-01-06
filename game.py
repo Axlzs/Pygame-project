@@ -1,4 +1,5 @@
 import pygame
+import math
 from static_variables import Static_variables
 from static_classes import *
 from playerFile import Player
@@ -342,6 +343,7 @@ def upgrade_screen(player_type):
             if speed_uppgrade.handle_event(event):
                 pygame.time.delay(100)
                 player.speed_linear *= 1.2
+                #player.speed_diagonal = math.sqrt(2*player.speed_linear)
                 player.speed_diagonal *= 1.2
                 player.upgrade_movement_speed(1.2)
 

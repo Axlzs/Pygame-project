@@ -277,8 +277,8 @@ def main_menu():
     background2 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/2.png").convert_alpha()
     background3 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/3.png").convert_alpha()
     background4 = pygame.image.load("images/UI_elements/Backgrounds/Main_menu/4.png").convert_alpha()
-    start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2))
-    info_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "info", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(40 *Static_variables.PLAYER_SCALE)))
+    #start_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2))
+    start_button= Button(game_manager.screen, BUTTON_SPRITE_SHEET, "start", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(40 *Static_variables.PLAYER_SCALE)))
     option_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "option", (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE)))
     quit_button = Button(game_manager.screen, BUTTON_SPRITE_SHEET, "quit", (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE)))
 
@@ -307,9 +307,9 @@ def main_menu():
                     game_manager.screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
                 choose_player()
-            if info_button.handle_event(event):
-                pygame.time.delay(100)
-                print("Start button presseed!")
+            #if info_button.handle_event(event):
+            #    pygame.time.delay(100)
+            #    print("Start button presseed!")
             if option_button.handle_event(event):
                 pygame.time.delay(100)
                 game_manager.save_settings()
@@ -334,8 +334,8 @@ def main_menu():
                 background3 = pygame.transform.scale(background3, (WIDTH+80, HEIGHT+80))
                 background4 = pygame.transform.scale(background4, (WIDTH+80, HEIGHT+80))
 
-                start_button.pos = (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2)
-                info_button.pos = (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(40 *Static_variables.PLAYER_SCALE))
+                #start_button.pos = (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2)
+                start_button.pos = (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(40 *Static_variables.PLAYER_SCALE))
                 option_button.pos = (WIDTH//2-(40*Static_variables.PLAYER_SCALE), HEIGHT//2+(80*Static_variables.PLAYER_SCALE))
                 quit_button.pos = (WIDTH//2-(32*Static_variables.PLAYER_SCALE), HEIGHT//2+(120*Static_variables.PLAYER_SCALE))
 
@@ -355,13 +355,13 @@ def main_menu():
 
         # Draw everything
         start_button.draw()
-        info_button.draw()
+        #info_button.draw()
         option_button.draw()
         quit_button.draw()
 
         if Static_variables.RECT_MODE:
             pygame.draw.rect(game_manager.screen, (255, 0, 0), start_button.rect, 2)
-            pygame.draw.rect(game_manager.screen, (255, 0, 0), info_button.rect, 2)
+            #pygame.draw.rect(game_manager.screen, (255, 0, 0), info_button.rect, 2)
             pygame.draw.rect(game_manager.screen, (255, 0, 0), option_button.rect, 2)
             pygame.draw.rect(game_manager.screen, (255, 0, 0), quit_button.rect, 2)
 

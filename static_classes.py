@@ -105,7 +105,7 @@ class Projectile(pygame.sprite.Sprite):
         # First we get delta x and delta y, then we use atan2, that calculates arctan in radians and at last we convert radians to degrees
         dx = self.target_pos.x - self.pos.x
         dy = self.target_pos.y - self.pos.y
-        return math.degrees(math.atan2(-dy, dx)) # dy is negative because of pygame. Basically the y coordinates are as if they were upside down
+        return math.degrees(math.atan2(-dy, dx)) # dy is negative because of pygame
 
     def calculate_velocity(self, angle):
         # Convert angle to radians and calculate velocity vector
@@ -281,6 +281,6 @@ class Droppable(pygame.sprite.Sprite):
     def interact(self,player):
         if self.item_type == "xp":
             player.gain_xp(self.amount)
-        elif self.item_type == "health":
+        elif self.item_type == "health" or self.item_type == "lesser_health":
             player.heal(self.amount)
         self.kill()
