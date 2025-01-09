@@ -1,9 +1,4 @@
-
-[-]known resolution bug - sometimes the game does not want to exit fullscreen mode, the config file needs to be changed at that point
-
-
 [-]optimise arrows
-[-]find better sprites and make them bigger(will partly resolve optimization problem)
 
 [+]some fixes to melee hitboxes 
 
@@ -16,8 +11,9 @@
 [+]implement enemy sprites
 
 ----optimization notes----
+Do not run all of the functions on all of the ticks
 
-optimise the stupid arrows - not as big performace hit
+optimise the arrows - not as big performace hit
 
 preload arrows
  - rotate function is expensive 
