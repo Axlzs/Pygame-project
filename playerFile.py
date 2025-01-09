@@ -306,7 +306,7 @@ class Player(pygame.sprite.Sprite):
             self.arrow_offset = 0
             self.arrow_offset = 10*self.scale
         else:
-            self.melee_range = Static_variables.PLAYER_DATA[self.type]['range'] * self.scale
+            #self.melee_range = Static_variables.PLAYER_DATA[self.type]['range'] * self.scale
             self.melee_cooldown = Static_variables.MELEE_COOLDOWN
             self.last_melee_time = 0
             self.heal_factor = Static_variables.PLAYER_DATA[self.type]['heal_factor']

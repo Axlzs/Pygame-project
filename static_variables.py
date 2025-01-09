@@ -7,8 +7,8 @@ class Static_variables:
     FPS = 60 # Framerate value for game
     #WIN = pygame.display.set_mode((WIDTH,HEIGHT)) # idk if it is needed prolly not
     RECT_MODE = False # lets one see rects(hitboxes)
-    MIN_WIDTH = 800
-    MIN_HEIGHT = 600
+    MIN_WIDTH = 1000
+    MIN_HEIGHT = 800
     ############MAP_DATA############
     TILE_WIDTH = 640
     TILE_HEIGHT = 640
