@@ -2,8 +2,8 @@
 
 [+]some fixes to melee hitboxes 
 
-[+] fix attack speed upgrade
-[+] Started working on resetting player after death
+[+]fix attack speed upgrade
+[+]Started working on resetting player after death
 [+]ran back the enemy cooldown stuff, that was not working 
 [+]new player sprites 
 [+]Shadow wizard money gang
@@ -17,3 +17,7 @@ optimise the arrows - not as big performace hit
 
 preload arrows
  - rotate function is expensive 
+
+Pre-dungeon
+
+-farm
