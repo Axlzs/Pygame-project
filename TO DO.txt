@@ -1,19 +1,37 @@
+
+--------------Optimization---------------
 [-]optimise arrows
+[-]optimise pathfinding
+[-]optimise repulsion (quadratic tree)
+[-]need more enemies
 
-[+]some fixes to melee hitboxes 
+--------------Game-Features--------------
+Wizard effects:
+    [-]Garlic effect
+    [-]Draw-to-kill
+    [-]Dash
+    [-]Lightning
 
-[+] fix attack speed upgrade
-[+] Started working on resetting player after death
-[+]ran back the enemy cooldown stuff, that was not working 
-[+]new player sprites 
-[+]Shadow wizard money gang
-[+]upgrades to the projectile class, now it is back more epic 
-[+]implement enemy sprites
+Knight effects:
+    [-]Shield
+    [-]Bow
+    [-]Big strike
+    [-]Earthquake
+
+-------------Engine-Features-------------
+[-]Sound
+[-]Options during pause
+
+
+
+
+
+
+
+
 
 ----optimization notes----
 Do not run all of the functions on all of the ticks
-
-optimise the arrows - not as big performace hit
 
 preload arrows
  - rotate function is expensive 
