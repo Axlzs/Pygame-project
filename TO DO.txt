@@ -15,7 +15,7 @@ Wizard effects:
 Knight effects:
     [-]Shield
     [-]Bow
-    [-]Big strike
+    [-]Big hit
     [-]Earthquake
 
 -------------Engine-Features-------------
