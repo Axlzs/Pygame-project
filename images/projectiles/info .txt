@@ -1,0 +1,2 @@
+arrow: 48x5
+fireball: 16x6

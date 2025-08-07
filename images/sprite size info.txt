@@ -1,0 +1,33 @@
+p-melee:
+   64x64
+     walk wasd - 9
+     death - 9
+   attack 192x192
+     attack wasd1, wasd2 - 6
+     attack poke wasd - 8
+
+p-ranged:
+   64x64
+     shoot wasd - 8
+     walk wasd - 9
+     death - 7
+
+
+lizard knight:
+   64x64
+     walk wasd - 9
+     death - 7
+   192x192
+     attack wasd - 6
+
+skeleton:
+   128x128
+     walk wasd - 9
+   64x64
+     shoot - 9
+
+thief:
+   64x64
+     wals wasd - 9
+     attack wasd - 6
+     

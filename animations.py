@@ -1,100 +1,52 @@
 import pygame
-import spritesheet
 
-pygame.init()
+class Animation:
+    # Sprite sheet  has all the animations in a single line
+    # All animations -> actions -> frames -> frame_index 
+    def __init__(self, frames, cooldown):
+        self.frames = frames  # List of frames for a speficific action 
+        self.cooldown = cooldown # Time interval between animation frames
+        self.last_update = 0 
+        self.frame_index = 0
+        self.is_playing = True
+        self.loop = True # Some animations need to run only once, others more than once
 
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 500
-
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Animation test')
-
-sprite_sheet_image = pygame.image.load('images/player.png').convert_alpha()
-sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
-
-BG = (50, 50, 50)
-BLACK = (0, 0, 0)
-
-animation_list = []
-animation_steps = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
-last_update = pygame.time.get_ticks() # Controls animation speed
-animation_cooldown = 150
-action = 4 # Animation that will be set as default when game starts
-frame = 0
-step_counter = 0 # Each step is one frame in the animation
-animation_completed = False
-last_lift_up = pygame.K_s
-
-# Splits the spritesheet into frames
-for animation in animation_steps:
-    temp_img_list = []
-    for _ in range(animation):
-        temp_img_list.append(sprite_sheet.get_image(step_counter, 48, 48, 3, BLACK))
-        step_counter += 1
-    animation_list.append(temp_img_list)
-
-run = True
-while run:
+    def get_current_frame(self):
+        # Returns the current frame
+        self.loop = True
+        if not self.is_playing:
+            return self.frames[self.frame_index]  # Return the current frame instead of the whole list
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_update > self.cooldown:
+            if self.loop:
+                # Loop through the frames
+                self.frame_index = (self.frame_index+1) % len(self.frames)  # Wrap around to the start
+            elif self.frame_index < len(self.frames) - 1:
+                self.frame_index += 1
+                
+            self.last_update = current_time  # Update the last update time
+        return self.frames[self.frame_index]  # Return the current frame based on frame_index
     
-    screen.fill(BG)
+    def play_once(self):
+        self.loop = False
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_update > self.cooldown:
+            if self.frame_index < len(self.frames) - 1:
+                self.frame_index += 1  # Advance frame until the last one
+            else:
+                self.is_playing = False  # Stop animation if it reaches the end without looping
+            self.last_update = current_time
+        return self.frames[self.frame_index]
 
-    current_time = pygame.time.get_ticks()
-
-    inputs_space = 0
-
-    if current_time - last_update >= animation_cooldown:
-        if not animation_completed:
-            frame += 1
-            last_update = current_time
-            if frame >= len(animation_list[action]):
-                frame = 0
-                animation_completed = True
-
-    screen.blit(animation_list[action][frame], (178, 178))
-
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_s]:
-        action = 0
-        animation_completed = False
-    if keys[pygame.K_d]:
-        action = 2
-        animation_completed = False
-    if keys[pygame.K_a]:
-        action = 1
-        animation_completed = False
-    if keys[pygame.K_w]:
-        action = 3
-        animation_completed = False
+    def is_completed(self):
+        return self.frame_index == len(self.frames) - 1 and not self.loop
+     
+    def reset(self):
+        self.frame_index = 0
+        self.last_update = pygame.time.get_ticks()
     
-    if sum(keys) == 0 and last_lift_up != pygame.K_SPACE:
-        animation_completed = False
-        if last_lift_up == pygame.K_w:
-            action = 7
-        elif last_lift_up == pygame.K_s:
-            action = 4
-        elif last_lift_up == pygame.K_a:
-            action = 5
-        elif last_lift_up == pygame.K_d:
-            action = 6
+    def play(self):
+        self.is_playing = True
 
-    if keys[pygame.K_SPACE] and not keys[pygame.K_w] and not keys[pygame.K_s] and not keys[pygame.K_a] and not keys[pygame.K_d]:
-        animation_completed = False
-        if last_lift_up == pygame.K_w:
-            action = 11
-        elif last_lift_up == pygame.K_s:
-            action = 8
-        elif last_lift_up == pygame.K_a:
-            action = 9
-        elif last_lift_up == pygame.K_d:
-            action = 10
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        elif event.type == pygame.KEYUP:
-            last_lift_up = event.key
-
-    pygame.display.update()
-
-pygame.quit()
+    def stop(self):
+        self.is_playing = False
